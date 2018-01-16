@@ -1,6 +1,5 @@
 // Export Sortable Element Component Mixin
 export const ElementMixin = {
-  name: 'sortableElement',
   inject: ['manager'],
   props: {
     index: {
@@ -11,7 +10,10 @@ export const ElementMixin = {
       type: [String, Number],
       default: 'default',
     },
-    disabled: Boolean,
+    disabled: { 
+      type: Boolean, 
+      default: false,
+    },
   },
 
   mounted() {
@@ -22,21 +24,23 @@ export const ElementMixin = {
     }
   },
 
-  componentWillReceiveProps(nextProps) {
-    if (this.index !== nextProps.index && this.node) {
-      this.node.sortableInfo.index = nextProps.index;
-    }
-    if (this.disabled !== nextProps.disabled) {
-      const {collection, disabled, index} = nextProps;
-      if (disabled) {
-        this.removeDraggable(collection);
-      } else {
-        this.setDraggable(collection, index);
+  watch: {
+    index(newIndex) {
+      if (this.node) {
+        this.node.sortableInfo.index = newIndex;
       }
-    } else if (this.collection !== nextProps.collection) {
-      this.removeDraggable(this.collection);
-      this.setDraggable(nextProps.collection, nextProps.index);
-    }
+    },
+    disabled(isDisabled) {
+      if (isDisabled) {
+        this.removeDraggable(this.collection);
+      } else {
+        this.setDraggable(this.collection, this.index);
+      }
+    },
+    collection(newCollection, oldCollection) {
+      this.removeDraggable(oldCollection);
+      this.setDraggable(newCollection, this.index);
+    },
   },
 
   beforeDestroy() {

@@ -1,34 +1,17 @@
 {
     "env": {
-        "development": {
-            "presets": ["es2015", "react", "react-hmre", "stage-0", "stage-1", "stage-2"]
-        },
         "commonjs": {
-            "presets": [
-                "es2015",
-                "react",
-                "stage-0",
-                "stage-1"
-            ]
+            "presets": [ "env" ]
         },
         "es6": {
+            "presets": [ "env" ],
+            "plugins": [ "transform-runtime" ]
+        },
+        "rollup": {
             "presets": [
-                "es2015-rollup",
-                "react",
-                "stage-0",
-                "stage-1"
+                ["env", { "modules": false }]
             ],
-            "plugins": [
-                "transform-runtime"
-            ]
-        },
-        "production": {
-            "presets": ["es2015", "react", "stage-0", "stage-1", "stage-2"],
-            "plugins": ["transform-runtime", "transform-object-assign"]
-        },
-        "testing": {
-            "presets": ["es2015", "react", "stage-0", "stage-1", "stage-2"],
-            "plugins": ["transform-object-assign"]
+            "plugins": ["external-helpers"]
         }
     }
 }

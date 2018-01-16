@@ -1,5 +1,8 @@
 {
-  "extends": "react-app",
+  "extends": [
+    "eslint:recommended",
+    "plugin:vue/recommended"
+  ],
   "rules": {
     "prefer-const": ["error"],
     "comma-dangle": ["error", "always-multiline"],

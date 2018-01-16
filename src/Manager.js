@@ -1,8 +1,7 @@
-import find from 'lodash/find';
-import sortBy from 'lodash/sortBy';
-
 export default class Manager {
-  refs = {};
+  constructor() {
+    this.refs = {};
+  }
 
   add(collection, ref) {
     if (!this.refs[collection]) {
@@ -25,11 +24,7 @@ export default class Manager {
   }
 
   getActive() {
-    return find(
-      this.refs[this.active.collection],
-      // eslint-disable-next-line eqeqeq
-      ({node}) => node.sortableInfo.index == this.active.index
-    );
+    return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
   }
 
   getIndex(collection, ref) {
@@ -37,6 +32,8 @@ export default class Manager {
   }
 
   getOrderedRefs(collection = this.active.collection) {
-    return sortBy(this.refs[collection], ({node}) => node.sortableInfo.index);
+    return this.refs[collection].sort((a, b) => {
+      return a.node.sortableInfo.index - b.node.sortableInfo.index;
+    });
   }
 }

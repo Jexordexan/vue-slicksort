@@ -1,64 +1,77 @@
-import 'babel-polyfill';
-import React, {Component} from 'react';
-import {render} from 'react-dom';
-import {SortableContainer, SortableElement, arrayMove} from './src/index';
+import Vue from 'vue';
 import range from 'lodash/range';
 import random from 'lodash/random';
+import { ContainerMixin, ElementMixin } from './src';
 
-const SortableItem = SortableElement(({height, value}) => (
-    <div style={{
-        position: 'relative',
-        width: '100%',
-        display: 'block',
-        padding: 20,
-        backgroundColor: '#FFF',
-        borderBottom: '1px solid #EFEFEF',
-        boxSizing: 'border-box',
-        WebkitUserSelect: 'none',
-        height: height
-    }}>
-        Item {value}
-    </div>
-));
+const defaultProps = () => ({
+  axis: 'y',
+  transitionDuration: 300,
+  pressDelay: 0,
+  pressThreshold: 5,
+  distance: 0,
+  useWindowAsScrollContainer: false,
+  hideSortableGhost: true,
+  shouldCancelStart: function(e) {
+    // Cancel sorting if the event target is an `input`, `textarea`, `select` or `option`
+    const disabledElements = ['input', 'textarea', 'select', 'option', 'button'];
 
-const SortableList = SortableContainer(({items}) => (
-    <div style={{
-        width: '80%',
-        height: '80vh',
-        maxWidth: '500px',
-        margin: '0 auto',
-        overflow: 'auto',
-        backgroundColor: '#f3f3f3',
-        border: '1px solid #EFEFEF',
-        borderRadius: 3
-    }}>
-        {items.map(({height, value}, index) => <SortableItem key={`item-${index}`} index={index} value={value} height={height}/>)}
-    </div>
-));
-
-class Example extends Component {
-    state = {
-        items: range(100).map((value) => {
-            return {
-                value,
-                height: random(49, 120)
-            };
-        })
-    };
-    onSortEnd = ({oldIndex, newIndex}) => {
-        let {items} = this.state;
-
-        this.setState({
-            items: arrayMove(items, oldIndex, newIndex)
-        });
-    };
-    render() {
-        const {items} = this.state;
-
-        return <SortableList items={items} onSortEnd={this.onSortEnd} />;
+    if (disabledElements.indexOf(e.target.tagName.toLowerCase()) !== -1) {
+      return true; // Return true to cancel sorting
     }
-}
+  },
+  lockToContainerEdges: false,
+  lockOffset: '50%',
+  getHelperDimensions: ({node}) => ({
+    width: node.offsetWidth,
+    height: node.offsetHeight,
+  }),
+});
 
-render(<Example />,
-  document.getElementById('root')
-)
+const SortableList = {
+  mixins: [ContainerMixin],
+  template: `
+    <ul class="list">
+      <slot />
+    </ul>
+  `,
+};
+
+const SortableItem = {
+  mixins: [ElementMixin],
+  template: `
+    <li class="list-item" :style="{height: item.height + 'px'}" >Vue {{item.value}}</li>
+  `,
+  props: ['item'],
+};
+
+const ExampleVue = {
+  name: 'Example',
+  template: `
+    <div class="root">
+      <SortableList lockAxis="y" v-model="items">
+        <SortableItem v-for="(item, index) in items" :index="index" :key="index" :item="item" :style="{height: item.height + 'px'}" />
+      </SortableList>
+    </div>
+  `,
+  components: {
+    SortableItem,
+    SortableList,
+  },
+  data() {
+    return {
+      sortableProps: defaultProps(),
+      items: range(100).map((value) => {
+        return {
+          value: 'Item ' + value,
+          height: random(49, 120),
+        };
+      }),
+    };
+  },
+};
+
+const app = new Vue({
+  render: (h) => h(ExampleVue),
+});
+
+app.$mount('#root');
