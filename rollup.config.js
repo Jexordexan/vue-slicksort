@@ -2,6 +2,8 @@ import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 
 const input =  './src/index.js';
+const fileName = 'vue-slicksort';
+const moduleName = 'VueSlicksort';
 
 export default [
   {
@@ -22,8 +24,8 @@ export default [
   }, {
     input,
     output: {
-      file: './dist/umd/vue-sortable.js',
-      name: 'VueSortable',
+      file: './dist/umd/' + fileName + '.js',
+      name: moduleName,
       format: 'umd',
     },
     plugins: [ 
@@ -32,8 +34,8 @@ export default [
   }, {
     input,
     output: {
-      file: './dist/umd/vue-sortable.min.js',
-      name: 'VueSortable',
+      file: './dist/umd/' + fileName + '.min.js',
+      name: moduleName,
       format: 'umd',
       sourcemap: true,
     },
