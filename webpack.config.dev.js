@@ -8,6 +8,7 @@ module.exports = {
     devtool: 'cheap-module-eval-source-map',
     entry: [
         'webpack-hot-middleware/client',
+        './index.vue',
         './index'
     ],
     output: {
@@ -25,7 +26,10 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin()
     ],
     resolve: {
-		extensions: ['', '.js', '.jsx', '.scss']
+        extensions: ['', '.js', '.jsx', '.scss'],
+        alias: {
+            'vue': 'vue/dist/vue.common.js'
+        }
     },
     module: {
         loaders: [

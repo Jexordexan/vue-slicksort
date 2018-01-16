@@ -1,12 +1,12 @@
 {
-  "name": "react-sortable-hoc",
+  "name": "vue-sortable-hoc",
   "version": "0.6.8",
   "description": "Set of higher-order components to turn any list into a sortable, touch-friendly, animated list",
   "author": {
-    "name": "Clauderic Demers",
-    "email": "me@ced.io"
+    "name": "Jordan Simonds",
+    "email": "simonds.jordan@gmail.com"
   },
-  "user": "clauderic",
+  "user": "jsimonds",
   "homepage": "https://github.com/clauderic/react-sortable-hoc",
   "main": "dist/commonjs/index.js",
   "jsnext:main": "dist/es6/index.js",
@@ -49,7 +49,8 @@
     "babel-runtime": "^6.11.6",
     "invariant": "^2.2.1",
     "lodash": "^4.12.0",
-    "prop-types": "^15.5.7"
+    "prop-types": "^15.5.7",
+    "vue": "^2.5.13"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0 || ^16.0.0",

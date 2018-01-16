@@ -15,15 +15,42 @@
             display: table;
             color: #333;
             font-family: 'Montserrat', 'Helvetica Neue', Helvetica, arial, sans-serif;
+            display: flex;
         }
-        #root {
-            display: table-cell;
-            vertical-align: middle;
+        .root {
+            display: flex;
+            width: 50%;
+            align-items: center;
+            flex: 1 1 0;
+        }
+
+        .list {
+            width: 80%;
+            height: 80vh;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0;
+            overflow: auto;
+            background-color: #f3f3f3;
+            border: 1px solid #EFEFEF;
+            border-radius: 3;
+        }
+
+        .list-item {
+            position: relative;
+            width: 100%;
+            display: block;
+            padding: 20px;
+            background-color: #FFF;
+            border-bottom: 1px solid #EFEFEF;
+            box-sizing: border-box;
+            -webkit-user-select: none;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root" class="root"></div>
+    <div id="vue-root" class="root">loading</div>
     <script src="/static/bundle.js"></script>
 </body>
 </html>
