@@ -1,16 +1,19 @@
 # Vue Slicksort
 > A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
 
+> Based on [react-sortable-hoc](https://github.com/clauderic/react-sortable-hoc)
+
 <!-- [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordan/vue-slicksort/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/Jexordan/vue-slicksort.svg)](https://gitter.im/Jexordan/vue-slicksort)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort/dist/umd/vue-slicksort.min.js?compression=gzip) -->
 
-### Examples available here: <a href="#">http://Jexordan.github.io/vue-slicksort/</a>
+<!-- ### Examples available here: <a href="#">http://Jexordan.github.io/vue-slicksort/</a> -->
 
 Features
 ---------------
+* **`v-model` Compatible** – Make any array editable with the `v-model` standard
 * **Mixin Components** – Integrates with your existing components
 * **Drag handle, auto-scrolling, locked axis, events, and more!**
 * **Suuuper smooth animations** – Chasing the 60FPS dream 🌈
@@ -105,11 +108,12 @@ Why should I use this?
 --------------------
 There are already a number of great Drag & Drop libraries out there (for instance, [vuedraggable](https://github.com/SortableJS/Vue.Draggable) is fantastic). If those libraries fit your needs, you should definitely give them a try first. However, most of those libraries rely on the HTML5 Drag & Drop API, which has some severe limitations. For instance, things rapidly become tricky if you need to support touch devices, if you need to lock dragging to an axis, or want to animate the nodes as they're being sorted. Vue Slicksort aims to provide a simple set of component mixins to fill those gaps. If you're looking for a dead-simple, mobile-friendly way to add sortable functionality to your lists, then you're in the right place.
 
-### Props
+## ContainerMixin
 
-#### ContainerMixin
+### Props
 | Property                   | Type              | Default                                                                                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 |:---------------------------|:------------------|:-----------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| value (required)           | Array             |                                                                                                            | The `value` can be inherited from `v-model` but has to be set to the same list that is rendered with `v-for` inside the `Container`                                                                                                                                                                                                                                                                                                                                    |
 | axis                       | String            | `y`                                                                                                        | Items can be sorted horizontally, vertically or in a grid. Possible values: `x`, `y` or `xy`                                                                                                                                                                                                                                                                                                                                                                           |
 | lockAxis                   | String            |                                                                                                            | If you'd like, you can lock movement to an axis while sorting. This is not something that is possible with HTML5 Drag & Drop                                                                                                                                                                                                                                                                                                                                           |
 | helperClass                | String            |                                                                                                            | You can provide a class you'd like to add to the sortable helper to add some styles to it                                                                                                                                                                                                                                                                                                                                                                              |
@@ -125,13 +129,24 @@ There are already a number of great Drag & Drop libraries out there (for instanc
 | useWindowAsScrollContainer | Boolean           | `false`                                                                                                    | If you want, you can set the `window` as the scrolling container                                                                                                                                                                                                                                                                                                                                                                                                       |
 | hideSortableGhost          | Boolean           | `true`                                                                                                     | Whether to auto-hide the ghost element. By default, as a convenience, Vue Slicksort List will automatically hide the element that is currently being sorted. Set this to false if you would like to apply your own styling.                                                                                                                                                                                                                                           |
 | lockToContainerEdges       | Boolean           | `false`                                                                                                    | You can lock movement of the sortable element to it's parent `Container`                                                                                                                                                                                                                                                                                                                                                                                       |
-| lockOffset                 | `OffsetValue`\* \|\| [`OffsetValue`\*, `OffsetValue`\*]                                                              | `"50%"` | When `lockToContainerEdges` is set to `true`, this controls the offset distance between the sortable helper and the top/bottom edges of it's parent `Container`. Percentage values are relative to the height of the item currently being sorted. If you wish to specify different behaviours for locking to the *top* of the container vs the *bottom*, you may also pass in an `array` (For example: `["0%", "100%"]`).                            |
+| lockOffset                 | `OffsetValue`\* -or- [`OffsetValue`\*, `OffsetValue`\*]                                                              | `"50%"` | When `lockToContainerEdges` is set to `true`, this controls the offset distance between the sortable helper and the top/bottom edges of it's parent `Container`. Percentage values are relative to the height of the item currently being sorted. If you wish to specify different behaviours for locking to the *top* of the container vs the *bottom*, you may also pass in an `array` (For example: `["0%", "100%"]`).                            |
 | getHelperDimensions        | Function          | [Function](https://github.com/Jexordan/vue-slicksort/blob/master/src/ContainerMixin.js#L58) | Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordan/vue-slicksort/blob/master/src/ContainerMixin.js#L58) for more details                                                                                                                                                                                                         |
 
 \* `OffsetValue` can either be a finite `Number` or a `String` made up of a number and a unit (`px` or `%`).
 Examples: `10` (which is the same as `"10px"`), `"50%"`
 
-#### ElementMixin
+### Events
+
+| Event        | Arguments                                   | Description                                               |
+|:-------------|:--------------------------------------------|:----------------------------------------------------------|
+| `@sortStart` | `{ event, node, index, collection }`        | Fired when sorting begins.                                |
+| `@sortMove`  | `{ event }`                                 | Fired when the mouse is moved during sorting.             |
+| `@sortEnd`   | `{ event, newIndex, oldIndex, collection }` | Fired when sorting has ended.                             |
+| `@input`     | `newList`                                   | Fired after sorting has ended with the newly sorted list. |
+
+## ElementMixin
+
+### Props
 | Property   | Type             | Default | Required? | Description                                                                                                                                                                                                                               |
 |:-----------|:-----------------|:--------|:---------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | index      | Number           |         |     ✓     | This is the element's sortableIndex within it's collection. This prop is required.                                                                                                                                                        |
