@@ -7,17 +7,17 @@
     "email": "simonds.jordan@gmail.com"
   },
   "user": "jsimonds",
-  "homepage": "https://github.com/Jexordexan/vue-sortable-hoc",
+  "homepage": "https://github.com/Jexordexan/vue-slicksort",
   "main": "dist/commonjs/index.js",
   "jsnext:main": "dist/es6/index.js",
   "browser": "dist/umd/vue-sortable.min.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jexordexan/vue-sortable-hoc.git"
+    "url": "https://github.com/Jexordexan/vue-slicksort.git"
   },
   "bugs": {
-    "url": "https://github.com/Jexordexan/vue-sortable-hoc/issues"
+    "url": "https://github.com/Jexordexan/vue-slicksort/issues"
   },
   "keywords": [
     "vue",
@@ -31,7 +31,13 @@
     "smooth",
     "animated",
     "mixin",
-    "component"
+    "component",
+    "react-sortable-hoc",
+    "vue-slicksort",
+    "vue-sort",
+    "vue-sortable",
+    "drag and drop",
+    "vue-slicksort"
   ],
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js",
@@ -69,6 +75,7 @@
     "express": "^4.13.3",
     "extract-text-webpack-plugin": "^3.0.2",
     "html-webpack-plugin": "^2.16.1",
+    "lodash": "^4.17.4",
     "node-sass": "^3.7.0",
     "postcss-loader": "^0.9.1",
     "qs": "^6.2.0",

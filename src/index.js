@@ -1,5 +1,5 @@
-export { ElementMixin } from './ElementMixin.vue';
-export { ContainerMixin } from './ContainerMixin.vue';
-export { HandleDirective } from './HandleDirective.vue';
+export { ElementMixin } from './ElementMixin';
+export { ContainerMixin } from './ContainerMixin';
+export { HandleDirective } from './HandleDirective';
 
 export {arrayMove} from './utils';
