@@ -45,8 +45,7 @@ const ExampleVue = {
   },
 };
 
-const app = new Vue({
+new Vue({
+  el: '#root',
   render: (h) => h(ExampleVue),
 });
-
-app.$mount('#root');
