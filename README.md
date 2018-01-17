@@ -3,11 +3,11 @@
 
 > Based on [react-sortable-hoc](https://github.com/clauderic/react-sortable-hoc) by [@clauderic]
 
-<!-- [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
+[![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordan/vue-slicksort/blob/master/LICENSE)
-[![Gitter](https://badges.gitter.im/Jexordan/vue-slicksort.svg)](https://gitter.im/Jexordan/vue-slicksort)
-![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort/dist/umd/vue-slicksort.min.js?compression=gzip) -->
+<!-- [![Gitter](https://badges.gitter.im/Jexordan/vue-slicksort.svg)](https://gitter.im/Jexordan/vue-slicksort) -->
+![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort/dist/umd/vue-slicksort.min.js?compression=gzip)
 
 <!-- ### Examples available here: <a href="#">http://Jexordan.github.io/vue-slicksort/</a> -->
 
