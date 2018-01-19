@@ -50,7 +50,8 @@
     "clean:umd": "rimraf dist/umd",
     "clean:es6": "rimraf dist/es6",
     "clean:commonjs": "rimraf dist/commonjs",
-    "test": "eslint src/** --ext .js"
+    "test": "eslint src/** --ext .js",
+    "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "dependencies": {
     "babel-runtime": "^6.11.6",
@@ -60,6 +61,8 @@
     "vue": "^2.2.0 || ^2.5.0"
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^3.3.9",
+    "@storybook/vue": "^3.3.9",
     "autoprefixer": "^6.3.6",
     "babel-cli": "^6.9.0",
     "babel-core": "^6.3.15",
@@ -87,6 +90,8 @@
     "sass-loader": "^3.2.0",
     "stack-source-map": "^1.0.4",
     "style-loader": "^0.13.1",
+    "vue-loader": "^13.7.0",
+    "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0",
     "webpack-dashboard": "^0.2.1",
     "webpack-dev-server": "^2.11.0",

@@ -37,7 +37,7 @@ const ExampleVue = {
     return {
       items: range(100).map((value) => {
         return {
-          value: 'Item ' + value,
+          value: 'Item ' + (value + 1),
           height: random(49, 120),
         };
       }),
