@@ -8,7 +8,7 @@
 [![Gitter](https://badges.gitter.im/vue-slicksort/Lobby.svg)](https://gitter.im/vue-slicksort/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
 
-### Examples available here: <a href="#">https://jexordan.github.io/vue-slicksort/</a>
+### Examples available here: <a href="#">https://jexordexan.github.io/vue-slicksort/</a>
 
 Features
 ---------------
