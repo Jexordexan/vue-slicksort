@@ -51,7 +51,9 @@
     "clean:es6": "rimraf dist/es6",
     "clean:commonjs": "rimraf dist/commonjs",
     "test": "eslint src/** --ext .js",
-    "storybook": "start-storybook -p 9001 -c .storybook"
+    "storybook": "start-storybook -p 9001 -c .storybook",
+    "build-storybook": "build-storybook -s .storybook -o .out",
+    "deploy-storybook": "storybook-to-ghpages"
   },
   "dependencies": {
     "babel-runtime": "^6.11.6",
@@ -62,6 +64,7 @@
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.9",
+    "@storybook/storybook-deployer": "^2.2.0",
     "@storybook/vue": "^3.3.9",
     "autoprefixer": "^6.3.6",
     "babel-cli": "^6.9.0",
