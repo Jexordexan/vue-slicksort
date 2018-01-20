@@ -16,18 +16,22 @@ const SortableItem = {
   mixins: [ElementMixin],
   props: ['item'],
   template: `
-    <li class="list-item" :style="{height: item.height + 'px'}" >Vue {{item.value}}</li>
+    <li class="list-item" :style="{height: item.height + 'px'}" >{{item.value}}</li>
   `,
 };
 
-const ExampleVue = {
-  name: 'Example',
+let id = 100;
+
+const InnerList = {
+  mixins: [ElementMixin],
+  props: ['list'],
   template: `
-    <div class="root">
-      <SortableList lockAxis="y" v-model="items">
-        <SortableItem v-for="(item, index) in items" :index="index" :key="index" :item="item" />
+    <li class="list-item">
+      <h3>{{list.name}}</h3>
+      <SortableList v-model="list.items" class="shortList">
+        <SortableItem v-for="(item, index) in list.items" :key="item.id" :collection="list.name" :index="index" :item="item" />
       </SortableList>
-    </div>
+    </li>
   `,
   components: {
     SortableItem,
@@ -35,10 +39,47 @@ const ExampleVue = {
   },
   data() {
     return {
+      items: this.list.items.slice(0),
+    };
+  },
+};
+
+const ExampleVue = {
+  name: 'Example',
+  template: `
+    <div class="root">
+      <SortableList lockAxis="y" v-model="items">
+        <SortableItem v-for="(item, index) in items" :key="index" :index="index" collection="items" :item="item" />
+      </SortableList>
+      <SortableList lockAxis="y" v-model="lists">
+        <InnerList v-for="(list, index) in lists" :key="list.name" :index="index" collection="lists" :list="list" ></InnerList>
+      </SortableList>
+    </div>
+  `,
+  components: {
+    SortableItem,
+    SortableList,
+    InnerList,
+  },
+  data() {
+    return {
       items: range(100).map((value) => {
         return {
           value: 'Item ' + (value + 1),
           height: random(49, 120),
+          id: id++,
+        };
+      }),
+      lists: range(3).map(val => {
+        return {
+          id: id++,
+          name: 'List ' + (val + 1),
+          items: range(3).map((value) => {
+            return {
+              value: 'Item ' + (value + 1),
+              id: id++,
+            };
+          }),
         };
       }),
     };

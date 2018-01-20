@@ -9,6 +9,13 @@
     align-items: center;
 }
 
+a {
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -16,6 +23,14 @@ ul {
 
 li {
   padding: 10px;
+}
+
+pre {
+    width: 80%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 20px;
+    background: #FEFEFE;
 }
 
 // Base styles
@@ -33,14 +48,17 @@ li {
 }
 
 .list-item {
-    position: relative;
+    display: flex;
+    align-items: center;
     width: 100%;
-    display: block;
     padding: 20px;
     background-color: #FFF;
     border-bottom: 1px solid #EFEFEF;
     box-sizing: border-box;
-    -webkit-user-select: none;
+    user-select: none;
+
+    color: #333;
+    font-weight: 400;
 }
 
 // Stylized
@@ -166,9 +184,11 @@ li {
     box-shadow: 0 5px 5px -5px rgba(0,0,0,0.2), 0 -5px 5px -5px rgba(0,0,0,0.2);
 }
 .stylizedHelper {
-    box-shadow: 0 5px 5px -5px rgba(0,0,0,0.2), 0 -5px 5px -5px rgba(0,0,0,0.2);
-    background-color: rgba(255,255,255,0.8);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    background-color: rgba(31, 136, 255, 0.8);
+    color: #FFF;
     cursor: row-resize;
+    border: 1px solid white;
 
     &.horizontalItem {
         cursor: col-resize;
