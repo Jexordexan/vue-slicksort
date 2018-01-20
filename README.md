@@ -1,6 +1,8 @@
 # Vue Slicksort
-> A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
 
+[![Join the chat at https://gitter.im/vue-slicksort/Lobby](https://badges.gitter.im/vue-slicksort/Lobby.svg)](https://gitter.im/vue-slicksort/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+> A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
+> A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
 > Based on [react-sortable-hoc](https://github.com/clauderic/react-sortable-hoc) by [@clauderic]
 
 [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
