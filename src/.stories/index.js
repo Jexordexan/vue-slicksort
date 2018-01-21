@@ -7,6 +7,8 @@ import { storiesOf } from '@storybook/vue';
 import { action } from '@storybook/addon-actions';
 
 import { ContainerMixin, ElementMixin, HandleDirective } from '../index';
+import SortableItem from './SortableItem'
+import SortableList from './SortableList'
 
 function createList(count, variableHeight = false) {
   return range(count).map((value) => {
@@ -16,27 +18,6 @@ function createList(count, variableHeight = false) {
     };
   })
 }
-
-const SortableList = {
-  mixins: [ContainerMixin],
-  template: `
-    <ul class="list">
-      <slot />
-    </ul>
-  `,
-};
-
-const ListItem = {
-  mixins: [ElementMixin],
-  props: ['item', 'showHandle'],
-  directives: { handle: HandleDirective },
-  template: `
-    <li class="list-item" :style="{height: item.height + 'px'}" >
-      <span v-handle class="handle" v-if="showHandle"></span>
-      {{item.value}}
-    </li>
-  `,
-};
 
 const actions = {
   sortStart: action('@sortStart'),
@@ -55,12 +36,12 @@ function generateComponent(pageTitle, count, variableHeight = false, props = {})
       <h3>${pageTitle}</h3>
       <pre v-show="propsText">{{ propsText }}</pre>
       <SortableList v-model="items" :class="classes" v-bind="sortableProps" @sortStart="sortStart" @sortEnd="sortEnd" @sortMove="sortMove" @input="onInput">
-        <ListItem v-for="(item, index) in items" :showHandle="showHandle" :index="index" :key="index" :item="item" />
+        <SortableItem v-for="(item, index) in items" :showHandle="showHandle" :index="index" :key="index" :item="item" />
       </SortableList>
     </div>
     `,
     components: {
-      ListItem,
+      SortableItem,
       SortableList,
     },
     data() {
@@ -107,9 +88,6 @@ function generateComponent(pageTitle, count, variableHeight = false, props = {})
   });
 }
 
-
-
-
 storiesOf('Vertical sorting', module)
   .add('Simple list', generateComponent('Simple list', 10))
   .add('Variable height', generateComponent('Variable height', 10, true))
@@ -132,12 +110,12 @@ const InnerList = {
     <li class="list-item">
       <h3>{{list.name}}</h3>
       <SortableList v-model="list.items" class="shortList">
-        <ListItem v-for="(item, index) in list.items" :key="item.id" :collection="list.name" :index="index" :item="item" />
+        <SortableItem v-for="(item, index) in list.items" :key="item.id" :collection="list.name" :index="index" :item="item" />
       </SortableList>
     </li>
   `,
   components: {
-    ListItem,
+    SortableItem,
     SortableList,
   },
   data() {
@@ -177,7 +155,6 @@ const ExampleVue = {
     };
   },
 };
-  
 
 storiesOf('Advanced use', module)
   .add('Nested list', () => ExampleVue)
