@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { ContainerMixin } from '../index';
+
 export default {
   mixins: [ContainerMixin]
 }

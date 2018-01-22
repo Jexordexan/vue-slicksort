@@ -7,8 +7,8 @@ import { storiesOf } from '@storybook/vue';
 import { action } from '@storybook/addon-actions';
 
 import { ContainerMixin, ElementMixin, HandleDirective } from '../index';
-import SortableItem from './SortableItem'
-import SortableList from './SortableList'
+import SortableItem from './SortableItem.vue'
+import SortableList from './SortableList.vue'
 
 function createList(count, variableHeight = false) {
   return range(count).map((value) => {

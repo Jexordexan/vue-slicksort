@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import { ElementMixin, HandleDirective } from '../index';
+
 export default {
   mixins: [ElementMixin],
   props: ['item', 'showHandle'],
