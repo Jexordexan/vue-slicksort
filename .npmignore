@@ -10,6 +10,7 @@ index.html
 /index.js
 karma.conf.js
 webpack.config.js
+rollup.config.js
 babel.preprocess.sass.js
 codecov.yml
 .travis.yml

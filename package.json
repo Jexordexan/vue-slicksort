@@ -41,7 +41,7 @@
   ],
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js",
-    "build": "npm run build:commonjs && npm run build:es6 && npm run build:umd",
+    "build": "npm run clean && npm run rollup",
     "prepublishOnly": "npm run build",
     "rollup": "cross-env BABEL_ENV=rollup rollup -c",
     "build:commonjs": "npm run clean:commonjs && cross-env BABEL_ENV=commonjs babel src --out-dir dist/commonjs --ignore *.example.js,*.test.js",
@@ -54,7 +54,9 @@
     "test": "eslint src/** --ext .js",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "build-storybook": "build-storybook -s .storybook -o .out",
-    "deploy-storybook": "storybook-to-ghpages"
+    "deploy-storybook": "storybook-to-ghpages",
+    "deploy:patch": "npm test && npm version patch && npm run deploy:final",
+    "deploy:final": "git push master; git push master --tags; npm publish; npm run deploy-storybook"
   },
   "peerDependencies": {
     "vue": "^2.2.0 || ^2.5.0"
