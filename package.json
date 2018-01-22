@@ -46,7 +46,7 @@
     "rollup": "cross-env BABEL_ENV=rollup rollup -c",
     "build:commonjs": "npm run clean:commonjs && cross-env BABEL_ENV=commonjs babel src --out-dir dist/commonjs --ignore *.example.js,*.test.js",
     "build:es6": "npm run clean:es6 && cross-env BABEL_ENV=es6 BABEL_DISABLE_CACHE=1 babel src --out-dir dist/es6 --ignore *.test.js",
-    "build:umd": "npm run rollup",
+    "build:umd": "npm run clean:umd && npm run rollup",
     "clean": "npm run clean:umd; npm run clean:es6; npm run clean:commonjs",
     "clean:umd": "rimraf dist/umd",
     "clean:es6": "rimraf dist/es6",
@@ -55,10 +55,6 @@
     "storybook": "start-storybook -p 9001 -c .storybook",
     "build-storybook": "build-storybook -s .storybook -o .out",
     "deploy-storybook": "storybook-to-ghpages"
-  },
-  "dependencies": {
-    "babel-runtime": "^6.11.6",
-    "vue": "^2.5.13"
   },
   "peerDependencies": {
     "vue": "^2.2.0 || ^2.5.0"
@@ -74,6 +70,7 @@
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.15.0",
     "babel-preset-env": "^1.6.1",
+    "babel-runtime": "^6.26.0",
     "cross-env": "^1.0.7",
     "css-loader": "^0.23.1",
     "eslint": "^4.15.0",
@@ -94,6 +91,7 @@
     "sass-loader": "^3.2.0",
     "stack-source-map": "^1.0.4",
     "style-loader": "^0.13.1",
+    "vue": "^2.5.13",
     "vue-loader": "^13.7.0",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0",
