@@ -54,7 +54,7 @@
     "deploy:final": "git push master; git push master --tags; npm publish; npm run deploy:storybook"
   },
   "peerDependencies": {
-    "vue": "^2.2.0 || ^2.5.0"
+    "vue": ">=2.2.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.9",
