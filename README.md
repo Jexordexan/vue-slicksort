@@ -18,6 +18,7 @@ Features
 * **Suuuper smooth animations** – Chasing the 60FPS dream 🌈
 * **Horizontal lists, vertical lists, or a grid** ↔ ↕ ⤡
 * **Touch support** 👌
+* **Oh yeah, and it's DEPENDENCY FREE!** 👌
 
 Installation
 ------------
