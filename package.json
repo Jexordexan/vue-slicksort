@@ -51,7 +51,7 @@
     "build-storybook": "build-storybook -s .storybook -o .out",
     "deploy:storybook": "storybook-to-ghpages",
     "deploy:patch": "npm test && npm version patch && npm run deploy:final",
-    "deploy:final": "git push master; git push master --tags; npm publish; npm run deploy:storybook"
+    "deploy:final": "git push; git push --tags; npm publish; npm run deploy:storybook"
   },
   "peerDependencies": {
     "vue": ">=2.2.0"
