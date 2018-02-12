@@ -121,14 +121,8 @@ export const ContainerMixin = {
 
         this.manager.active = {index, collection};
 
-        /*
-				 * Fixes a bug in Firefox where the :active state of anchor tags
-				 * prevent subsequent 'mousemove' events from being fired
-				 * (see https://github.com/clauderic/react-sortable-hoc/issues/118)
-				 */
-        if (e.target.tagName.toLowerCase() === 'a') {
-          e.preventDefault();
-        }
+        // Prevent text from highlighting while dragging
+        e.preventDefault();
 
         if (!distance) {
           if (this.$props.pressDelay === 0) {
@@ -311,7 +305,7 @@ export const ContainerMixin = {
     },
 
     handleSortMove(e) {
-      e.preventDefault(); // Prevent scrolling on mobile
+      e.preventDefault(); // Prevent scrolling on mobile, and text highlighting
 
       this.updatePosition(e);
       this.animateNodes();
