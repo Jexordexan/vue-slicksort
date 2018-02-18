@@ -3,6 +3,10 @@
     "eslint:recommended",
     "plugin:vue/recommended"
   ],
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "rules": {
     "prefer-const": ["error"],
     "comma-dangle": ["error", "always-multiline"],
@@ -12,9 +16,9 @@
       "warn",
       {
         "groups": [
-          ['&', '|', '^', '~', '<<', '>>', '>>>'],
-          ['==', '!=', '===', '!==', '>', '>=', '<', '<='],
-          ['in', 'instanceof']
+          ["&", "|", "^", "~", "<<", ">>", ">>>"],
+          ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+          ["in", "instanceof"]
         ],
         "allowSamePrecedence": true
       }

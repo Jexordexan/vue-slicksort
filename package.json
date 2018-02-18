@@ -69,7 +69,8 @@
     "babel-preset-env": "^1.6.1",
     "babel-runtime": "^6.26.0",
     "cross-env": "^1.0.7",
-    "css-loader": "^0.23.1",
+    "css-loader": "^0.28.9",
+    "cssnano": "^3.10.0",
     "eslint": "^4.15.0",
     "eslint-plugin-import": "^2.0.1",
     "eslint-plugin-vue": "^4.2.0",
@@ -78,14 +79,14 @@
     "html-webpack-plugin": "^2.16.1",
     "lodash": "^4.17.4",
     "node-sass": "^3.7.0",
-    "postcss-loader": "^0.9.1",
+    "postcss-loader": "^2.1.0",
     "qs": "^6.2.0",
     "raw-loader": "^0.5.1",
     "rimraf": "^2.5.2",
     "rollup": "^0.54.0",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-uglify": "^2.0.1",
-    "sass-loader": "^3.2.0",
+    "sass-loader": "^6.0.6",
     "stack-source-map": "^1.0.4",
     "style-loader": "^0.13.1",
     "vue": "^2.5.13",
@@ -99,5 +100,9 @@
   "xo": {
     "esnext": true,
     "extends": "xo-react"
-  }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 4 versions"
+  ]
 }
