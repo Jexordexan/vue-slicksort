@@ -47,7 +47,13 @@ var ElementMixin = slicksort.ElementMixin;
 
 Alternatively, an UMD build is also available:
 ```html
-<script src="vue-slicksort/dist/umd/vue-slicksort.js"></script>
+<script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
+
+<script>
+var { ContainerMixin, ElementMixin, HandleDirective } = window.VueSlicksort;
+
+// Use the mixins below
+</script>
 ```
 
 Usage
