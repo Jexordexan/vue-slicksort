@@ -425,7 +425,7 @@ export const ContainerMixin = {
       if (typeof lockOffset === 'string') {
         const match = /^[+-]?\d*(?:\.\d*)?(px|%)$/.exec(lockOffset);
 
-        if (match !== null) {
+        if (match === null) {
           throw new Error(`lockOffset value should be a number or a string of a number followed by "px" or "%". Given ${lockOffset}`);
         }
 
