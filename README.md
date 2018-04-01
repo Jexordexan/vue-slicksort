@@ -178,7 +178,7 @@ Slicksort has no dependencies.
 
 Reporting Issues
 ----------------
-If believe you've found an issue, please [report it](https://github.com/Jexordan/vue-slicksort/issues) along with any relevant details to reproduce it. The easiest way to do so is to fork this [jsfiddle](https://jsfiddle.net/Jexordan/6r7r2cva/).
+If believe you've found an issue, please [report it](https://github.com/Jexordan/vue-slicksort/issues) along with any relevant details to reproduce it. The easiest way to do so is to fork this [jsfiddle](https://jsfiddle.net/Jexordexan/1puv2L6c/).
 
 Asking for help
 ----------------
