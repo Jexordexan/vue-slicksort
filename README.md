@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordan/vue-slicksort/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/master/LICENSE)
 [![Gitter](https://badges.gitter.im/vue-slicksort/Lobby.svg)](https://gitter.im/vue-slicksort/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
 
@@ -33,6 +33,11 @@ Using yarn:
   $ yarn add vue-slicksort
 ```
 
+Using a CDN:
+```html
+<script src="https://unpkg.com/vue-slicksort@latest/dist/vue-slicksort.min.js"></script>
+```
+
 Then, using a module bundler that supports either CommonJS or ES2015 modules, such as [webpack](https://github.com/webpack/webpack):
 
 ```js
@@ -45,9 +50,11 @@ var ContainerMixin = slicksort.ContainerMixin;
 var ElementMixin = slicksort.ElementMixin;
 ```
 
-Alternatively, an UMD build is also available:
+If you are loading the package via `<script>` tag:
 ```html
-<script src="vue-slicksort/dist/umd/vue-slicksort.js"></script>
+<script>
+  var { ContainerMixin, ElementMixin, HandleDirective } = window.VueSlicksort;
+</script>
 ```
 
 Usage
@@ -102,13 +109,26 @@ const app = new Vue({
 ```
 That's it! Vue Slicksort does not come with any styles by default, since it's meant to enhance your existing components.
 
-<!-- More code examples are available [here](https://github.com/Jexordan/vue-slicksort/blob/master/examples/). -->
+<!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/master/examples/). -->
 
 Why should I use this?
 --------------------
 There are already a number of great Drag & Drop libraries out there (for instance, [vuedraggable](https://github.com/SortableJS/Vue.Draggable) is fantastic). If those libraries fit your needs, you should definitely give them a try first. However, most of those libraries rely on the HTML5 Drag & Drop API, which has some severe limitations. For instance, things rapidly become tricky if you need to support touch devices, if you need to lock dragging to an axis, or want to animate the nodes as they're being sorted. Vue Slicksort aims to provide a simple set of component mixins to fill those gaps. If you're looking for a dead-simple, mobile-friendly way to add sortable functionality to your lists, then you're in the right place.
 
-## ContainerMixin
+## Customization and props
+You apply options as individual `props` on whatever component is using the `ContainerMixin`. The component also emits several events during a sorting operation. Here's an example of a customized component:
+
+```html
+<SortableContainer :value="items" 
+                   :transitionDuration="250" 
+                   :lockAxis="'y'"
+                   :useDragHandle="true"
+                   @sortStart="onSortStart($event)" >
+  <!-- SortableElement stuff goes here -->
+</SortableContainer>
+```
+
+## `ContainerMixin`
 
 ### Props
 | Property                     | Type              | Default                                                                                                    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -126,8 +146,8 @@ There are already a number of great Drag & Drop libraries out there (for instanc
 | `hideSortableGhost`          | Boolean           | `true`                                                                                                     | Whether to auto-hide the ghost element. By default, as a convenience, Vue Slicksort List will automatically hide the element that is currently being sorted. Set this to false if you would like to apply your own styling.                                                                                                                                                                                                                                           |
 | `lockToContainerEdges`       | Boolean           | `false`                                                                                                    | You can lock movement of the sortable element to it's parent `Container`                                                                                                                                                                                                                                                                                                                                                                                       |
 | `lockOffset`                 | `OffsetValue`\* -or- [`OffsetValue`\*, `OffsetValue`\*]                                                              | `"50%"` | When `lockToContainerEdges` is set to `true`, this controls the offset distance between the sortable helper and the top/bottom edges of it's parent `Container`. Percentage values are relative to the height of the item currently being sorted. If you wish to specify different behaviours for locking to the *top* of the container vs the *bottom*, you may also pass in an `array` (For example: `["0%", "100%"]`).                            |
-| `shouldCancelStart`          | Function          | [Function](https://github.com/Jexordan/vue-slicksort/blob/master/src/ContainerMixin.js#L41) | This function is invoked before sorting begins, and can be used to programatically cancel sorting before it begins. By default, it will cancel sorting if the event target is either an `input`, `textarea`, `select` or `option`.                                                                                                                                                                                                                                     |
-| `getHelperDimensions`        | Function          | [Function](https://github.com/Jexordan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) | Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details                                                                                                                                                                                                         |
+| `shouldCancelStart`          | Function          | [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L41) | This function is invoked before sorting begins, and can be used to programatically cancel sorting before it begins. By default, it will cancel sorting if the event target is either an `input`, `textarea`, `select` or `option`.                                                                                                                                                                                                                                     |
+| `getHelperDimensions`        | Function          | [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) | Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details                                                                                                                                                                                                         |
 
 \* `OffsetValue` can either be a finite `Number` or a `String` made up of a number and a unit (`px` or `%`).
 Examples: `10` (which is the same as `"10px"`), `"50%"`
@@ -141,14 +161,14 @@ Examples: `10` (which is the same as `"10px"`), `"50%"`
 | `@sortEnd`   | `{ event, newIndex, oldIndex, collection }` | Fired when sorting has ended.                             |
 | `@input`     | `newList`                                   | Fired after sorting has ended with the newly sorted list. |
 
-## ElementMixin
+## `ElementMixin`
 
 ### Props
 | Property           | Type             | Default | Description                                                                                                                                                                                                                               |
 |:-------------------|:-----------------|:--------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| index *(required)* | Number           |         | This is the element's sortableIndex within it's collection. This prop is required.                                                                                                                                                        |
-| collection         | Number or String | `0`     | The collection the element is part of. This is useful if you have multiple groups of sortable elements within the same `Container`. [Example](http://Jexordan.github.io/vue-slicksort/#/basic-configuration/multiple-lists) |
-| disabled           | Boolean          | `false` | Whether the element should be sortable or not                                                                                                                                                                                             |
+| `index` *(required)* | Number           |         | This is the element's sortableIndex within it's collection. This prop is required.                                                                                                                                                        |
+| `collection`         | Number or String | `0`     | The collection the element is part of. This is useful if you have multiple groups of sortable elements within the same `Container`. [Example](http://Jexordexan.github.io/vue-slicksort/#/basic-configuration/multiple-lists) |
+| `disabled`           | Boolean          | `false` | Whether the element should be sortable or not                                                                                                                                                                                             |
 
 FAQ
 ---------------
@@ -168,7 +188,7 @@ Need to sort items in a grid? We've got you covered! Just set the `axis` prop to
 Upon sorting, `vue-slicksort` creates a clone of the element you are sorting (the _sortable-helper_) and appends it to the end of the `<body>` tag. The original element will still be in-place to preserve its position in the DOM until the end of the drag (with inline-styling to make it invisible). If the _sortable-helper_ gets messed up from a CSS standpoint, consider that maybe your selectors to the draggable item are dependent on a parent element which isn't present anymore (again, since the _sortable-helper_ is at the end of the `<body>`). This can also be a `z-index` issue, for example, when using `vue-slicksort` within a Bootstrap modal, you'll need to increase the `z-index` of the SortableHelper so it is displayed on top of the modal.
 
 ### Click events being swallowed
-By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordan/vue-slicksort/blob/master/src/HandleDirective.js).
+By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordexan/vue-slicksort/blob/master/src/HandleDirective.js).
 
 
 Dependencies
@@ -178,11 +198,11 @@ Slicksort has no dependencies.
 
 Reporting Issues
 ----------------
-If believe you've found an issue, please [report it](https://github.com/Jexordan/vue-slicksort/issues) along with any relevant details to reproduce it. The easiest way to do so is to fork this [jsfiddle](https://jsfiddle.net/Jexordexan/1puv2L6c/).
+If believe you've found an issue, please [report it](https://github.com/Jexordexan/vue-slicksort/issues) along with any relevant details to reproduce it. The easiest way to do so is to fork this [jsfiddle](https://jsfiddle.net/Jexordexan/1puv2L6c/).
 
 Asking for help
 ----------------
-Please do not use the issue tracker for personal support requests. Instead, use [Gitter](https://gitter.im/Jexordan/vue-slicksort) or StackOverflow.
+Please do not use the issue tracker for personal support requests. Instead, use [Gitter](https://gitter.im/vue-slicksort/Lobby) or StackOverflow.
 
 Contributions
 ------------
