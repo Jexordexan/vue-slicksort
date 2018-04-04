@@ -23,6 +23,7 @@
         "allowSamePrecedence": true
       }
     ],
-    "quotes": ["error", "single"]
+    "quotes": ["error", "single"],
+    "eol-last": 2
   }
 }
