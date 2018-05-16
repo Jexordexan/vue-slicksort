@@ -14,3 +14,4 @@ rollup.config.js
 babel.preprocess.sass.js
 codecov.yml
 .travis.yml
+.out

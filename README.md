@@ -1,4 +1,6 @@
 # Vue Slicksort
+
+![Slicksort logo](/logo/logomark.png)]
 > A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
 > Based on [react-sortable-hoc](https://github.com/clauderic/react-sortable-hoc) by [@clauderic]
 
@@ -14,6 +16,7 @@ Features
 ---------------
 * **`v-model` Compatible** – Make any array editable with the `v-model` standard
 * **Mixin Components** – Integrates with your existing components
+* **Standalone Components** – Easy to use components for slick lists
 * **Drag handle, auto-scrolling, locked axis, events, and more!**
 * **Suuuper smooth animations** – Chasing the 60FPS dream 🌈
 * **Horizontal lists, vertical lists, or a grid** ↔ ↕ ⤡
@@ -109,6 +112,37 @@ const app = new Vue({
 ```
 That's it! Vue Slicksort does not come with any styles by default, since it's meant to enhance your existing components.
 
+## Slicksort components
+
+There are two pre-built components that implement the two mixins. Use them like this:
+
+```javascript
+import { SlickList, SlickItem } from 'vue-slicksort';
+
+
+const ExampleVue = {
+  name: 'Example',
+  template: `
+    <div class="root">
+      <SlickList lockAxis="y" v-model="items">
+        <SlickItem v-for="(item, index) in items" :index="index" :key="index">
+          {{ item }}
+        </SlickItem>
+      </SlickList>
+    </div>
+  `,
+  components: {
+    SlickItem,
+    SlickList,
+  },
+  data() {
+    return {
+      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8'],
+    };
+  },
+};
+```
+
 <!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/master/examples/). -->
 
 Why should I use this?
@@ -153,6 +187,8 @@ You apply options as individual `props` on whatever component is using the `Cont
 Examples: `10` (which is the same as `"10px"`), `"50%"`
 
 ### Events
+
+Events are emitted from the Container element, and can be bound to using `v-bind` or `@` directives
 
 | Event        | Arguments                                   | Description                                               |
 |:-------------|:--------------------------------------------|:----------------------------------------------------------|

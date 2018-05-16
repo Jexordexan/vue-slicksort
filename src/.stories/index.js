@@ -3,13 +3,16 @@ import './Storybook.scss';
 import Vue from 'vue';
 import { storiesOf } from '@storybook/vue';
 
-import { ContainerMixin, ElementMixin, HandleDirective } from '../index';
+import { ContainerMixin, ElementMixin, HandleDirective, SlickItem, SlickList } from '../index';
 import SortableItem from './SortableItem.vue'
 import SortableList from './SortableList.vue'
+import StandaloneList from './Standalone.vue'
 import DemoList from './DemoList.vue'
 import NestedList from './nested-list-example/OuterList.vue'
 import createList from './createList'
 import actions from './actions'
+
+document.title = 'Vue Slicksort';
 
 function generateComponent(pageTitle, count, variableHeight = false, sortableProps = {}) {
   return () => ({ 
@@ -37,3 +40,7 @@ storiesOf('Optional props', module)
 
 storiesOf('Advanced use', module)
   .add('Nested list', () => NestedList)
+
+
+storiesOf('Standalone components', module)
+  .add('Simple list', () => StandaloneList)

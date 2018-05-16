@@ -47,8 +47,8 @@
     "rollup": "cross-env BABEL_ENV=rollup rollup -c",
     "clean": "rimraf dist/",
     "test": "eslint src/** --ext .js",
-    "storybook": "start-storybook -p 9001 -c .storybook",
-    "build-storybook": "build-storybook -s .storybook -o .out",
+    "storybook": "start-storybook -s ./logo -p 8001 -c .storybook",
+    "build-storybook": "build-storybook -s ./logo -c .storybook -o .out",
     "deploy:storybook": "storybook-to-ghpages",
     "deploy:patch": "npm test && npm version patch && npm run deploy:final",
     "deploy:final": "git push; git push --tags; npm publish; npm run deploy:storybook"
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.9",
+    "@storybook/addon-options": "^3.4.4",
     "@storybook/storybook-deployer": "^2.2.0",
     "@storybook/vue": "^3.3.9",
     "autoprefixer": "^6.3.6",
