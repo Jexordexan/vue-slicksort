@@ -105,5 +105,8 @@
   "browserslist": [
     "> 1%",
     "last 4 versions"
+  ],
+  "files": [
+    "dist/*"
   ]
 }
