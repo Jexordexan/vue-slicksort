@@ -1,17 +1,15 @@
 {
-    "env": {
-        "commonjs": {
-            "presets": [ "env" ]
-        },
-        "es6": {
-            "presets": [ "env" ],
-            "plugins": [ "transform-runtime" ]
-        },
-        "rollup": {
-            "presets": [
-                ["env", { "modules": false }]
-            ],
-            "plugins": ["external-helpers"]
-        }
+  "env": {
+    "commonjs": {
+      "presets": ["env"]
+    },
+    "es6": {
+      "presets": ["env"],
+      "plugins": ["transform-runtime"]
+    },
+    "rollup": {
+      "presets": [["env", { "modules": false }]],
+      "plugins": ["external-helpers"]
     }
+  }
 }
