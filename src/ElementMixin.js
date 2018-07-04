@@ -26,7 +26,7 @@ export const ElementMixin = {
 
   watch: {
     index(newIndex) {
-      if (this.$el) {
+      if (this.$el && this.$el.sortableInfo) {
         this.$el.sortableInfo.index = newIndex;
       }
     },
