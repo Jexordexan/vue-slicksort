@@ -306,7 +306,7 @@ export const ContainerMixin = {
         this.sorting = true;
         this.sortingIndex = index;
 
-        this.$emit('sortStart', {event: e, node, index, collection});
+        this.$emit('sort-start', {event: e, node, index, collection});
       }
     },
 
@@ -317,7 +317,7 @@ export const ContainerMixin = {
       this.animateNodes();
       this.autoscroll();
 
-      this.$emit('sortMove', { event: e });
+      this.$emit('sort-move', { event: e });
     },
 
     handleSortEnd(e) {
@@ -365,7 +365,7 @@ export const ContainerMixin = {
       this.sorting = false;
       this.sortingIndex = null;
 
-      this.$emit('sortEnd', {
+      this.$emit('sort-end', {
         event: e,
         oldIndex: this.index,
         newIndex: this.newIndex,

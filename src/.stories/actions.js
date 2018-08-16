@@ -1,8 +1,8 @@
 import { action } from '@storybook/addon-actions';
 
 export default {
-  sortStart: action('@sortStart'),
-  sortEnd: action('@sortEnd'),
-  sortMove: action('@sortMove'),
+  sortStart: action('@sort-start'),
+  sortEnd: action('@sort-end'),
+  sortMove: action('@sort-move'),
   input: action('@input')
 };

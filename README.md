@@ -180,7 +180,7 @@ You apply options as individual `props` on whatever component is using the `Cont
                    :transitionDuration="250"
                    :lockAxis="'y'"
                    :useDragHandle="true"
-                   @sortStart="onSortStart($event)" >
+                   @sort-start="onSortStart($event)" >
   <!-- SortableElement stuff goes here -->
 </SortableContainer>
 ```
@@ -214,12 +214,12 @@ Examples: `10` (which is the same as `"10px"`), `"50%"`
 
 Events are emitted from the Container element, and can be bound to using `v-bind` or `@` directives
 
-| Event        | Arguments                                   | Description                                               |
-| :----------- | :------------------------------------------ | :-------------------------------------------------------- |
-| `@sortStart` | `{ event, node, index, collection }`        | Fired when sorting begins.                                |
-| `@sortMove`  | `{ event }`                                 | Fired when the mouse is moved during sorting.             |
-| `@sortEnd`   | `{ event, newIndex, oldIndex, collection }` | Fired when sorting has ended.                             |
-| `@input`     | `newList`                                   | Fired after sorting has ended with the newly sorted list. |
+| Event         | Arguments                                   | Description                                               |
+| :------------ | :------------------------------------------ | :-------------------------------------------------------- |
+| `@sort-start` | `{ event, node, index, collection }`        | Fired when sorting begins.                                |
+| `@sort-move`  | `{ event }`                                 | Fired when the mouse is moved during sorting.             |
+| `@sort-end`   | `{ event, newIndex, oldIndex, collection }` | Fired when sorting has ended.                             |
+| `@input`      | `newList`                                   | Fired after sorting has ended with the newly sorted list. |
 
 ## `ElementMixin`
 

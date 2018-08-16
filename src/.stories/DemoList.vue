@@ -3,7 +3,7 @@
     <h1><a href="https://github.com/Jexordexan/vue-slicksort" target="_blank" title="Go to Github">Vue Slicksort</a></h1>
     <h3>{{pageTitle}}</h3>
     <pre v-show="propsText">{{ propsText }}</pre>
-    <SortableList v-model="items" :class="classes" v-bind="sortableProps" @sortStart="sortStart" @sortEnd="sortEnd" @sortMove="sortMove" @input="onInput">
+    <SortableList v-model="items" :class="classes" v-bind="sortableProps" @sort-start="sortStart" @sort-end="sortEnd" @sort-move="sortMove" @input="onInput">
       <SortableItem v-for="(item, index) in items" :showHandle="showHandle" :index="index" :key="index" :item="item" />
     </SortableList>
   </div>
@@ -60,7 +60,7 @@ export default {
       movesCounter++;
     },
     sortEnd({ oldIndex, newIndex }) {
-      actions.sortMove(movesCounter + " sortMove events fired");
+      actions.sortMove(movesCounter + " sort-move events fired");
       actions.sortEnd({ oldIndex, newIndex });
       movesCounter = 0;
     },
