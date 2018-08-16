@@ -1,6 +1,6 @@
 ## Changelog
 
-### 1.0.0
+## 1.0.0
 
 ADDED Typescript support
 BREAKING: sortStart, sortMove, and sortEnd events are now kebab-case (sort-start, sort-move, sort-end) as per standard practice.
