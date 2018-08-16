@@ -102,11 +102,6 @@
     "esnext": true,
     "extends": "xo-react"
   },
-  "browserslist": [
-    "> 1%",
-    "last 4 versions"
-  ],
-  "files": [
-    "dist/*"
-  ]
+  "browserslist": ["> 1%", "last 4 versions"],
+  "files": ["index.d.ts", "dist/*"]
 }
