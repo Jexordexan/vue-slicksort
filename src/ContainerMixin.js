@@ -32,6 +32,7 @@ export const ContainerMixin = {
     useDragHandle:              { type: Boolean, default: false },
     useWindowAsScrollContainer: { type: Boolean, default: false },
     hideSortableGhost:          { type: Boolean, default: true },
+    appendHelperToContainer:    { type: Boolean, default: false },
     lockToContainerEdges:       { type: Boolean, default: false },
     lockOffset:                 { type: [String, Number, Array], default: '50%' },
     transitionDuration:         { type: Number,  default: 300 },
@@ -242,7 +243,11 @@ export const ContainerMixin = {
           }
         });
 
-        this.helper = this.document.body.appendChild(clonedNode);
+        if (this.appendHelperToContainer) {
+          this.helper = this.container.appendChild(clonedNode);
+        } else {
+          this.helper = this.document.body.appendChild(clonedNode);
+        }
 
         this.helper.style.position = 'fixed';
         this.helper.style.top = `${this.boundingClientRect.top - margin.top}px`;
