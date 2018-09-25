@@ -20,6 +20,9 @@ export const ContainerMixin = {
         move: this.handleMove,
         end: this.handleEnd,
       },
+      // Tracker data used by the `updated` lifecycle hook to transition the
+      // dragged item into place when sorting ends.
+      lastSortEndEventParams: null,
     };
   },
 
@@ -35,6 +38,7 @@ export const ContainerMixin = {
     lockToContainerEdges:       { type: Boolean, default: false },
     lockOffset:                 { type: [String, Number, Array], default: '50%' },
     transitionDuration:         { type: Number,  default: 300 },
+    draggedSettlingDuration:    { type: Number,  default: 300 },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -76,6 +80,52 @@ export const ContainerMixin = {
         );
       }
     }
+  },
+
+  updated() {
+    this.$nextTick(() => {
+      // Transition the dragged item into place
+      if (this.lastSortEndEventParams && this.$props.draggedSettlingDuration) {
+        // If draggable items are added with v-for, Vue either rearranges or
+        // patches DOM nodes in place according to the key. The sortableInfo
+        // index is consulted to know which node to translate.
+        let nodes = this.manager.refs[this.lastSortEndEventParams.collection];
+        let oldIndexNode = nodes[this.lastSortEndEventParams.oldIndex].node;
+        let el = null;
+        if (oldIndexNode.sortableInfo.index === this.lastSortEndEventParams.newIndex) {
+          el = oldIndexNode;
+        } else {
+          el = nodes[this.lastSortEndEventParams.newIndex].node;
+        }
+
+        // The dragged item begins where the helper ended
+        el.style[
+          `${vendorPrefix}Transform`
+        ] = `translate3d(${this.lastSortEndEventParams.translate.x}px,${this.lastSortEndEventParams.translate.y}px, 0)`;
+
+        // Force browser recalculation to reset transition
+        el.getBoundingClientRect();
+
+        // Transition into place
+        el.style[`${vendorPrefix}Transform`] = 'translate3d(0, 0, 0)';
+        el.style[
+          `${vendorPrefix}TransitionDuration`
+        ] = `${this.$props.draggedSettlingDuration}ms`;
+
+        // Register an event handler to clean up styles when the transition
+        // finishes.
+        el.addEventListener("transitionend", event => {
+          if (event.propertyName === "transform") {
+            el.style[`${vendorPrefix}Transform`] = '';
+            el.style[`${vendorPrefix}TransitionDuration`] = '';
+          }
+        }, {
+          once: true,
+        });
+      }
+
+      this.lastSortEndEventParams = null;
+    });
   },
 
   beforeDestroy() {
@@ -334,9 +384,6 @@ export const ContainerMixin = {
           this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
-      // Remove the helper from the DOM
-      this.helper.parentNode.removeChild(this.helper);
-
       if (this.hideSortableGhost && this.sortableGhost) {
         this.sortableGhost.style.visibility = '';
         this.sortableGhost.style.opacity = '';
@@ -355,6 +402,17 @@ export const ContainerMixin = {
         el.style[`${vendorPrefix}TransitionDuration`] = '';
       }
 
+      // Calculate the offset of the dropped item from its target position
+      const helperRect = this.helper.getBoundingClientRect();
+      const newIndexNodeRect = nodes[this.newIndex].node.getBoundingClientRect();
+      const translate = {
+        x: this.newIndex > this.index ? helperRect.right - newIndexNodeRect.right : helperRect.left - newIndexNodeRect.left,
+        y: this.newIndex > this.index ? helperRect.bottom - newIndexNodeRect.bottom : helperRect.top - newIndexNodeRect.top,
+      };
+
+      // Remove the helper from the DOM
+      this.helper.parentNode.removeChild(this.helper);
+
       // Stop autoscroll
       clearInterval(this.autoscrollInterval);
       this.autoscrollInterval = null;
@@ -365,12 +423,15 @@ export const ContainerMixin = {
       this.sorting = false;
       this.sortingIndex = null;
 
-      this.$emit('sort-end', {
+      this.lastSortEndEventParams = {
         event: e,
         oldIndex: this.index,
         newIndex: this.newIndex,
         collection,
-      });
+        translate,
+      };
+
+      this.$emit('sort-end', this.lastSortEndEventParams);
       this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
 
       this._touched = false;
