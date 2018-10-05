@@ -35,6 +35,7 @@ export const ContainerMixin = {
     lockToContainerEdges:       { type: Boolean, default: false },
     lockOffset:                 { type: [String, Number, Array], default: '50%' },
     transitionDuration:         { type: Number,  default: 300 },
+    appendTo:                   { type: String,  default: 'body' },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -193,6 +194,7 @@ export const ContainerMixin = {
           helperClass,
           hideSortableGhost,
           useWindowAsScrollContainer,
+          appendTo
         } = this.$props;
         const {node, collection} = active;
         const {index} = node.sortableInfo;
@@ -242,7 +244,7 @@ export const ContainerMixin = {
           }
         });
 
-        this.helper = this.document.body.appendChild(clonedNode);
+        this.helper = this.document.querySelector(appendTo).appendChild(clonedNode);
 
         this.helper.style.position = 'fixed';
         this.helper.style.top = `${this.boundingClientRect.top - margin.top}px`;
