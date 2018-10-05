@@ -275,7 +275,7 @@ Need to sort items in a grid? We've got you covered! Just set the `axis` prop to
 
 ### Item disappearing when sorting / CSS issues
 
-Upon sorting, `vue-slicksort` creates a clone of the element you are sorting (the _sortable-helper_) and appends it to the end of the `appendTo` tag. The original element will still be in-place to preserve its position in the DOM until the end of the drag (with inline-styling to make it invisible). If the _sortable-helper_ gets messed up from a CSS standpoint, consider that maybe your selectors to the draggable item are dependent on a parent element which isn't present anymore (again, since the _sortable-helper_ is at the end of the `appentTo` prop). This can also be a `z-index` issue, for example, when using `vue-slicksort` within a Bootstrap modal, you'll need to increase the `z-index` of the SortableHelper so it is displayed on top of the modal.
+Upon sorting, `vue-slicksort` creates a clone of the element you are sorting (the _sortable-helper_) and appends it to the end of the `appendTo` tag. The original element will still be in-place to preserve its position in the DOM until the end of the drag (with inline-styling to make it invisible). If the _sortable-helper_ gets messed up from a CSS standpoint, consider that maybe your selectors to the draggable item are dependent on a parent element which isn't present anymore (again, since the _sortable-helper_ is at the end of the `appendTo` prop). This can also be a `z-index` issue, for example, when using `vue-slicksort` within a Bootstrap modal, you'll need to increase the `z-index` of the SortableHelper so it is displayed on top of the modal.
 
 ### Click events being swallowed
 
