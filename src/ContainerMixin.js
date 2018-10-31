@@ -20,9 +20,6 @@ export const ContainerMixin = {
         move: this.handleMove,
         end: this.handleEnd,
       },
-      // Tracker data used by the `updated` lifecycle hook to transition the
-      // dragged item into place when sorting ends.
-      lastSortEndEventParams: null,
     };
   },
 
@@ -80,52 +77,6 @@ export const ContainerMixin = {
         );
       }
     }
-  },
-
-  updated() {
-    this.$nextTick(() => {
-      // Transition the dragged item into place
-      if (this.lastSortEndEventParams && this.$props.draggedSettlingDuration) {
-        // If draggable items are added with v-for, Vue either rearranges or
-        // patches DOM nodes in place according to the key. The sortableInfo
-        // index is consulted to know which node to translate.
-        let nodes = this.manager.refs[this.lastSortEndEventParams.collection];
-        let oldIndexNode = nodes[this.lastSortEndEventParams.oldIndex].node;
-        let el = null;
-        if (oldIndexNode.sortableInfo.index === this.lastSortEndEventParams.newIndex) {
-          el = oldIndexNode;
-        } else {
-          el = nodes[this.lastSortEndEventParams.newIndex].node;
-        }
-
-        // The dragged item begins where the helper ended
-        el.style[
-          `${vendorPrefix}Transform`
-        ] = `translate3d(${this.lastSortEndEventParams.translate.x}px,${this.lastSortEndEventParams.translate.y}px, 0)`;
-
-        // Force browser recalculation to reset transition
-        el.getBoundingClientRect();
-
-        // Transition into place
-        el.style[`${vendorPrefix}Transform`] = 'translate3d(0, 0, 0)';
-        el.style[
-          `${vendorPrefix}TransitionDuration`
-        ] = `${this.$props.draggedSettlingDuration}ms`;
-
-        // Register an event handler to clean up styles when the transition
-        // finishes.
-        el.addEventListener("transitionend", event => {
-          if (event.propertyName === "transform") {
-            el.style[`${vendorPrefix}Transform`] = '';
-            el.style[`${vendorPrefix}TransitionDuration`] = '';
-          }
-        }, {
-          once: true,
-        });
-      }
-
-      this.lastSortEndEventParams = null;
-    });
   },
 
   beforeDestroy() {
@@ -370,7 +321,7 @@ export const ContainerMixin = {
       this.$emit('sort-move', { event: e });
     },
 
-    handleSortEnd(e) {
+    async handleSortEnd(e) {
       const {collection} = this.manager.active;
 
       // Remove the event listeners if the node is still in the DOM
@@ -384,12 +335,20 @@ export const ContainerMixin = {
           this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
+      const nodes = this.manager.refs[collection];
+
+      if (this.$props.draggedSettlingDuration) {
+        await this.transitionHelperIntoPlace(nodes);
+      }
+
+      // Remove the helper from the DOM
+      this.helper.parentNode.removeChild(this.helper);
+
       if (this.hideSortableGhost && this.sortableGhost) {
         this.sortableGhost.style.visibility = '';
         this.sortableGhost.style.opacity = '';
       }
 
-      const nodes = this.manager.refs[collection];
       for (let i = 0, len = nodes.length; i < len; i++) {
         const node = nodes[i];
         const el = node.node;
@@ -402,17 +361,6 @@ export const ContainerMixin = {
         el.style[`${vendorPrefix}TransitionDuration`] = '';
       }
 
-      // Calculate the offset of the dropped item from its target position
-      const helperRect = this.helper.getBoundingClientRect();
-      const newIndexNodeRect = nodes[this.newIndex].node.getBoundingClientRect();
-      const translate = {
-        x: this.newIndex > this.index ? helperRect.right - newIndexNodeRect.right : helperRect.left - newIndexNodeRect.left,
-        y: this.newIndex > this.index ? helperRect.bottom - newIndexNodeRect.bottom : helperRect.top - newIndexNodeRect.top,
-      };
-
-      // Remove the helper from the DOM
-      this.helper.parentNode.removeChild(this.helper);
-
       // Stop autoscroll
       clearInterval(this.autoscrollInterval);
       this.autoscrollInterval = null;
@@ -423,18 +371,59 @@ export const ContainerMixin = {
       this.sorting = false;
       this.sortingIndex = null;
 
-      this.lastSortEndEventParams = {
+      this.$emit('sort-end', {
         event: e,
         oldIndex: this.index,
         newIndex: this.newIndex,
         collection,
-        translate,
-      };
-
-      this.$emit('sort-end', this.lastSortEndEventParams);
+      });
       this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
 
       this._touched = false;
+    },
+
+    transitionHelperIntoPlace(nodes) {
+      const deltaScroll = {
+        left: this.scrollContainer.scrollLeft - this.initialScroll.left,
+        top: this.scrollContainer.scrollTop - this.initialScroll.top,
+      };
+      const indexNode = nodes[this.index].node;
+      const newIndexNode = nodes[this.newIndex].node;
+
+      let targetX = -deltaScroll.left;
+      if (this.translate.x > 0) {
+        // Diff against right edge when moving to the right
+        targetX += newIndexNode.offsetLeft + newIndexNode.offsetWidth -
+          (indexNode.offsetLeft + indexNode.offsetWidth);
+      } else {
+        targetX += newIndexNode.offsetLeft - indexNode.offsetLeft;
+      }
+
+      let targetY = -deltaScroll.top;
+      if (this.translate.y > 0) {
+        // Diff against the bottom edge when moving down
+        targetY += newIndexNode.offsetTop + newIndexNode.offsetHeight -
+          (indexNode.offsetTop + indexNode.offsetHeight);
+      } else {
+        targetY += newIndexNode.offsetTop - indexNode.offsetTop;
+      }
+
+      this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
+      this.helper.style[
+        `${vendorPrefix}TransitionDuration`
+      ] = `${this.$props.draggedSettlingDuration}ms`;
+
+      return new Promise(resolve => {
+        // Register an event handler to clean up styles when the transition
+        // finishes.
+        this.helper.addEventListener("transitionend", event => {
+          if (event.propertyName === "transform") {
+            this.helper.style[`${vendorPrefix}Transform`] = '';
+            this.helper.style[`${vendorPrefix}TransitionDuration`] = '';
+            resolve();
+          }
+        }, false);
+      });
     },
 
     getEdgeOffset(node, offset = {top: 0, left: 0}) {
