@@ -35,7 +35,7 @@ export const ContainerMixin = {
     lockToContainerEdges:       { type: Boolean, default: false },
     lockOffset:                 { type: [String, Number, Array], default: '50%' },
     transitionDuration:         { type: Number,  default: 300 },
-    draggedSettlingDuration:    { type: Number,  default: 300 },
+    draggedSettlingDuration:    { type: Number,  default: null },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -337,7 +337,7 @@ export const ContainerMixin = {
 
       const nodes = this.manager.refs[collection];
 
-      if (this.$props.draggedSettlingDuration) {
+      if (this.$props.transitionDuration || this.$props.draggedSettlingDuration) {
         await this.transitionHelperIntoPlace(nodes);
       }
 
@@ -383,6 +383,10 @@ export const ContainerMixin = {
     },
 
     transitionHelperIntoPlace(nodes) {
+      if (this.$props.draggedSettlingDuration === 0) {
+        return Promise.resolve();
+      }
+
       const deltaScroll = {
         left: this.scrollContainer.scrollLeft - this.initialScroll.left,
         top: this.scrollContainer.scrollTop - this.initialScroll.top,
@@ -408,10 +412,14 @@ export const ContainerMixin = {
         targetY += newIndexNode.offsetTop - indexNode.offsetTop;
       }
 
+      const duration = this.$props.draggedSettlingDuration !== null
+        ? this.$props.draggedSettlingDuration
+        : this.$props.transitionDuration;
+
       this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
       this.helper.style[
         `${vendorPrefix}TransitionDuration`
-      ] = `${this.$props.draggedSettlingDuration}ms`;
+      ] = `${duration}ms`;
 
       return new Promise(resolve => {
         // Register an event handler to clean up styles when the transition
