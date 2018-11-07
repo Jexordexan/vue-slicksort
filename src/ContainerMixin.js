@@ -35,6 +35,7 @@ export const ContainerMixin = {
     lockToContainerEdges:       { type: Boolean, default: false },
     lockOffset:                 { type: [String, Number, Array], default: '50%' },
     transitionDuration:         { type: Number,  default: 300 },
+    draggedSettlingDuration:    { type: Number,  default: null },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -320,7 +321,7 @@ export const ContainerMixin = {
       this.$emit('sort-move', { event: e });
     },
 
-    handleSortEnd(e) {
+    async handleSortEnd(e) {
       const {collection} = this.manager.active;
 
       // Remove the event listeners if the node is still in the DOM
@@ -334,6 +335,12 @@ export const ContainerMixin = {
           this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
+      const nodes = this.manager.refs[collection];
+
+      if (this.$props.transitionDuration || this.$props.draggedSettlingDuration) {
+        await this.transitionHelperIntoPlace(nodes);
+      }
+
       // Remove the helper from the DOM
       this.helper.parentNode.removeChild(this.helper);
 
@@ -342,7 +349,6 @@ export const ContainerMixin = {
         this.sortableGhost.style.opacity = '';
       }
 
-      const nodes = this.manager.refs[collection];
       for (let i = 0, len = nodes.length; i < len; i++) {
         const node = nodes[i];
         const el = node.node;
@@ -374,6 +380,58 @@ export const ContainerMixin = {
       this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
 
       this._touched = false;
+    },
+
+    transitionHelperIntoPlace(nodes) {
+      if (this.$props.draggedSettlingDuration === 0) {
+        return Promise.resolve();
+      }
+
+      const deltaScroll = {
+        left: this.scrollContainer.scrollLeft - this.initialScroll.left,
+        top: this.scrollContainer.scrollTop - this.initialScroll.top,
+      };
+      const indexNode = nodes[this.index].node;
+      const newIndexNode = nodes[this.newIndex].node;
+
+      let targetX = -deltaScroll.left;
+      if (this.translate.x > 0) {
+        // Diff against right edge when moving to the right
+        targetX += newIndexNode.offsetLeft + newIndexNode.offsetWidth -
+          (indexNode.offsetLeft + indexNode.offsetWidth);
+      } else {
+        targetX += newIndexNode.offsetLeft - indexNode.offsetLeft;
+      }
+
+      let targetY = -deltaScroll.top;
+      if (this.translate.y > 0) {
+        // Diff against the bottom edge when moving down
+        targetY += newIndexNode.offsetTop + newIndexNode.offsetHeight -
+          (indexNode.offsetTop + indexNode.offsetHeight);
+      } else {
+        targetY += newIndexNode.offsetTop - indexNode.offsetTop;
+      }
+
+      const duration = this.$props.draggedSettlingDuration !== null
+        ? this.$props.draggedSettlingDuration
+        : this.$props.transitionDuration;
+
+      this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
+      this.helper.style[
+        `${vendorPrefix}TransitionDuration`
+      ] = `${duration}ms`;
+
+      return new Promise(resolve => {
+        // Register an event handler to clean up styles when the transition
+        // finishes.
+        this.helper.addEventListener("transitionend", event => {
+          if (event.propertyName === "transform") {
+            this.helper.style[`${vendorPrefix}Transform`] = '';
+            this.helper.style[`${vendorPrefix}TransitionDuration`] = '';
+            resolve();
+          }
+        }, false);
+      });
     },
 
     getEdgeOffset(node, offset = {top: 0, left: 0}) {
