@@ -104,16 +104,7 @@ const ExampleVue = {
   },
   data() {
     return {
-      items: [
-        'Item 1',
-        'Item 2',
-        'Item 3',
-        'Item 4',
-        'Item 5',
-        'Item 6',
-        'Item 7',
-        'Item 8'
-      ]
+      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8']
     };
   }
 };
@@ -150,16 +141,7 @@ const ExampleVue = {
   },
   data() {
     return {
-      items: [
-        'Item 1',
-        'Item 2',
-        'Item 3',
-        'Item 4',
-        'Item 5',
-        'Item 6',
-        'Item 7',
-        'Item 8'
-      ]
+      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8']
     };
   }
 };
@@ -197,6 +179,7 @@ You apply options as individual `props` on whatever component is using the `Cont
 | `helperClass`                | String                                                  |                                                                                               | You can provide a class you'd like to add to the sortable helper to add some styles to it                                                                                                                                                                                                                                                                                                                                 |
 | `appendTo`                   | String                                                  | `body`                                                                                        | You can provide a querySelector string you'd like to add to the sorting element to add parent dom                                                                                                                                                                                                                                                                                                                         |
 | `transitionDuration`         | Number                                                  | `300`                                                                                         | The duration of the transition when elements shift positions. Set this to `0` if you'd like to disable transitions                                                                                                                                                                                                                                                                                                        |
+| `draggedSettlingDuration`    | Number                                                  | null                                                                                          | Override the settling duration for the drag helper. If not set, `transitionDuration` will be used.                                                                                                                                                                                                                                                                                                                        |
 | `pressDelay`                 | Number                                                  | `0`                                                                                           | If you'd like elements to only become sortable after being pressed for a certain time, change this property. A good sensible default value for mobile is `200`. Cannot be used in conjunction with the `distance` prop.                                                                                                                                                                                                   |
 | `pressThreshold`             | Number                                                  | `5`                                                                                           | Number of pixels of movement to tolerate before ignoring a press event.                                                                                                                                                                                                                                                                                                                                                   |
 | `distance`                   | Number                                                  | `0`                                                                                           | If you'd like elements to only become sortable after being dragged a certain number of pixels. Cannot be used in conjunction with the `pressDelay` prop.                                                                                                                                                                                                                                                                  |
@@ -268,6 +251,10 @@ In root folder:
 	$ npm install
 	$ npm run storybook
 ``` -->
+
+### Upgrade from v0.x.x
+
+The event names have all changed from camelCase to dash-case to accommodate for inline HTML templates.
 
 ### Grid support?
 

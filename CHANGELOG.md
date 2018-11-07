@@ -3,6 +3,7 @@
 ## 1.0.0
 
 ADDED Typescript support
+ADDED Settling animation, the drag helper will now settle back into its new location after releasing the drag.
 BREAKING: sortStart, sortMove, and sortEnd events are now kebab-case (sort-start, sort-move, sort-end) as per standard practice.
 Any previous event listeners will need to be updated
 
