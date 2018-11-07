@@ -1,16 +1,20 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:vue/recommended"
-  ],
+  "extends": ["eslint:recommended", "plugin:vue/recommended"],
   "env": {
     "browser": true,
     "node": true
   },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2017,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
   "rules": {
     "prefer-const": ["error"],
     "comma-dangle": ["error", "always-multiline"],
-    "indent": ["error", 2, {"SwitchCase": 1}],
+    "indent": ["error", 2, { "SwitchCase": 1 }],
     "semi": ["error", "always"],
     "no-mixed-operators": [
       "warn",

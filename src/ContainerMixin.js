@@ -424,8 +424,8 @@ export const ContainerMixin = {
       return new Promise(resolve => {
         // Register an event handler to clean up styles when the transition
         // finishes.
-        this.helper.addEventListener("transitionend", event => {
-          if (event.propertyName === "transform") {
+        this.helper.addEventListener('transitionend', event => {
+          if (event.propertyName === 'transform') {
             this.helper.style[`${vendorPrefix}Transform`] = '';
             this.helper.style[`${vendorPrefix}TransitionDuration`] = '';
             resolve();
