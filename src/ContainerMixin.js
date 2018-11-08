@@ -323,7 +323,7 @@ export const ContainerMixin = {
       this.$emit('sort-move', { event: e });
     },
 
-    handleSortEnd(e) {
+    async handleSortEnd(e) {
       const {collection} = this.manager.active;
 
       // Remove the event listeners if the node is still in the DOM
@@ -339,54 +339,49 @@ export const ContainerMixin = {
 
       const nodes = this.manager.refs[collection];
 
-      const onEnd = () => {
-        // Remove the helper from the DOM
-        this.helper.parentNode.removeChild(this.helper);
-
-        if (this.hideSortableGhost && this.sortableGhost) {
-          this.sortableGhost.style.visibility = '';
-          this.sortableGhost.style.opacity = '';
-        }
-
-        for (let i = 0, len = nodes.length; i < len; i++) {
-          const node = nodes[i];
-          const el = node.node;
-
-          // Clear the cached offsetTop / offsetLeft value
-          node.edgeOffset = null;
-
-          // Remove the transforms / transitions
-          el.style[`${vendorPrefix}Transform`] = '';
-          el.style[`${vendorPrefix}TransitionDuration`] = '';
-        }
-
-        // Stop autoscroll
-        clearInterval(this.autoscrollInterval);
-        this.autoscrollInterval = null;
-
-        // Update state
-        this.manager.active = null;
-
-        this.sorting = false;
-        this.sortingIndex = null;
-
-        this.$emit('sort-end', {
-          event: e,
-          oldIndex: this.index,
-          newIndex: this.newIndex,
-          collection,
-        });
-        this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
-
-        this._touched = false;
-      };
-
       if (this.$props.transitionDuration || this.$props.draggedSettlingDuration) {
-        this.transitionHelperIntoPlace(nodes).then(() => onEnd());
-      } else {
-        onEnd();
+        await this.transitionHelperIntoPlace(nodes);
       }
 
+      // Remove the helper from the DOM
+      this.helper.parentNode.removeChild(this.helper);
+
+      if (this.hideSortableGhost && this.sortableGhost) {
+        this.sortableGhost.style.visibility = '';
+        this.sortableGhost.style.opacity = '';
+      }
+
+      for (let i = 0, len = nodes.length; i < len; i++) {
+        const node = nodes[i];
+        const el = node.node;
+
+        // Clear the cached offsetTop / offsetLeft value
+        node.edgeOffset = null;
+
+        // Remove the transforms / transitions
+        el.style[`${vendorPrefix}Transform`] = '';
+        el.style[`${vendorPrefix}TransitionDuration`] = '';
+      }
+
+      // Stop autoscroll
+      clearInterval(this.autoscrollInterval);
+      this.autoscrollInterval = null;
+
+      // Update state
+      this.manager.active = null;
+
+      this.sorting = false;
+      this.sortingIndex = null;
+
+      this.$emit('sort-end', {
+        event: e,
+        oldIndex: this.index,
+        newIndex: this.newIndex,
+        collection,
+      });
+      this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
+
+      this._touched = false;
     },
 
     transitionHelperIntoPlace(nodes) {
