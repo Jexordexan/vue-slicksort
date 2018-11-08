@@ -1,5 +1,9 @@
 ## Changelog
 
+## 1.1.0
+
+ADDED appendTo prop - appends the helper to the selected DOM node.
+
 ## 1.0.0
 
 ADDED Typescript support

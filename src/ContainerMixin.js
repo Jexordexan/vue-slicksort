@@ -195,7 +195,7 @@ export const ContainerMixin = {
           helperClass,
           hideSortableGhost,
           useWindowAsScrollContainer,
-          appendTo
+          appendTo,
         } = this.$props;
         const {node, collection} = active;
         const {index} = node.sortableInfo;
