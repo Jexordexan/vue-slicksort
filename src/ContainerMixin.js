@@ -261,6 +261,7 @@ export const ContainerMixin = {
           node.style.opacity = 0;
         }
 
+        this.translate = {};
         this.minTranslate = {};
         this.maxTranslate = {};
         if (this._axis.x) {
