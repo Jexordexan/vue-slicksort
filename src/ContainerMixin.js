@@ -399,6 +399,14 @@ export const ContainerMixin = {
         left: this.scrollContainer.scrollLeft - this.initialScroll.left,
         top: this.scrollContainer.scrollTop - this.initialScroll.top,
       };
+
+      //when there is no offset, the "translate3d" does not raise an "transitionend" event, 
+      //but at the same time changes the style of the component to the draggable
+      //-no offset, no further processing
+      if (deltaScroll.left === 0 && deltaScroll.top === 0) {
+				return Promise.resolve();
+      }
+
       const indexNode = nodes[this.index].node;
       const newIndexNode = nodes[this.newIndex].node;
 
