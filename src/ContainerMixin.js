@@ -403,7 +403,7 @@ export const ContainerMixin = {
       const newIndexNode = nodes[this.newIndex].node;
 
       let targetX = -deltaScroll.left;
-      if (this.translate.x > 0) {
+      if (this.translate && this.translate.x > 0) {
         // Diff against right edge when moving to the right
         targetX += newIndexNode.offsetLeft + newIndexNode.offsetWidth -
           (indexNode.offsetLeft + indexNode.offsetWidth);
@@ -412,7 +412,7 @@ export const ContainerMixin = {
       }
 
       let targetY = -deltaScroll.top;
-      if (this.translate.y > 0) {
+      if (this.translate && this.translate.y > 0) {
         // Diff against the bottom edge when moving down
         targetY += newIndexNode.offsetTop + newIndexNode.offsetHeight -
           (indexNode.offsetTop + indexNode.offsetHeight);
