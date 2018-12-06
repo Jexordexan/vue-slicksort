@@ -4,7 +4,7 @@ var DashboardPlugin = require('webpack-dashboard/plugin');
 
 module.exports = {
   devtool: 'cheap-module-eval-source-map',
-  entry: [ './index.js' ],
+  entry: [ 'babel-polyfill', './index.js' ],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
