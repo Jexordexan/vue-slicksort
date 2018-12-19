@@ -28,6 +28,8 @@ export const ContainerMixin = {
     axis:                       { type: String,  default: 'y' }, // 'x', 'y', 'xy'
     distance:                   { type: Number,  default: 0 },
     pressDelay:                 { type: Number,  default: 0 },
+    clickDelay:                 { type: Number,  default: 0 },
+    touchDelay:                 { type: Number,  default: 200 },
     pressThreshold:             { type: Number,  default: 5 },
     useDragHandle:              { type: Boolean, default: false },
     useWindowAsScrollContainer: { type: Boolean, default: false },
@@ -133,12 +135,14 @@ export const ContainerMixin = {
         }
 
         if (!distance) {
-          if (this.$props.pressDelay === 0) {
+          const delay = this.$props.pressDelay || 
+            (e instanceof TouchEvent ? this.$props.touchDelay : this.$props.clickDelay)
+          if (delay === 0) {
             this.handlePress(e);
           } else {
             this.pressTimer = setTimeout(
               () => this.handlePress(e),
-              this.$props.pressDelay
+              delay
             );
           }
         }
