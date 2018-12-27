@@ -264,11 +264,14 @@ default: `false`
 You can lock movement of the sortable element to it's parent `Container`
 
 #### `lockOffset`
-type: *`OffsetValue`\* -or- [`OffsetValue`\*, `OffsetValue`\*]*
+type: *`OffsetValue` or [ `OffsetValue`, `OffsetValue` ]*\*
 
 default: `"50%"`
 
 When `lockToContainerEdges` is set to `true`, this controls the offset distance between the sortable helper and the top/bottom edges of it's parent `Container`. Percentage values are relative to the height of the item currently being sorted. If you wish to specify different behaviours for locking to the _top_ of the container vs the _bottom_, you may also pass in an `array` (For example: `["0%", "100%"]`).
+
+\* `OffsetValue` can either be a finite `Number` or a `String` made up of a number and a unit (`px` or `%`).
+Examples: `10` (which is the same as `"10px"`), `"50%"`
 
 #### `shouldCancelStart`
 type: *Function*
@@ -284,19 +287,36 @@ default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/
 
 Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details
 
-\* `OffsetValue` can either be a finite `Number` or a `String` made up of a number and a unit (`px` or `%`).
-Examples: `10` (which is the same as `"10px"`), `"50%"`
-
 ### Events
 
 Events are emitted from the Container element, and can be bound to using `v-bind` or `@` directives
 
-| Event         | Arguments                                   | Description                                               |
-| :------------ | :------------------------------------------ | :-------------------------------------------------------- |
-| `@sort-start` | `{ event, node, index, collection }`        | Fired when sorting begins.                                |
-| `@sort-move`  | `{ event }`                                 | Fired when the mouse is moved during sorting.             |
-| `@sort-end`   | `{ event, newIndex, oldIndex, collection }` | Fired when sorting has ended.                             |
-| `@input`      | `newList`                                   | Fired after sorting has ended with the newly sorted list. |
+
+#### `@sort-start`
+
+emits: `{ event, node, index, collection }`
+
+Fired when sorting begins.
+
+#### `@sort-move`
+
+emits: `{ event }`
+
+Fired when the mouse is moved during sorting.
+
+#### `@sort-end`
+
+emits: `{ event, newIndex, oldIndex, collection }`
+
+Fired when sorting has ended.
+
+#### `@input`
+
+emits: `Array`
+
+Fired after sorting has ended with the newly sorted list.
+
+---
 
 ## `ElementMixin`
 
