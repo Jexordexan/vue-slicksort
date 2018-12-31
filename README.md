@@ -8,8 +8,13 @@
 [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/master/LICENSE)
-[![Gitter](https://badges.gitter.im/vue-slicksort/Lobby.svg)](https://gitter.im/vue-slicksort/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
+
+<p align="center">
+  <a href="https://jexordexan.github.io/vue-slicksort/">
+    <img src="logo/demo.gif">
+  </a>
+</p>
 
 ### Examples available here: <a href="https://jexordexan.github.io/vue-slicksort/">https://jexordexan.github.io/vue-slicksort/</a>
 
@@ -294,7 +299,7 @@ Events are emitted from the Container element, and can be bound to using `v-bind
 
 #### `@sort-start`
 
-emits: `{ event, node, index, collection }`
+emits: `{ event: MouseEvent, node: HTMLElement, index: number, collection: string }`
 
 Fired when sorting begins.
 
