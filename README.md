@@ -8,8 +8,13 @@
 [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/master/LICENSE)
-[![Gitter](https://badges.gitter.im/vue-slicksort/Lobby.svg)](https://gitter.im/vue-slicksort/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
+
+<p align="center">
+  <a href="https://jexordexan.github.io/vue-slicksort/">
+    <img src="logo/demo.gif">
+  </a>
+</p>
 
 ### Examples available here: <a href="https://jexordexan.github.io/vue-slicksort/">https://jexordexan.github.io/vue-slicksort/</a>
 
@@ -171,49 +176,175 @@ You apply options as individual `props` on whatever component is using the `Cont
 
 ### Props
 
-| Property                     | Type                                                    | Default                                                                                       | Description                                                                                                                                                                                                                                                                                                                                                                                                               |
-| :--------------------------- | :------------------------------------------------------ | :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `value` _(required)_         | Array                                                   |                                                                                               | The `value` can be inherited from `v-model` but has to be set to the same list that is rendered with `v-for` inside the `Container`                                                                                                                                                                                                                                                                                       |
-| `axis`                       | String                                                  | `y`                                                                                           | Items can be sorted horizontally, vertically or in a grid. Possible values: `x`, `y` or `xy`                                                                                                                                                                                                                                                                                                                              |
-| `lockAxis`                   | String                                                  |                                                                                               | If you'd like, you can lock movement to an axis while sorting. This is not something that is possible with HTML5 Drag & Drop                                                                                                                                                                                                                                                                                              |
-| `helperClass`                | String                                                  |                                                                                               | You can provide a class you'd like to add to the sortable helper to add some styles to it                                                                                                                                                                                                                                                                                                                                 |
-| `appendTo`                   | String                                                  | `body`                                                                                        | You can provide a querySelector string you'd like to add to the sorting element to add parent dom                                                                                                                                                                                                                                                                                                                         |
-| `transitionDuration`         | Number                                                  | `300`                                                                                         | The duration of the transition when elements shift positions. Set this to `0` if you'd like to disable transitions                                                                                                                                                                                                                                                                                                        |
-| `draggedSettlingDuration`    | Number                                                  | null                                                                                          | Override the settling duration for the drag helper. If not set, `transitionDuration` will be used.                                                                                                                                                                                                                                                                                                                        |
-| `pressDelay`                 | Number                                                  | `0`                                                                                           | If you'd like elements to only become sortable after being pressed for a certain time, change this property. A good sensible default value for mobile is `200`. Cannot be used in conjunction with the `distance` prop.                                                                                                                                                                                                   |
-| `pressThreshold`             | Number                                                  | `5`                                                                                           | Number of pixels of movement to tolerate before ignoring a press event.                                                                                                                                                                                                                                                                                                                                                   |
-| `distance`                   | Number                                                  | `0`                                                                                           | If you'd like elements to only become sortable after being dragged a certain number of pixels. Cannot be used in conjunction with the `pressDelay` prop.                                                                                                                                                                                                                                                                  |
-| `useDragHandle`              | Boolean                                                 | `false`                                                                                       | If you're using the `HandleDirective`, set this to `true`                                                                                                                                                                                                                                                                                                                                                                 |
-| `useWindowAsScrollContainer` | Boolean                                                 | `false`                                                                                       | If you want, you can set the `window` as the scrolling container                                                                                                                                                                                                                                                                                                                                                          |
-| `hideSortableGhost`          | Boolean                                                 | `true`                                                                                        | Whether to auto-hide the ghost element. By default, as a convenience, Vue Slicksort List will automatically hide the element that is currently being sorted. Set this to false if you would like to apply your own styling.                                                                                                                                                                                               |
-| `lockToContainerEdges`       | Boolean                                                 | `false`                                                                                       | You can lock movement of the sortable element to it's parent `Container`                                                                                                                                                                                                                                                                                                                                                  |
-| `lockOffset`                 | `OffsetValue`\* -or- [`OffsetValue`\*, `OffsetValue`\*] | `"50%"`                                                                                       | When `lockToContainerEdges` is set to `true`, this controls the offset distance between the sortable helper and the top/bottom edges of it's parent `Container`. Percentage values are relative to the height of the item currently being sorted. If you wish to specify different behaviours for locking to the _top_ of the container vs the _bottom_, you may also pass in an `array` (For example: `["0%", "100%"]`). |
-| `shouldCancelStart`          | Function                                                | [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L41) | This function is invoked before sorting begins, and can be used to programatically cancel sorting before it begins. By default, it will cancel sorting if the event target is either an `input`, `textarea`, `select` or `option`.                                                                                                                                                                                        |
-| `getHelperDimensions`        | Function                                                | [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) | Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details                                                                                                                                                                         |
+#### `value` _(required)_
+type: *Array*
+
+The `value` can be inherited from `v-model` but has to be set to the same list that is rendered with `v-for` inside the `Container`
+
+#### `axis`
+type: *String*
+
+default: `y`
+
+Items can be sorted horizontally, vertically or in a grid. Possible values: `x`, `y` or `xy`
+
+#### `lockAxis`
+type: *String*
+
+If you'd like, you can lock movement to an axis while sorting. This is not something that is possible with HTML5 Drag & Drop
+
+#### `helperClass`
+type: *String*
+
+You can provide a class you'd like to add to the sortable helper to add some styles to it
+
+#### `appendTo`
+type: *String*
+
+default: `body`
+
+You can provide a querySelector string you'd like to add to the sorting element to add parent dom
+
+#### `transitionDuration`
+type: *Number*
+
+default: `300`
+
+The duration of the transition when elements shift positions. Set this to `0` if you'd like to disable transitions
+
+#### `draggedSettlingDuration`
+type: *Number*
+
+default: `null`
+
+Override the settling duration for the drag helper. If not set, `transitionDuration` will be used.
+
+#### `pressDelay`
+type: *Number*
+
+default: `0`
+
+If you'd like elements to only become sortable after being pressed for a certain time, change this property. A good sensible default value for mobile is `200`. Cannot be used in conjunction with the `distance` prop.
+
+#### `pressThreshold`
+type: *Number*
+
+default: `5`
+
+Number of pixels of movement to tolerate before ignoring a press event.
+
+#### `distance`
+type: *Number*
+
+default: `0`
+
+If you'd like elements to only become sortable after being dragged a certain number of pixels. Cannot be used in conjunction with the `pressDelay` prop.
+
+#### `useDragHandle`
+type: *Boolean*
+
+default: `false`
+
+If you're using the `HandleDirective`, set this to `true`
+
+#### `useWindowAsScrollContainer`
+type: *Boolean*
+
+default: `false`
+
+If you want, you can set the `window` as the scrolling container
+
+#### `hideSortableGhost`
+type: *Boolean*
+
+default: `true`
+
+Whether to auto-hide the ghost element. By default, as a convenience, Vue Slicksort List will automatically hide the element that is currently being sorted. Set this to false if you would like to apply your own styling.
+
+#### `lockToContainerEdges`
+type: *Boolean*
+
+default: `false`
+
+You can lock movement of the sortable element to it's parent `Container`
+
+#### `lockOffset`
+type: *`OffsetValue` or [ `OffsetValue`, `OffsetValue` ]*\*
+
+default: `"50%"`
+
+When `lockToContainerEdges` is set to `true`, this controls the offset distance between the sortable helper and the top/bottom edges of it's parent `Container`. Percentage values are relative to the height of the item currently being sorted. If you wish to specify different behaviours for locking to the _top_ of the container vs the _bottom_, you may also pass in an `array` (For example: `["0%", "100%"]`).
 
 \* `OffsetValue` can either be a finite `Number` or a `String` made up of a number and a unit (`px` or `%`).
 Examples: `10` (which is the same as `"10px"`), `"50%"`
+
+#### `shouldCancelStart`
+type: *Function*
+
+default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L41)
+
+This function is invoked before sorting begins, and can be used to programatically cancel sorting before it begins. By default, it will cancel sorting if the event target is either an `input`, `textarea`, `select` or `option`.
+
+#### `getHelperDimensions`
+type: *Function*
+
+default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49)
+
+Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details
 
 ### Events
 
 Events are emitted from the Container element, and can be bound to using `v-bind` or `@` directives
 
-| Event         | Arguments                                   | Description                                               |
-| :------------ | :------------------------------------------ | :-------------------------------------------------------- |
-| `@sort-start` | `{ event, node, index, collection }`        | Fired when sorting begins.                                |
-| `@sort-move`  | `{ event }`                                 | Fired when the mouse is moved during sorting.             |
-| `@sort-end`   | `{ event, newIndex, oldIndex, collection }` | Fired when sorting has ended.                             |
-| `@input`      | `newList`                                   | Fired after sorting has ended with the newly sorted list. |
+
+#### `@sort-start`
+
+emits: `{ event: MouseEvent, node: HTMLElement, index: number, collection: string }`
+
+Fired when sorting begins.
+
+#### `@sort-move`
+
+emits: `{ event }`
+
+Fired when the mouse is moved during sorting.
+
+#### `@sort-end`
+
+emits: `{ event, newIndex, oldIndex, collection }`
+
+Fired when sorting has ended.
+
+#### `@input`
+
+emits: `Array`
+
+Fired after sorting has ended with the newly sorted list.
+
+---
 
 ## `ElementMixin`
 
 ### Props
 
-| Property             | Type             | Default | Description                                                                                                                                                                                                                   |     |
-| :------------------- | :--------------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| `index` _(required)_ | Number           |         | This is the element's sortableIndex within it's collection. This prop is required.                                                                                                                                            |
-| `collection`         | Number or String | `0`     | The collection the element is part of. This is useful if you have multiple groups of sortable elements within the same `Container`. [Example](http://Jexordexan.github.io/vue-slicksort/#/basic-configuration/multiple-lists) |
-| `disabled`           | Boolean          | `false` | Whether the element should be sortable or not                                                                                                                                                                                 |
+#### `index` _(required)_
+type: *Number*
+
+This is the element's sortableIndex within it's collection. This prop is required.
+
+#### `collection`
+type: *Number or String*
+
+default: `0`
+
+The collection the element is part of. This is useful if you have multiple groups of sortable elements within the same `Container`. [Example](http://Jexordexan.github.io/vue-slicksort/#/basic-configuration/multiple-lists)
+
+#### `disabled`
+type: *Boolean*
+
+default: `false`
+
+Whether the element should be sortable or not
 
 ## `HandleDirective`
 
