@@ -3,6 +3,8 @@ import range from 'lodash/range';
 import random from 'lodash/random';
 import { ContainerMixin, ElementMixin } from './src';
 
+import { GroupExample } from './src/group-example';
+
 const SortableList = {
   mixins: [ContainerMixin],
   template: `
@@ -48,18 +50,14 @@ const ExampleVue = {
   name: 'Example',
   template: `
     <div class="root">
-      <SortableList lockAxis="y" v-model="items">
-        <SortableItem v-for="(item, index) in items" :key="index" :index="index" collection="items" :item="item" />
-      </SortableList>
-      <SortableList lockAxis="y" v-model="lists">
-        <InnerList v-for="(list, index) in lists" :key="list.name" :index="index" collection="lists" :list="list" ></InnerList>
-      </SortableList>
+      <GroupExample />
     </div>
   `,
   components: {
     SortableItem,
     SortableList,
     InnerList,
+    GroupExample,
   },
   data() {
     return {
