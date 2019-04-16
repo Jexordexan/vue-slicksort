@@ -40,15 +40,15 @@ export const ContainerMixin = {
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
-    shouldCancelStart: { 
-      type: Function, 
+    shouldCancelStart: {
+      type: Function,
       default: (e) => {
         // Cancel sorting if the event target is an `input`, `textarea`, `select` or `option`
         const disabledElements = ['input', 'textarea', 'select', 'option', 'button'];
         return disabledElements.indexOf(e.target.tagName.toLowerCase()) !== -1;
       },
     },
-    getHelperDimensions: { 
+    getHelperDimensions: {
       type: Function,
       default: ({node}) => ({
         width: node.offsetWidth,
@@ -391,7 +391,7 @@ export const ContainerMixin = {
     },
 
     transitionHelperIntoPlace(nodes) {
-      if (this.$props.draggedSettlingDuration === 0) {
+      if (this.$props.draggedSettlingDuration === 0 || nodes.length === 0) {
         return Promise.resolve();
       }
 
