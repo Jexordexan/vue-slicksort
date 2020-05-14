@@ -63,13 +63,21 @@
             border-left:5px solid transparent;
         }
 
-        .list-item.selected{
-            background:lightblue;
+ .list-item:not(.sorting):hover{
+    background: gainsboro;
+}
+
+        .list-item.selected {
+            background:#badfff;
+        }
+
+        .list-item.sorting-hover, .list-item.active{
+            background:#8ecbff !important;
         }
 
         .list-item.active
         {
-            border-left:5px solid blue;
+            border-left:5px solid #4798fd;
         }
 
     </style>

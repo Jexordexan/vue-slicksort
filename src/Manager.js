@@ -17,16 +17,12 @@ export default class Manager {
     if (index !== -1) {
       this.refs[collection].splice(index, 1);
     }
-  }
-
-  isActive() {
-    return this.active;
-  }
-
-  getActive() {    
-    if (this.active)
+  }  
+ 
+  getTouched() {    
+    if (this.touched)
     {
-    return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
+    return this.refs[this.touched.collection].find(({node}) => node.sortableInfo.index == this.touched.index);
     }
     else{
       return null;
@@ -34,14 +30,14 @@ export default class Manager {
   }
 
   getSelected() {
-    return this.refs[this.active.collection].filter(({node}) => node.sortableInfo.selected == true || node.sortableInfo.index == this.active.index);    
+    return this.refs[this.touched.collection].filter(({node}) => node.sortableInfo.selected == true || node.sortableInfo.index == this.touched.index);    
   }
 
   getIndex(collection, ref) {
     return this.refs[collection].indexOf(ref);
   }
 
-  getOrderedRefs(collection = this.active.collection) {
+  getOrderedRefs(collection = this.touched.collection) {
     return this.refs[collection].sort((a, b) => {
       return a.node.sortableInfo.index - b.node.sortableInfo.index;
     });

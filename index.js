@@ -50,11 +50,13 @@ const ExampleVue = {
   name: 'Example',
   template: `
     <div class="root">
-      <SortableList lockAxis="y" v-model="items" @select="onSelect" selectionMode="single">
+      <SortableList lockAxis="y" v-model="items" @select="onSelect" selectionMode="multiple" helperClass="sorting-hover">
         <SortableItem v-for="(item, index) in items"
          v-bind:class="{selected: item.selected, active: activeItem == item}"
          :key="index" :index="index" :selected="item.selected" collection="items" :item="item" />
       </SortableList>
+
+
       <SortableList lockAxis="y" v-model="lists">
         <InnerList v-for="(list, index) in lists" :key="list.name" :index="index" collection="lists" :list="list" ></InnerList>
       </SortableList>

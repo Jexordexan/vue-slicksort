@@ -109,11 +109,7 @@ export const ContainerMixin = {
         y: e.pageY,
       };
       const node = closest(e.target, el => el.sortableInfo != null);
-
-      if (!node.sortableInfo.selected && !e.ctrlKey && !e.shiftKey) {
-        this.fireSelectEvent(node.sortableInfo.index, e);
-      }
-
+             
       if (
         node &&
         node.sortableInfo &&
@@ -129,7 +125,11 @@ export const ContainerMixin = {
         )
           return;
           
-        this.manager.active = { index, collection };
+        this.manager.touched = { index, collection };        
+
+        if (!node.sortableInfo.selected && !e.ctrlKey && !e.shiftKey) {
+          this.fireSelectEvent(node.sortableInfo.index, e);
+        }
 
         /*
 				 * Fixes a bug in Firefox where the :active state of anchor tags
@@ -160,11 +160,14 @@ export const ContainerMixin = {
     },
 
     fireSelectEvent(subjectIndex, e) {
-      var active = this.manager.getActive();
-      if (!active) { return; }
-
-      const { node } = this.manager.getActive();
+      
+      if (!this.manager.touched)
+      {
+        return;
+      }
+      
       const refs = this.manager.getOrderedRefs();
+      const subjectNode = refs[subjectIndex].node;
 
       var selections = [];
       var activeIndex = 0;
@@ -174,7 +177,7 @@ export const ContainerMixin = {
         for (var i = 0; i < refs.length; i++) {
           var { selected } = refs[i].node.sortableInfo;
 
-          if (i === this.manager.previousActiveIndex || i == subjectIndex) {
+          if (i === this.manager.previousTouchedIndex || i == subjectIndex) {
             if (!selected) {
               selections.push({ index: i, select: true });
             }
@@ -187,16 +190,16 @@ export const ContainerMixin = {
         activeIndex = subjectIndex;
       }
       else if (e.ctrlKey) {
-        var selectItem = node.sortableInfo.selected == false;
+        var selectItem = subjectNode.sortableInfo.selected == false;
         var selectedCount = this.manager.getSelected().length;
 
         if (selectItem || selectedCount > 1) {
-          if (selectItem !== node.sortableInfo.selected) {
+          if (selectItem !== subjectNode.sortableInfo.selected) {
             selections.push({ index: subjectIndex, select: selectItem });
           }
         }
         
-        activeIndex = node.sortableInfo.index;
+        activeIndex = subjectIndex;
         if (!selectItem) {
           for (var i = 0; i < refs.length; i++) {
             var { selected } = refs[i].node.sortableInfo;
@@ -217,7 +220,7 @@ export const ContainerMixin = {
         activeIndex = subjectIndex;
       }
 
-      var eventData= { selections: selections, activeIndex: activeIndex };
+      var eventData = { selections: selections, activeIndex: activeIndex };
       console.log(eventData);
       this.$emit('select', eventData);
     },
@@ -248,7 +251,7 @@ export const ContainerMixin = {
           clearTimeout(this.cancelTimer);
           this.cancelTimer = setTimeout(this.cancel, 0);
           this.startDrag(e);
-        } else if (distance && delta >= distance && this.manager.isActive()) {
+        } else if (distance && delta >= distance) {
           this.startDrag(e);
         }
       }
@@ -260,10 +263,10 @@ export const ContainerMixin = {
       this._touched = false;
       this._readyToDrag = false;
 
-      const active = this.manager.getActive();
+      const touched = this.manager.getTouched();
 
-      if (!this.sorting && active) {
-        const { node } = active;
+      if (!this.sorting && touched) {
+        const { node } = touched;
         const { index } = node.sortableInfo;
         this.fireSelectEvent(index, e);
       }
@@ -276,18 +279,17 @@ export const ContainerMixin = {
     cancel() {
       if (!this.sorting) {
         clearTimeout(this.pressTimer);
-        if (this.manager.active)
-        {          
-         this.manager.previousActiveIndex = this.manager.active.index;                  
+        if (this.manager.touched){
+         this.manager.previousTouchedIndex = this.manager.touched.index;                                  
+         this.manager.touched.dragging = false;
         }
-        this.manager.active = null;
       }
     },
 
     startDrag(e) {
-      const active = this.manager.getActive();
+      const touched = this.manager.getTouched();
 
-      if (!active) { return; }
+      if (!touched) { return; }
 
       const {
         axis,
@@ -297,7 +299,7 @@ export const ContainerMixin = {
         useWindowAsScrollContainer,
         appendTo,
       } = this.$props;
-      const { node, collection } = active;
+      const { node, collection } = touched;
       const { index, selected } = node.sortableInfo;
 
       const margin = getElementMargin(node);
@@ -357,7 +359,6 @@ export const ContainerMixin = {
 
       if (hideSortableGhost) {
         this.sortableGhost = node;
-
         node.style.visibility = 'hidden';
         node.style.opacity = 0;
       }
@@ -390,9 +391,11 @@ export const ContainerMixin = {
           this.height / 2;
       }
 
-      if (helperClass) {
-        this.helper.classList.add(...helperClass.split(' '));
+      if (helperClass) {        
+        this.helper.classList.add(...helperClass.split(' '));        
       }
+      
+      touched.node.parentNode.classList.add('sorting');    
 
       this.showMultiDragIndicator();
 
@@ -412,6 +415,7 @@ export const ContainerMixin = {
 
       this.sorting = true;
       this.sortingIndex = index;
+
 
 
       this.$emit('sort-start', { event: e, node, index, collection });
@@ -440,7 +444,7 @@ export const ContainerMixin = {
     },
 
     handleSortEnd(e) {
-      const { collection } = this.manager.active;
+      const { collection } = this.manager.touched;
 
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
@@ -474,7 +478,7 @@ export const ContainerMixin = {
 
           // Clear the cached offsetTop / offsetLeft value
           node.edgeOffset = null;
-
+          
           // Remove the transforms / transitions
           el.style[`${vendorPrefix}Transform`] = '';
           el.style[`${vendorPrefix}TransitionDuration`] = '';
@@ -484,8 +488,11 @@ export const ContainerMixin = {
         clearInterval(this.autoscrollInterval);
         this.autoscrollInterval = null;
 
+        var touched = this.manager.getTouched();
+        touched.node.classList.remove('sorting');
+          
         // Update state
-        this.manager.active = null;
+        this.manager.touched.dragging = false; // Unnessecary
 
         this.sorting = false;
         this.sortingIndex = null;
@@ -722,7 +729,7 @@ export const ContainerMixin = {
 
         // If we haven't cached the node's offsetTop / offsetLeft value
         if (!edgeOffset) {
-          nodes[i].edgeOffset = (edgeOffset = this.getEdgeOffset(node));
+          nodes[i].edgeOffset = (edgeOffset = this.getEdgeOffset(node));          
         }
 
         // Get a reference to the next and previous node
@@ -733,7 +740,7 @@ export const ContainerMixin = {
         // We need this for calculating the animation in a grid setup
         if (nextNode && !nextNode.edgeOffset) {
           nextNode.edgeOffset = this.getEdgeOffset(nextNode.node);
-        }
+        } 
 
         // If the node currently being draged, skip it  
 
@@ -751,6 +758,8 @@ export const ContainerMixin = {
           }
           continue;
         }
+        
+        
 
         if (transitionDuration) {
           node.style[
