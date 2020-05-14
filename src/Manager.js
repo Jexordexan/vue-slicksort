@@ -17,20 +17,19 @@ export default class Manager {
     if (index !== -1) {
       this.refs[collection].splice(index, 1);
     }
-  }  
- 
-  getTouched() {    
-    if (this.touched)
-    {
-    return this.refs[this.touched.collection].find(({node}) => node.sortableInfo.index == this.touched.index);
+  }
+
+  getTouched() {
+    if (this.touched) {
+      return this.refs[this.touched.collection].find(({ node }) => node.sortableInfo.index == this.touched.index);
     }
-    else{
+    else {
       return null;
     }
   }
 
   getSelected() {
-    return this.refs[this.touched.collection].filter(({node}) => node.sortableInfo.selected == true || node.sortableInfo.index == this.touched.index);    
+    return this.refs[this.touched.collection].filter(({ node }) => node.sortableInfo.selected == true || node.sortableInfo.index == this.touched.index);
   }
 
   getIndex(collection, ref) {
@@ -42,4 +41,5 @@ export default class Manager {
       return a.node.sortableInfo.index - b.node.sortableInfo.index;
     });
   }
+
 }
