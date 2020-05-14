@@ -1,13 +1,39 @@
-export function arrayMove(arr, previousIndex, newIndex) {
+export function arrayMove(arr, previousIndex, newIndex, piggyBackIndexes) {
+
   const array = arr.slice(0);
-  if (newIndex >= array.length) {
-    let k = newIndex - array.length;
-    while (k-- + 1) {
-      array.push(undefined);
+
+  if (piggyBackIndexes && piggyBackIndexes.length > 1)
+  {    
+    //Remove All Selected Items From Array
+    var finalIndex = newIndex;
+    var moveItems = [];
+    for (var i= piggyBackIndexes.length-1; i>=0; i--)
+    {
+        var index = piggyBackIndexes[i];
+        moveItems.push(array[index]);
+        array.splice(index, 1);
+        if (index < newIndex-1)
+        {
+          finalIndex--;
+        }
     }
+
+    // Insert them back in
+    array.splice(finalIndex, 0, ...moveItems.reverse());
   }
-  array.splice(newIndex, 0, array.splice(previousIndex, 1)[0]);
-  return array;
+  else{
+    
+      if (newIndex >= array.length) {
+        let k = newIndex - array.length;
+        while (k-- + 1) {
+          array.push(undefined);
+        }
+      }
+      array.splice(newIndex, 0, array.splice(previousIndex, 1)[0]);
+}
+
+return array;
+
 }
 
 export const events = {
@@ -38,6 +64,23 @@ export function closest(el, fn) {
     if (fn(el)) return el;
     el = el.parentNode;
   }
+}
+
+export function findChildTagByClass(el, className) {
+    
+    if (el.className && el.className.indexOf(className) != -1)
+    {
+      return el;
+    }
+    else{     
+      for (var i = 0; i < el.childNodes.length; i++)
+      {
+        var childElement = el.childNodes[i];
+        var match = findChildTagByClass(childElement, className);
+        if (match) { return match;}
+      }      
+      return null;
+    }  
 }
 
 export function limit(min, max, value) {

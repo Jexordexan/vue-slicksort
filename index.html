@@ -36,6 +36,21 @@
             border-radius: 3;
         }
 
+        .mutli-drag-indicator
+        {
+            position:absolute;
+            right:-5px;
+            top:-5px;
+            width:30px;
+            height:30px;
+            background:blue;
+            color:white;
+            border-radius: 50%;
+            display:none;
+            line-height: 30px;
+            text-align: center;
+        }
+
         .list-item {
             position: relative;
             width: 100%;
@@ -45,7 +60,18 @@
             border-bottom: 1px solid #EFEFEF;
             box-sizing: border-box;
             -webkit-user-select: none;
+            border-left:5px solid transparent;
         }
+
+        .list-item.selected{
+            background:lightblue;
+        }
+
+        .list-item.active
+        {
+            border-left:5px solid blue;
+        }
+
     </style>
 </head>
 <body>

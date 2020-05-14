@@ -3,6 +3,7 @@ import {
   closest,
   events,
   vendorPrefix,
+  findChildTagByClass,
   limit,
   getElementMargin,
   arrayMove,
@@ -18,40 +19,41 @@ export const ContainerMixin = {
       events: {
         touch: this.handleTouch,
         move: this.handleMove,
-        release: this.handleRelease        
+        release: this.handleRelease
       },
     };
   },
 
   props: {
-    value:                      { type: Array,   required: true },
-    axis:                       { type: String,  default: 'y' }, // 'x', 'y', 'xy'
-    distance:                   { type: Number,  default: 0 },
-    pressDelay:                 { type: Number,  default: 0 },
-    pressThreshold:             { type: Number,  default: 5 },
-    useDragHandle:              { type: Boolean, default: false },
+    value: { type: Array, required: true },
+    axis: { type: String, default: 'y' }, // 'x', 'y', 'xy'
+    distance: { type: Number, default: 0 },
+    pressDelay: { type: Number, default: 0 },
+    pressThreshold: { type: Number, default: 5 },
+    useDragHandle: { type: Boolean, default: false },
     useWindowAsScrollContainer: { type: Boolean, default: false },
-    hideSortableGhost:          { type: Boolean, default: true },
-    lockToContainerEdges:       { type: Boolean, default: false },
-    lockOffset:                 { type: [String, Number, Array], default: '50%' },
-    transitionDuration:         { type: Number,  default: 300 },
-    appendTo:                   { type: String,  default: 'body' },
-    draggedSettlingDuration:    { type: Number,  default: null },
-    selectionMode:              { type: String,  default: 'none' }, //none, single, multiple
+    hideSortableGhost: { type: Boolean, default: true },
+    lockToContainerEdges: { type: Boolean, default: false },
+    lockOffset: { type: [String, Number, Array], default: '50%' },
+    transitionDuration: { type: Number, default: 300 },
+    appendTo: { type: String, default: 'body' },
+    draggedSettlingDuration: { type: Number, default: null },
+    selectionMode: { type: String, default: 'none' }, //none, single, multiple
+    multiDragIndicatorClass: { type: String, default: 'mutli-drag-indicator' },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
-    shouldCancelStart: { 
-      type: Function, 
+    shouldCancelStart: {
+      type: Function,
       default: (e) => {
         // Cancel sorting if the event target is an `input`, `textarea`, `select` or `option`
         const disabledElements = ['input', 'textarea', 'select', 'option', 'button'];
         return disabledElements.indexOf(e.target.tagName.toLowerCase()) !== -1;
       },
     },
-    getHelperDimensions: { 
+    getHelperDimensions: {
       type: Function,
-      default: ({node}) => ({
+      default: ({ node }) => ({
         width: node.offsetWidth,
         height: node.offsetHeight,
       }),
@@ -93,22 +95,24 @@ export const ContainerMixin = {
 
   methods: {
 
-    handleTouch(e)
-    { 
-      const {distance, shouldCancelStart} = this.$props;
+    handleTouch(e) {
+      const { distance, shouldCancelStart } = this.$props;
 
       if (e.button === 2 || shouldCancelStart(e)) {
         return false;
       }
-      
+
       this._touched = true;
       this._readyToDrag = false;
       this._pos = {
         x: e.pageX,
         y: e.pageY,
       };
-      
       const node = closest(e.target, el => el.sortableInfo != null);
+
+      if (!node.sortableInfo.selected && !e.ctrlKey && !e.shiftKey) {
+        this.fireSelectEvent(node.sortableInfo.index, e);
+      }
 
       if (
         node &&
@@ -116,15 +120,16 @@ export const ContainerMixin = {
         this.nodeIsChild(node) &&
         !this.sorting
       ) {
-        const {useDragHandle} = this.$props;
-        const {index, collection} = node.sortableInfo;
+
+        const { useDragHandle } = this.$props;
+        const { index, collection } = node.sortableInfo;
 
         if (
           useDragHandle && !closest(e.target, el => el.sortableHandle != null)
         )
           return;
-
-        this.manager.active = {index, collection};
+          
+        this.manager.active = { index, collection };
 
         /*
 				 * Fixes a bug in Firefox where the :active state of anchor tags
@@ -136,20 +141,92 @@ export const ContainerMixin = {
         }
 
         if (distance) {
-          this._readyToDrag = true; 
+          this.readyToDrag(e);
         }
-        else{
+        else {
+
           if (this.$props.pressDelay === 0) {
-            this._readyToDrag = true; 
-            //this.startDrag(e);
+            this.readyToDrag(e);
+
           } else {
             this.pressTimer = setTimeout(
-              () => this._readyToDrag = true,
+              () => { this.readyToDrag(e); },
               this.$props.pressDelay
             );
           }
         }
+
+      }
+    },
+
+    fireSelectEvent(subjectIndex, e) {
+      var active = this.manager.getActive();
+      if (!active) { return; }
+
+      const { node } = this.manager.getActive();
+      const refs = this.manager.getOrderedRefs();
+
+      var selections = [];
+      var activeIndex = 0;
+      if (e.shiftKey) {
         
+        var select = false;
+        for (var i = 0; i < refs.length; i++) {
+          var { selected } = refs[i].node.sortableInfo;
+
+          if (i === this.manager.previousActiveIndex || i == subjectIndex) {
+            if (!selected) {
+              selections.push({ index: i, select: true });
+            }
+            select = !select;
+          }
+          else if (selected != select) {
+            selections.push({ index: i, select: select });
+          }
+        }
+        activeIndex = subjectIndex;
+      }
+      else if (e.ctrlKey) {
+        var selectItem = node.sortableInfo.selected == false;
+        var selectedCount = this.manager.getSelected().length;
+
+        if (selectItem || selectedCount > 1) {
+          if (selectItem !== node.sortableInfo.selected) {
+            selections.push({ index: subjectIndex, select: selectItem });
+          }
+        }
+        
+        activeIndex = node.sortableInfo.index;
+        if (!selectItem) {
+          for (var i = 0; i < refs.length; i++) {
+            var { selected } = refs[i].node.sortableInfo;
+            if (selected) {
+              activeIndex = i;
+            }
+          }
+        }
+      }
+      else {
+
+        for (var i = 0; i < refs.length; i++) {
+          var select = i == subjectIndex;
+          if (refs[i].node.sortableInfo.selected != select) {
+            selections.push({ index: i, select: select });
+          }
+        }
+        activeIndex = subjectIndex;
+      }
+
+      var eventData= { selections: selections, activeIndex: activeIndex };
+      console.log(eventData);
+      this.$emit('select', eventData);
+    },
+
+    readyToDrag(e) {
+      this._readyToDrag = true;
+
+      if (this.selectionMode == 'none') {
+        this.startDrag(e);
       }
     },
 
@@ -158,8 +235,8 @@ export const ContainerMixin = {
     },
 
     handleMove(e) {
-      const {distance, pressThreshold} = this.$props;
-   
+      const { distance, pressThreshold } = this.$props;
+
       if (!this.sorting && this._touched && this._readyToDrag) {
         this._delta = {
           x: this._pos.x - e.pageX,
@@ -170,20 +247,26 @@ export const ContainerMixin = {
         if (!distance && (!pressThreshold || pressThreshold && delta >= pressThreshold)) {
           clearTimeout(this.cancelTimer);
           this.cancelTimer = setTimeout(this.cancel, 0);
-
           this.startDrag(e);
-
         } else if (distance && delta >= distance && this.manager.isActive()) {
           this.startDrag(e);
         }
       }
     },
-    
-    handleRelease() {
-      const {distance} = this.$props;
+
+    handleRelease(e) {
+      const { distance } = this.$props;
 
       this._touched = false;
-      ///this._readyToDrag = false;
+      this._readyToDrag = false;
+
+      const active = this.manager.getActive();
+
+      if (!this.sorting && active) {
+        const { node } = active;
+        const { index } = node.sortableInfo;
+        this.fireSelectEvent(index, e);
+      }
 
       if (!distance) {
         this.cancel();
@@ -193,142 +276,156 @@ export const ContainerMixin = {
     cancel() {
       if (!this.sorting) {
         clearTimeout(this.pressTimer);
+        if (this.manager.active)
+        {          
+         this.manager.previousActiveIndex = this.manager.active.index;                  
+        }
         this.manager.active = null;
       }
     },
-    
+
     startDrag(e) {
       const active = this.manager.getActive();
 
-      if (active) {
-        const {
-          axis,
-          getHelperDimensions,
-          helperClass,
-          hideSortableGhost,
-          useWindowAsScrollContainer,
-          appendTo,
-        } = this.$props;
-        const {node, collection} = active;
-        const {index} = node.sortableInfo;
-        const margin = getElementMargin(node);
+      if (!active) { return; }
 
-        const containerBoundingRect = this.container.getBoundingClientRect();
-        const dimensions = getHelperDimensions({index, node, collection});
+      const {
+        axis,
+        getHelperDimensions,
+        helperClass,
+        hideSortableGhost,
+        useWindowAsScrollContainer,
+        appendTo,
+      } = this.$props;
+      const { node, collection } = active;
+      const { index, selected } = node.sortableInfo;
 
-        this.node = node;
-        this.margin = margin;
-        this.width = dimensions.width;
-        this.height = dimensions.height;
-        this.marginOffset = {
-          x: this.margin.left + this.margin.right,
-          y: Math.max(this.margin.top, this.margin.bottom),
-        };
-        this.boundingClientRect = node.getBoundingClientRect();
-        this.containerBoundingRect = containerBoundingRect;
-        this.index = index;
-        this.newIndex = index;
+      const margin = getElementMargin(node);
+      const containerBoundingRect = this.container.getBoundingClientRect();
+      const dimensions = getHelperDimensions({ index, node, collection });
 
-        this._axis = {
-          x: axis.indexOf('x') >= 0,
-          y: axis.indexOf('y') >= 0,
-        };
-        this.offsetEdge = this.getEdgeOffset(node);
-        this.initialOffset = this.getOffset(e);
-        this.initialScroll = {
-          top: this.scrollContainer.scrollTop,
-          left: this.scrollContainer.scrollLeft,
-        };
+      this.node = node;
+      this.margin = margin;
+      this.width = dimensions.width;
+      this.height = dimensions.height;
+      this.marginOffset = {
+        x: this.margin.left + this.margin.right,
+        y: Math.max(this.margin.top, this.margin.bottom),
+      };
+      this.boundingClientRect = node.getBoundingClientRect();
+      this.containerBoundingRect = containerBoundingRect;
+      this.index = index;
+      this.newIndex = index;
 
-        this.initialWindowScroll = {
-          top: window.pageYOffset,
-          left: window.pageXOffset,
-        };
+      this._axis = {
+        x: axis.indexOf('x') >= 0,
+        y: axis.indexOf('y') >= 0,
+      };
+      this.offsetEdge = this.getEdgeOffset(node);
+      this.initialOffset = this.getOffset(e);
+      this.initialScroll = {
+        top: this.scrollContainer.scrollTop,
+        left: this.scrollContainer.scrollLeft,
+      };
 
-        const fields = node.querySelectorAll('input, textarea, select');
-        const clonedNode = node.cloneNode(true);
-        const clonedFields = [
-          ...clonedNode.querySelectorAll('input, textarea, select'),
-        ]; // Convert NodeList to Array
+      this.initialWindowScroll = {
+        top: window.pageYOffset,
+        left: window.pageXOffset,
+      };
 
-        clonedFields.forEach((field, index) => {
-          if (field.type !== 'file' && fields[index]) {
-            field.value = fields[index].value;
-          }
-        });
+      const fields = node.querySelectorAll('input, textarea, select');
+      const clonedNode = node.cloneNode(true);
+      const clonedFields = [
+        ...clonedNode.querySelectorAll('input, textarea, select'),
+      ]; // Convert NodeList to Array
 
-        this.helper = this.document.querySelector(appendTo).appendChild(clonedNode);
-
-        this.helper.style.position = 'fixed';
-        this.helper.style.top = `${this.boundingClientRect.top - margin.top}px`;
-        this.helper.style.left = `${this.boundingClientRect.left - margin.left}px`;
-        this.helper.style.width = `${this.width}px`;
-        this.helper.style.height = `${this.height}px`;
-        this.helper.style.boxSizing = 'border-box';
-        this.helper.style.pointerEvents = 'none';
-
-        if (hideSortableGhost) {
-          this.sortableGhost = node;
-        /*  var selectedNodes = this.manager.getSelected();
-          selectedNodes.forEach(function(n)
-          {
-            n.style.visibility = 'hidden';
-            n.style.opacity = 0;
-          });*/
-          node.style.visibility = 'hidden';
-          node.style.opacity = 0;
+      clonedFields.forEach((field, index) => {
+        if (field.type !== 'file' && fields[index]) {
+          field.value = fields[index].value;
         }
+      });
 
-        this.translate = {};
-        this.minTranslate = {};
-        this.maxTranslate = {};
-        if (this._axis.x) {
-          this.minTranslate.x = (useWindowAsScrollContainer
-            ? 0
-            : containerBoundingRect.left) -
-            this.boundingClientRect.left -
-            this.width / 2;
-          this.maxTranslate.x = (useWindowAsScrollContainer
-            ? this._window.innerWidth
-            : containerBoundingRect.left + containerBoundingRect.width) -
-            this.boundingClientRect.left -
-            this.width / 2;
+      this.helper = this.document.querySelector(appendTo).appendChild(clonedNode);
+
+      this.helper.style.position = 'fixed';
+      this.helper.style.top = `${this.boundingClientRect.top - margin.top}px`;
+      this.helper.style.left = `${this.boundingClientRect.left - margin.left}px`;
+      this.helper.style.width = `${this.width}px`;
+      this.helper.style.height = `${this.height}px`;
+      this.helper.style.boxSizing = 'border-box';
+      this.helper.style.pointerEvents = 'none';
+
+      if (hideSortableGhost) {
+        this.sortableGhost = node;
+
+        node.style.visibility = 'hidden';
+        node.style.opacity = 0;
+      }
+
+      this.translate = {};
+      this.minTranslate = {};
+      this.maxTranslate = {};
+      if (this._axis.x) {
+        this.minTranslate.x = (useWindowAsScrollContainer
+          ? 0
+          : containerBoundingRect.left) -
+          this.boundingClientRect.left -
+          this.width / 2;
+        this.maxTranslate.x = (useWindowAsScrollContainer
+          ? this._window.innerWidth
+          : containerBoundingRect.left + containerBoundingRect.width) -
+          this.boundingClientRect.left -
+          this.width / 2;
+      }
+      if (this._axis.y) {
+        this.minTranslate.y = (useWindowAsScrollContainer
+          ? 0
+          : containerBoundingRect.top) -
+          this.boundingClientRect.top -
+          this.height / 2;
+        this.maxTranslate.y = (useWindowAsScrollContainer
+          ? this._window.innerHeight
+          : containerBoundingRect.top + containerBoundingRect.height) -
+          this.boundingClientRect.top -
+          this.height / 2;
+      }
+
+      if (helperClass) {
+        this.helper.classList.add(...helperClass.split(' '));
+      }
+
+      this.showMultiDragIndicator();
+
+      this.listenerNode = e.touches ? node : this._window;
+      events.move.forEach(eventName =>
+        this.listenerNode.addEventListener(
+          eventName,
+          this.handleSortMove,
+          false
+        ));
+      events.release.forEach(eventName =>
+        this.listenerNode.addEventListener(
+          eventName,
+          this.handleSortEnd,
+          false
+        ));
+
+      this.sorting = true;
+      this.sortingIndex = index;
+
+
+      this.$emit('sort-start', { event: e, node, index, collection });
+
+    },
+
+    showMultiDragIndicator() {
+      var selectedCount = this.manager.getSelected().length;
+      if (selectedCount > 1) {
+        var dragIndicator = findChildTagByClass(this.helper, this.multiDragIndicatorClass);
+        if (dragIndicator) {
+          dragIndicator.innerText = selectedCount.toString();
+          dragIndicator.style.display = 'block';
         }
-        if (this._axis.y) {
-          this.minTranslate.y = (useWindowAsScrollContainer
-            ? 0
-            : containerBoundingRect.top) -
-            this.boundingClientRect.top -
-            this.height / 2;
-          this.maxTranslate.y = (useWindowAsScrollContainer
-            ? this._window.innerHeight
-            : containerBoundingRect.top + containerBoundingRect.height) -
-            this.boundingClientRect.top -
-            this.height / 2;
-        }
-
-        if (helperClass) {
-          this.helper.classList.add(...helperClass.split(' '));
-        }
-
-        this.listenerNode = e.touches ? node : this._window;
-        events.move.forEach(eventName =>
-          this.listenerNode.addEventListener(
-            eventName,
-            this.handleSortMove,
-            false
-          ));
-        events.release.forEach(eventName =>
-          this.listenerNode.addEventListener(
-            eventName,
-            this.handleSortEnd,
-            false
-          ));
-
-        this.sorting = true;
-        this.sortingIndex = index;
-
-        this.$emit('sort-start', {event: e, node, index, collection});
       }
     },
 
@@ -343,7 +440,7 @@ export const ContainerMixin = {
     },
 
     handleSortEnd(e) {
-      const {collection} = this.manager.active;
+      const { collection } = this.manager.active;
 
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
@@ -359,6 +456,7 @@ export const ContainerMixin = {
       const nodes = this.manager.refs[collection];
 
       const onEnd = () => {
+
         // Remove the helper from the DOM
         this.helper.parentNode.removeChild(this.helper);
 
@@ -367,9 +465,12 @@ export const ContainerMixin = {
           this.sortableGhost.style.opacity = '';
         }
 
+        var selectedIndexes = [];
         for (let i = 0, len = nodes.length; i < len; i++) {
           const node = nodes[i];
           const el = node.node;
+
+          if (node.node.sortableInfo.selected) { selectedIndexes.push(i); }
 
           // Clear the cached offsetTop / offsetLeft value
           node.edgeOffset = null;
@@ -393,9 +494,11 @@ export const ContainerMixin = {
           event: e,
           oldIndex: this.index,
           newIndex: this.newIndex,
+          selectedIndexes: selectedIndexes,
           collection,
         });
-        this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
+
+        this.$emit('input', arrayMove(this.value, this.index, this.newIndex, selectedIndexes));
 
         this._touched = false;
       };
@@ -464,7 +567,7 @@ export const ContainerMixin = {
       });
     },
 
-    getEdgeOffset(node, offset = {top: 0, left: 0}) {
+    getEdgeOffset(node, offset = { top: 0, left: 0 }) {
       // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
       if (node) {
         const nodeOffset = {
@@ -487,7 +590,7 @@ export const ContainerMixin = {
     },
 
     getLockPixelOffsets() {
-      let {lockOffset} = this.$props;
+      let { lockOffset } = this.$props;
 
       if (!Array.isArray(this.lockOffset)) {
         lockOffset = [lockOffset, lockOffset];
@@ -537,7 +640,7 @@ export const ContainerMixin = {
     },
 
     updatePosition(e) {
-      const {lockAxis, lockToContainerEdges} = this.$props;
+      const { lockAxis, lockToContainerEdges } = this.$props;
 
       const offset = this.getOffset(e);
       const translate = {
@@ -585,7 +688,7 @@ export const ContainerMixin = {
     },
 
     animateNodes() {
-      const {transitionDuration, hideSortableGhost} = this.$props;
+      const { transitionDuration, hideSortableGhost } = this.$props;
       const nodes = this.manager.getOrderedRefs();
       const deltaScroll = {
         left: this.scrollContainer.scrollLeft - this.initialScroll.left,
@@ -602,7 +705,7 @@ export const ContainerMixin = {
       this.newIndex = null;
 
       for (let i = 0, len = nodes.length; i < len; i++) {
-        const {node} = nodes[i];
+        const { node } = nodes[i];
         const index = node.sortableInfo.index;
         const width = node.offsetWidth;
         const height = node.offsetHeight;
@@ -615,7 +718,7 @@ export const ContainerMixin = {
           x: 0,
           y: 0,
         };
-        let {edgeOffset} = nodes[i];
+        let { edgeOffset } = nodes[i];
 
         // If we haven't cached the node's offsetTop / offsetLeft value
         if (!edgeOffset) {
@@ -632,7 +735,8 @@ export const ContainerMixin = {
           nextNode.edgeOffset = this.getEdgeOffset(nextNode.node);
         }
 
-        // If the node is the one we're currently animating, skip it
+        // If the node currently being draged, skip it  
+
         if (index === this.index) {
           if (hideSortableGhost) {
             /*
@@ -643,6 +747,7 @@ export const ContainerMixin = {
             this.sortableGhost = node;
             node.style.visibility = 'hidden';
             node.style.opacity = 0;
+
           }
           continue;
         }
@@ -660,7 +765,7 @@ export const ContainerMixin = {
               index < this.index &&
               (
                 ((sortingOffset.left + scrollDifference.left) - offset.width <= edgeOffset.left &&
-                (sortingOffset.top + scrollDifference.top) <= edgeOffset.top + offset.height) ||
+                  (sortingOffset.top + scrollDifference.top) <= edgeOffset.top + offset.height) ||
                 (sortingOffset.top + scrollDifference.top) + offset.height <= edgeOffset.top
               )
             ) {
@@ -684,7 +789,7 @@ export const ContainerMixin = {
               index > this.index &&
               (
                 ((sortingOffset.left + scrollDifference.left) + offset.width >= edgeOffset.left &&
-                (sortingOffset.top + scrollDifference.top) + offset.height >= edgeOffset.top) ||
+                  (sortingOffset.top + scrollDifference.top) + offset.height >= edgeOffset.top) ||
                 (sortingOffset.top + scrollDifference.top) + offset.height >= edgeOffset.top + height
               )
             ) {

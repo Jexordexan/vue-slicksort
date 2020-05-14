@@ -24,12 +24,17 @@ export default class Manager {
   }
 
   getActive() {    
+    if (this.active)
+    {
     return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
+    }
+    else{
+      return null;
+    }
   }
 
   getSelected() {
-    //return this.refs[this.active.collection].find(({node}) => node.sortableInfo.selected);
-    return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
+    return this.refs[this.active.collection].filter(({node}) => node.sortableInfo.selected == true || node.sortableInfo.index == this.active.index);    
   }
 
   getIndex(collection, ref) {
