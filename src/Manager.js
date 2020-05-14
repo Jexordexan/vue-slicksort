@@ -23,7 +23,12 @@ export default class Manager {
     return this.active;
   }
 
-  getActive() {
+  getActive() {    
+    return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
+  }
+
+  getSelected() {
+    //return this.refs[this.active.collection].find(({node}) => node.sortableInfo.selected);
     return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
   }
 

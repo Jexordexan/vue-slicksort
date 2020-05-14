@@ -14,8 +14,12 @@ export const ElementMixin = {
       type: Boolean, 
       default: false,
     },
+    selected: {
+      type: Boolean,
+      default: false
+    }
   },
-
+  
   mounted() {
     const {collection, disabled, index} = this.$props;
 
@@ -28,6 +32,12 @@ export const ElementMixin = {
     index(newIndex) {
       if (this.$el && this.$el.sortableInfo) {
         this.$el.sortableInfo.index = newIndex;
+      }
+    },
+    selected(newSelected)
+    {
+      if (this.$el && this.$el.sortableInfo) {
+        this.$el.sortableInfo.selected = newSelected;
       }
     },
     disabled(isDisabled) {
@@ -55,6 +65,7 @@ export const ElementMixin = {
       node.sortableInfo = {
         index,
         collection,
+        selected: false,
         manager: this.manager,
       };
   

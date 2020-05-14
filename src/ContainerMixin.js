@@ -16,9 +16,9 @@ export const ContainerMixin = {
       sortingIndex: null,
       manager: new Manager(),
       events: {
-        start: this.handleStart,
+        touch: this.handleTouch,
         move: this.handleMove,
-        end: this.handleEnd,
+        release: this.handleRelease        
       },
     };
   },
@@ -37,6 +37,7 @@ export const ContainerMixin = {
     transitionDuration:         { type: Number,  default: 300 },
     appendTo:                   { type: String,  default: 'body' },
     draggedSettlingDuration:    { type: Number,  default: null },
+    selectionMode:              { type: String,  default: 'none' }, //none, single, multiple
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -92,19 +93,21 @@ export const ContainerMixin = {
 
   methods: {
 
-    handleStart(e) {
+    handleTouch(e)
+    { 
       const {distance, shouldCancelStart} = this.$props;
 
       if (e.button === 2 || shouldCancelStart(e)) {
         return false;
       }
-
+      
       this._touched = true;
+      this._readyToDrag = false;
       this._pos = {
         x: e.pageX,
         y: e.pageY,
       };
-
+      
       const node = closest(e.target, el => el.sortableInfo != null);
 
       if (
@@ -132,16 +135,21 @@ export const ContainerMixin = {
           e.preventDefault();
         }
 
-        if (!distance) {
+        if (distance) {
+          this._readyToDrag = true; 
+        }
+        else{
           if (this.$props.pressDelay === 0) {
-            this.handlePress(e);
+            //this._readyToDrag = true; 
+            this.startDrag(e);
           } else {
             this.pressTimer = setTimeout(
-              () => this.handlePress(e),
+              () => this._readyToDrag = true,
               this.$props.pressDelay
             );
           }
         }
+        
       }
     },
 
@@ -151,8 +159,8 @@ export const ContainerMixin = {
 
     handleMove(e) {
       const {distance, pressThreshold} = this.$props;
-
-      if (!this.sorting && this._touched) {
+   
+      if (!this.sorting && this._touched && this._readyToDrag) {
         this._delta = {
           x: this._pos.x - e.pageX,
           y: this._pos.y - e.pageY,
@@ -162,16 +170,20 @@ export const ContainerMixin = {
         if (!distance && (!pressThreshold || pressThreshold && delta >= pressThreshold)) {
           clearTimeout(this.cancelTimer);
           this.cancelTimer = setTimeout(this.cancel, 0);
+
+          //this.startDrag(e);
+
         } else if (distance && delta >= distance && this.manager.isActive()) {
-          this.handlePress(e);
+          this.startDrag(e);
         }
       }
     },
-
-    handleEnd() {
+    
+    handleRelease() {
       const {distance} = this.$props;
 
       this._touched = false;
+      ///this._readyToDrag = false;
 
       if (!distance) {
         this.cancel();
@@ -184,8 +196,8 @@ export const ContainerMixin = {
         this.manager.active = null;
       }
     },
-
-    handlePress(e) {
+    
+    startDrag(e) {
       const active = this.manager.getActive();
 
       if (active) {
@@ -257,6 +269,12 @@ export const ContainerMixin = {
 
         if (hideSortableGhost) {
           this.sortableGhost = node;
+        /*  var selectedNodes = this.manager.getSelected();
+          selectedNodes.forEach(function(n)
+          {
+            n.style.visibility = 'hidden';
+            n.style.opacity = 0;
+          });*/
           node.style.visibility = 'hidden';
           node.style.opacity = 0;
         }
@@ -300,7 +318,7 @@ export const ContainerMixin = {
             this.handleSortMove,
             false
           ));
-        events.end.forEach(eventName =>
+        events.release.forEach(eventName =>
           this.listenerNode.addEventListener(
             eventName,
             this.handleSortEnd,
@@ -334,7 +352,7 @@ export const ContainerMixin = {
             eventName,
             this.handleSortMove
           ));
-        events.end.forEach(eventName =>
+        events.release.forEach(eventName =>
           this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
