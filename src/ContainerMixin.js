@@ -140,8 +140,8 @@ export const ContainerMixin = {
         }
         else{
           if (this.$props.pressDelay === 0) {
-            //this._readyToDrag = true; 
-            this.startDrag(e);
+            this._readyToDrag = true; 
+            //this.startDrag(e);
           } else {
             this.pressTimer = setTimeout(
               () => this._readyToDrag = true,
@@ -171,7 +171,7 @@ export const ContainerMixin = {
           clearTimeout(this.cancelTimer);
           this.cancelTimer = setTimeout(this.cancel, 0);
 
-          //this.startDrag(e);
+          this.startDrag(e);
 
         } else if (distance && delta >= distance && this.manager.isActive()) {
           this.startDrag(e);
