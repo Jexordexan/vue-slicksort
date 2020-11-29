@@ -40,6 +40,7 @@ export function closest(el, fn) {
   }
 }
 
+
 export function limit(min, max, value) {
   if (value < min) {
     return min;
@@ -65,5 +66,96 @@ export function getElementMargin(element) {
     right: getCSSPixelValue(style.marginRight),
     bottom: getCSSPixelValue(style.marginBottom),
     left: getCSSPixelValue(style.marginLeft),
+  };
+}
+
+export function getPointerOffset(e) {
+  return {
+    x: e.touches ? e.touches[0].pageX : e.pageX,
+    y: e.touches ? e.touches[0].pageY : e.pageY,
+  };
+}
+
+export function getEdgeOffset(node, container, offset = {top: 0, left: 0}) {
+  // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
+  if (node) {
+    const nodeOffset = {
+      top: offset.top + node.offsetTop,
+      left: offset.left + node.offsetLeft,
+    };
+    if (node.parentNode !== container) {
+      return getEdgeOffset(node.parentNode, container, nodeOffset);
+    } else {
+      return nodeOffset;
+    }
+  }
+}
+
+export function getOffset(e) {
+  return {
+    x: e.touches ? e.touches[0].pageX : e.pageX,
+    y: e.touches ? e.touches[0].pageY : e.pageY,
+  };
+}
+
+export function getLockPixelOffsets(lockOffset, width, height) {
+
+  if (!Array.isArray(lockOffset)) {
+    lockOffset = [lockOffset, lockOffset];
+  }
+
+  if (lockOffset.length !== 2) {
+    throw new Error(`lockOffset prop of SortableContainer should be a single value or an array of exactly two values. Given ${lockOffset}`);
+  }
+
+  const [minLockOffset, maxLockOffset] = lockOffset;
+
+  return [
+    getLockPixelOffset(minLockOffset, width, height),
+    getLockPixelOffset(maxLockOffset, width, height),
+  ];
+}
+
+export function getLockPixelOffset(lockOffset, width, height) {
+  let offsetX = lockOffset;
+  let offsetY = lockOffset;
+  let unit = 'px';
+
+  if (typeof lockOffset === 'string') {
+    const match = /^[+-]?\d*(?:\.\d*)?(px|%)$/.exec(lockOffset);
+
+    if (match === null) {
+      throw new Error(`lockOffset value should be a number or a string of a number followed by "px" or "%". Given ${lockOffset}`);
+    }
+
+    offsetX = (offsetY = parseFloat(lockOffset));
+    unit = match[1];
+  }
+
+  if (!isFinite(offsetX) || !isFinite(offsetY)) {
+    throw new Error(`lockOffset value should be a finite. Given ${lockOffset}`);
+  }
+
+  if (unit === '%') {
+    offsetX = offsetX * width / 100;
+    offsetY = offsetY * height / 100;
+  }
+
+  return {
+    x: offsetX,
+    y: offsetY,
+  };
+}
+
+export function getDistance(x1, y1, x2, y2) {
+  const x = x1 - x2;
+  const y = y1 - y2;
+  return Math.sqrt( x*x + y*y );
+}
+
+export function getRectCenter(clientRect) {
+  return {
+    x: clientRect.left + clientRect.width / 2,
+    y: clientRect.top + clientRect.height / 2,
   };
 }

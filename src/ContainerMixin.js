@@ -1,19 +1,36 @@
 import Manager from './Manager';
 import {
+  arrayMove,
   closest,
   events,
-  vendorPrefix,
-  limit,
+  getEdgeOffset,
   getElementMargin,
-  arrayMove,
+  getLockPixelOffsets,
+  getPointerOffset,
+  limit,
+  vendorPrefix,
 } from './utils';
 
 // Export Sortable Container Component Mixin
 export const ContainerMixin = {
   data() {
+    let useHub = false;
+    let containerId = 1;
+    if (this.$props.group) {
+      // If the group option is set, it is assumed the user intends
+      // to drag between containers and the required plugin has been installed
+      if (this.$_slicksort_hub) {
+        useHub = true;
+        containerId = this.$_slicksort_hub.getId();
+      } else if (process.env.NODE_ENV !== 'production') {
+        throw new Error('Slicksort plugin required to use "group" prop');
+      }
+    }
+
     return {
       sorting: false,
-      sortingIndex: null,
+      id: containerId,
+      hub: useHub ? this.$_slicksort_hub : null,
       manager: new Manager(),
       events: {
         start: this.handleStart,
@@ -37,6 +54,7 @@ export const ContainerMixin = {
     transitionDuration:         { type: Number,  default: 300 },
     appendTo:                   { type: String,  default: 'body' },
     draggedSettlingDuration:    { type: Number,  default: null },
+    group:                      { type: String,  default: '' },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -78,6 +96,10 @@ export const ContainerMixin = {
         );
       }
     }
+
+    if (this.hub) {
+      this.hub.addContainer(this.group, this.id, this);
+    }
   },
 
   beforeDestroy() {
@@ -87,6 +109,10 @@ export const ContainerMixin = {
           this.container.removeEventListener(eventName, this.events[key])
         );
       }
+    }
+
+    if (this.hub) {
+      this.hub.removeContainer(this.group, this.id, this);
     }
   },
 
@@ -122,6 +148,9 @@ export const ContainerMixin = {
           return;
 
         this.manager.active = {index, collection};
+        if (this.hub) {
+          this.hub.setActive({ group: this.group, sourceId: this.id });
+        }
 
         /*
 				 * Fixes a bug in Firefox where the :active state of anchor tags
@@ -182,6 +211,10 @@ export const ContainerMixin = {
       if (!this.sorting) {
         clearTimeout(this.pressTimer);
         this.manager.active = null;
+
+        if (this.hub) {
+          this.hub.cancel();
+        }
       }
     },
 
@@ -221,8 +254,8 @@ export const ContainerMixin = {
           x: axis.indexOf('x') >= 0,
           y: axis.indexOf('y') >= 0,
         };
-        this.offsetEdge = this.getEdgeOffset(node);
-        this.initialOffset = this.getOffset(e);
+        this.offsetEdge = getEdgeOffset(node, this.container);
+        this.initialOffset = getPointerOffset(e);
         this.initialScroll = {
           top: this.scrollContainer.scrollTop,
           left: this.scrollContainer.scrollLeft,
@@ -254,6 +287,10 @@ export const ContainerMixin = {
         this.helper.style.height = `${this.height}px`;
         this.helper.style.boxSizing = 'border-box';
         this.helper.style.pointerEvents = 'none';
+
+        if (this.hub) {
+          this.hub.helper = this.helper;
+        }
 
         if (hideSortableGhost) {
           this.sortableGhost = node;
@@ -308,7 +345,6 @@ export const ContainerMixin = {
           ));
 
         this.sorting = true;
-        this.sortingIndex = index;
 
         this.$emit('sort-start', {event: e, node, index, collection});
       }
@@ -318,11 +354,22 @@ export const ContainerMixin = {
       e.preventDefault(); // Prevent scrolling on mobile
 
       this.updatePosition(e);
+
+      if (this.hub) {
+        this.hub.handleSortMove(e);
+      }
+
       this.animateNodes();
       this.autoscroll();
 
       this.$emit('sort-move', { event: e });
     },
+
+    handleDragOut(e) {
+      if (this.hub.isSource(this)) {
+        
+      }
+    }
 
     handleSortEnd(e) {
       const {collection} = this.manager.active;
@@ -369,7 +416,10 @@ export const ContainerMixin = {
         this.manager.active = null;
 
         this.sorting = false;
-        this.sortingIndex = null;
+
+        if (this.hub && this.hub.isDest(this)) {
+          this.hub.handleSortEnd();
+        }
 
         this.$emit('sort-end', {
           event: e,
@@ -446,82 +496,10 @@ export const ContainerMixin = {
       });
     },
 
-    getEdgeOffset(node, offset = {top: 0, left: 0}) {
-      // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
-      if (node) {
-        const nodeOffset = {
-          top: offset.top + node.offsetTop,
-          left: offset.left + node.offsetLeft,
-        };
-        if (node.parentNode !== this.container) {
-          return this.getEdgeOffset(node.parentNode, nodeOffset);
-        } else {
-          return nodeOffset;
-        }
-      }
-    },
-
-    getOffset(e) {
-      return {
-        x: e.touches ? e.touches[0].pageX : e.pageX,
-        y: e.touches ? e.touches[0].pageY : e.pageY,
-      };
-    },
-
-    getLockPixelOffsets() {
-      let {lockOffset} = this.$props;
-
-      if (!Array.isArray(this.lockOffset)) {
-        lockOffset = [lockOffset, lockOffset];
-      }
-
-      if (lockOffset.length !== 2) {
-        throw new Error(`lockOffset prop of SortableContainer should be a single value or an array of exactly two values. Given ${lockOffset}`);
-      }
-
-      const [minLockOffset, maxLockOffset] = lockOffset;
-
-      return [
-        this.getLockPixelOffset(minLockOffset),
-        this.getLockPixelOffset(maxLockOffset),
-      ];
-    },
-
-    getLockPixelOffset(lockOffset) {
-      let offsetX = lockOffset;
-      let offsetY = lockOffset;
-      let unit = 'px';
-
-      if (typeof lockOffset === 'string') {
-        const match = /^[+-]?\d*(?:\.\d*)?(px|%)$/.exec(lockOffset);
-
-        if (match === null) {
-          throw new Error(`lockOffset value should be a number or a string of a number followed by "px" or "%". Given ${lockOffset}`);
-        }
-
-        offsetX = (offsetY = parseFloat(lockOffset));
-        unit = match[1];
-      }
-
-      if (!isFinite(offsetX) || !isFinite(offsetY)) {
-        throw new Error(`lockOffset value should be a finite. Given ${lockOffset}`);
-      }
-
-      if (unit === '%') {
-        offsetX = offsetX * this.width / 100;
-        offsetY = offsetY * this.height / 100;
-      }
-
-      return {
-        x: offsetX,
-        y: offsetY,
-      };
-    },
-
     updatePosition(e) {
       const {lockAxis, lockToContainerEdges} = this.$props;
 
-      const offset = this.getOffset(e);
+      const offset = getPointerOffset(e);
       const translate = {
         x: offset.x - this.initialOffset.x,
         y: offset.y - this.initialOffset.y,
@@ -533,7 +511,11 @@ export const ContainerMixin = {
       this.translate = translate;
 
       if (lockToContainerEdges) {
-        const [minLockOffset, maxLockOffset] = this.getLockPixelOffsets();
+        const [minLockOffset, maxLockOffset] = getLockPixelOffsets(
+          this.lockOffset,
+          this.height,
+          this.width
+        );
         const minOffset = {
           x: this.width / 2 - minLockOffset.x,
           y: this.height / 2 - minLockOffset.y,
@@ -601,7 +583,7 @@ export const ContainerMixin = {
 
         // If we haven't cached the node's offsetTop / offsetLeft value
         if (!edgeOffset) {
-          nodes[i].edgeOffset = (edgeOffset = this.getEdgeOffset(node));
+          nodes[i].edgeOffset = (edgeOffset = getEdgeOffset(node, this.container));
         }
 
         // Get a reference to the next and previous node
@@ -611,21 +593,27 @@ export const ContainerMixin = {
         // Also cache the next node's edge offset if needed.
         // We need this for calculating the animation in a grid setup
         if (nextNode && !nextNode.edgeOffset) {
-          nextNode.edgeOffset = this.getEdgeOffset(nextNode.node);
+          nextNode.edgeOffset = getEdgeOffset(nextNode.node, this.container);
         }
 
         // If the node is the one we're currently animating, skip it
         if (index === this.index) {
+          /*
+            * With windowing libraries such as `react-virtualized`, the sortableGhost
+            * node may change while scrolling down and then back up (or vice-versa),
+            * so we need to update the reference to the new node just to be safe.
+            */
+          this.sortableGhost = node;
+          if (this.hub && !this.hub.isDest(this)) {
+            node.style.display = 'none';
+          } else {
+            node.style.display = 'block';
+          }
           if (hideSortableGhost) {
-            /*
-						 * With windowing libraries such as `react-virtualized`, the sortableGhost
-						 * node may change while scrolling down and then back up (or vice-versa),
-						 * so we need to update the reference to the new node just to be safe.
-						 */
-            this.sortableGhost = node;
             node.style.visibility = 'hidden';
             node.style.opacity = 0;
           }
+
           continue;
         }
 

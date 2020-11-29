@@ -20,7 +20,7 @@ export default class Manager {
   }
 
   isActive() {
-    return this.active;
+    return !!this.active;
   }
 
   getActive() {

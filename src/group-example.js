@@ -2,9 +2,9 @@ import Vue from 'vue';
 import range from 'lodash/range';
 import random from 'lodash/random';
 import { ContainerMixin, ElementMixin } from './index';
-import SlickSortPlugin from './plugin';
+import SlicksortPlugin from './plugin';
 
-Vue.use(SlickSortPlugin);
+Vue.use(SlicksortPlugin);
 
 const SortableList = {
   mixins: [ContainerMixin],
@@ -29,8 +29,8 @@ export const GroupExample = {
   name: 'GroupExample',
   template: `
     <div class="root">
-      <SortableList lockAxis="y" v-for="list in lists" v-model="list">
-        <SortableItem v-for="(item, index) in list" :key="index" :index="index" :item="item" />
+      <SortableList lockAxis="y" v-for="list in lists" group="a" v-model="list.items">
+        <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
       </SortableList>
     </div>
   `,
