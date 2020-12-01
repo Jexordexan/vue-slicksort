@@ -10,14 +10,14 @@ export const ElementMixin = {
       type: [String, Number],
       default: 'default',
     },
-    disabled: { 
-      type: Boolean, 
+    disabled: {
+      type: Boolean,
       default: false,
     },
   },
 
   mounted() {
-    const {collection, disabled, index} = this.$props;
+    const { collection, disabled, index } = this.$props;
 
     if (!disabled) {
       this.setDraggable(collection, index);
@@ -43,25 +43,25 @@ export const ElementMixin = {
     },
   },
 
-  beforeDestroy() {
-    const {collection, disabled} = this;
+  beforeUnmount() {
+    const { collection, disabled } = this;
 
     if (!disabled) this.removeDraggable(collection);
   },
   methods: {
     setDraggable(collection, index) {
       const node = this.$el;
-  
+
       node.sortableInfo = {
         index,
         collection,
         manager: this.manager,
       };
-  
-      this.ref = {node};
+
+      this.ref = { node };
       this.manager.add(collection, this.ref);
     },
-  
+
     removeDraggable(collection) {
       this.manager.remove(collection, this.ref);
     },

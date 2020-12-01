@@ -1,20 +1,19 @@
-var path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var DashboardPlugin = require('webpack-dashboard/plugin');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'inline-source-map',
   entry: [ './index.js' ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
-    publicPath: '/static/',
+    filename: '[name].bundle.js',
+    publicPath: '/',
   },
   devServer: {
     port: 3000,
+    contentBase: './dist',
   },
   plugins: [
-    new DashboardPlugin(),
     new HtmlWebpackPlugin({
       template: './index.html',
       inject: 'body', // Inject all scripts into the body
@@ -23,33 +22,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.scss'],
     alias: {
-      'vue': 'vue/dist/vue.common.js',
+      vue$: path.resolve(__dirname, 'node_modules', 'vue', 'dist', 'vue.esm-bundler.js'),
     },
-  },
-  module: {
-    loaders: [
-      {
-        test: /\.js?$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/,
-        include: __dirname,
-      },
-      {
-        test: /(\.scss)$/,
-        loaders: [
-          'style-loader', 
-          'css-laoder?sourceMap&modules&importLoaders=1&localIdentName=Cal__[name]__[local]',
-          'postcss-loader',
-          'sass-loader',
-        ],
-      },
-      {
-        test: /(\.css)$/,
-        loaders: [
-          'style-loader', 
-          'postcss-loader', 
-          'css-loader'],
-      },
-    ],
   },
 };

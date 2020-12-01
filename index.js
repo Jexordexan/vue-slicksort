@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import range from 'lodash/range';
 import random from 'lodash/random';
 import { ContainerMixin, ElementMixin } from './src';
@@ -86,7 +86,6 @@ const ExampleVue = {
   },
 };
 
-new Vue({
-  el: '#root',
-  render: (h) => h(ExampleVue),
-});
+const app = createApp(ExampleVue);
+
+app.mount('#root')
