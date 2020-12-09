@@ -133,8 +133,8 @@ const ExampleVue = {
   name: 'Example',
   template: `
     <div class="root">
-      <SlickList lockAxis="y" v-model="items">
-        <SlickItem v-for="(item, index) in items" :index="index" :key="index">
+      <SlickList lockAxis="y" v-model="items" tag="ul">
+        <SlickItem v-for="(item, index) in items" :index="index" :key="index" tag="li">
           {{ item }}
         </SlickItem>
       </SlickList>
