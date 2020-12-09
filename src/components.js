@@ -4,15 +4,17 @@ import { ContainerMixin } from './ContainerMixin';
 export const SlickList = {
   name: 'slick-list',
   mixins: [ ContainerMixin ],
+  props: [ 'tag' ],
   render (h) {
-    return h('div', this.$slots.default);
+    return h(this.$props.tag || 'div', this.$slots.default);
   },
 };
 
 export const SlickItem = {
   name: 'slick-item',
   mixins: [ ElementMixin ],
+  props: [ 'tag' ],
   render (h) {
-    return h('div', this.$slots.default);
+    return h(this.$props.tag || 'div', this.$slots.default);
   },
 };
