@@ -41,34 +41,34 @@ export const ContainerMixin = {
   },
 
   props: {
-    value:                      { type: Array,   required: true },
-    axis:                       { type: String,  default: 'y' }, // 'x', 'y', 'xy'
-    distance:                   { type: Number,  default: 0 },
-    pressDelay:                 { type: Number,  default: 0 },
-    pressThreshold:             { type: Number,  default: 5 },
-    useDragHandle:              { type: Boolean, default: false },
+    value: { type: Array, required: true },
+    axis: { type: String, default: 'y' }, // 'x', 'y', 'xy'
+    distance: { type: Number, default: 0 },
+    pressDelay: { type: Number, default: 0 },
+    pressThreshold: { type: Number, default: 5 },
+    useDragHandle: { type: Boolean, default: false },
     useWindowAsScrollContainer: { type: Boolean, default: false },
-    hideSortableGhost:          { type: Boolean, default: true },
-    lockToContainerEdges:       { type: Boolean, default: false },
-    lockOffset:                 { type: [String, Number, Array], default: '50%' },
-    transitionDuration:         { type: Number,  default: 300 },
-    appendTo:                   { type: String,  default: 'body' },
-    draggedSettlingDuration:    { type: Number,  default: null },
-    group:                      { type: String,  default: '' },
+    hideSortableGhost: { type: Boolean, default: true },
+    lockToContainerEdges: { type: Boolean, default: false },
+    lockOffset: { type: [String, Number, Array], default: '50%' },
+    transitionDuration: { type: Number, default: 300 },
+    appendTo: { type: String, default: 'body' },
+    draggedSettlingDuration: { type: Number, default: null },
+    group: { type: String, default: '' },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
-    shouldCancelStart: { 
-      type: Function, 
+    shouldCancelStart: {
+      type: Function,
       default: (e) => {
         // Cancel sorting if the event target is an `input`, `textarea`, `select` or `option`
         const disabledElements = ['input', 'textarea', 'select', 'option', 'button'];
         return disabledElements.indexOf(e.target.tagName.toLowerCase()) !== -1;
       },
     },
-    getHelperDimensions: { 
+    getHelperDimensions: {
       type: Function,
-      default: ({node}) => ({
+      default: ({ node }) => ({
         width: node.offsetWidth,
         height: node.offsetHeight,
       }),
@@ -85,15 +85,11 @@ export const ContainerMixin = {
     this.container = this.$el;
     this.document = this.container.ownerDocument || document;
     this._window = this.contentWindow || window;
-    this.scrollContainer = this.useWindowAsScrollContainer
-      ? this.document.body
-      : this.container;
+    this.scrollContainer = this.useWindowAsScrollContainer ? this.document.body : this.container;
 
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
-        events[key].forEach(eventName =>
-          this.container.addEventListener(eventName, this.events[key], false)
-        );
+        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key], false));
       }
     }
 
@@ -105,9 +101,7 @@ export const ContainerMixin = {
   beforeDestroy() {
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
-        events[key].forEach(eventName =>
-          this.container.removeEventListener(eventName, this.events[key])
-        );
+        events[key].forEach((eventName) => this.container.removeEventListener(eventName, this.events[key]));
       }
     }
 
@@ -117,9 +111,8 @@ export const ContainerMixin = {
   },
 
   methods: {
-
     handleStart(e) {
-      const {distance, shouldCancelStart} = this.$props;
+      const { distance, shouldCancelStart } = this.$props;
 
       if (e.button === 2 || shouldCancelStart(e)) {
         return false;
@@ -131,32 +124,24 @@ export const ContainerMixin = {
         y: e.pageY,
       };
 
-      const node = closest(e.target, el => el.sortableInfo != null);
+      const node = closest(e.target, (el) => el.sortableInfo != null);
 
-      if (
-        node &&
-        node.sortableInfo &&
-        this.nodeIsChild(node) &&
-        !this.sorting
-      ) {
-        const {useDragHandle} = this.$props;
-        const {index, collection} = node.sortableInfo;
+      if (node && node.sortableInfo && this.nodeIsChild(node) && !this.sorting) {
+        const { useDragHandle } = this.$props;
+        const { index, collection } = node.sortableInfo;
 
-        if (
-          useDragHandle && !closest(e.target, el => el.sortableHandle != null)
-        )
-          return;
+        if (useDragHandle && !closest(e.target, (el) => el.sortableHandle != null)) return;
 
-        this.manager.active = {index, collection};
+        this.manager.active = { index, collection };
         if (this.hub) {
           this.hub.setActive({ group: this.group, sourceId: this.id });
         }
 
         /*
-				 * Fixes a bug in Firefox where the :active state of anchor tags
-				 * prevent subsequent 'mousemove' events from being fired
-				 * (see https://github.com/clauderic/react-sortable-hoc/issues/118)
-				 */
+         * Fixes a bug in Firefox where the :active state of anchor tags
+         * prevent subsequent 'mousemove' events from being fired
+         * (see https://github.com/clauderic/react-sortable-hoc/issues/118)
+         */
         if (e.target.tagName.toLowerCase() === 'a') {
           e.preventDefault();
         }
@@ -165,10 +150,7 @@ export const ContainerMixin = {
           if (this.$props.pressDelay === 0) {
             this.handlePress(e);
           } else {
-            this.pressTimer = setTimeout(
-              () => this.handlePress(e),
-              this.$props.pressDelay
-            );
+            this.pressTimer = setTimeout(() => this.handlePress(e), this.$props.pressDelay);
           }
         }
       }
@@ -179,7 +161,7 @@ export const ContainerMixin = {
     },
 
     handleMove(e) {
-      const {distance, pressThreshold} = this.$props;
+      const { distance, pressThreshold } = this.$props;
 
       if (!this.sorting && this._touched) {
         this._delta = {
@@ -188,7 +170,7 @@ export const ContainerMixin = {
         };
         const delta = Math.abs(this._delta.x) + Math.abs(this._delta.y);
 
-        if (!distance && (!pressThreshold || pressThreshold && delta >= pressThreshold)) {
+        if (!distance && (!pressThreshold || (pressThreshold && delta >= pressThreshold))) {
           clearTimeout(this.cancelTimer);
           this.cancelTimer = setTimeout(this.cancel, 0);
         } else if (distance && delta >= distance && this.manager.isActive()) {
@@ -198,7 +180,7 @@ export const ContainerMixin = {
     },
 
     handleEnd() {
-      const {distance} = this.$props;
+      const { distance } = this.$props;
 
       this._touched = false;
 
@@ -230,12 +212,12 @@ export const ContainerMixin = {
           useWindowAsScrollContainer,
           appendTo,
         } = this.$props;
-        const {node, collection} = active;
-        const {index} = node.sortableInfo;
+        const { node, collection } = active;
+        const { index } = node.sortableInfo;
         const margin = getElementMargin(node);
 
         const containerBoundingRect = this.container.getBoundingClientRect();
-        const dimensions = getHelperDimensions({index, node, collection});
+        const dimensions = getHelperDimensions({ index, node, collection });
 
         this.node = node;
         this.margin = margin;
@@ -268,9 +250,7 @@ export const ContainerMixin = {
 
         const fields = node.querySelectorAll('input, textarea, select');
         const clonedNode = node.cloneNode(true);
-        const clonedFields = [
-          ...clonedNode.querySelectorAll('input, textarea, select'),
-        ]; // Convert NodeList to Array
+        const clonedFields = [...clonedNode.querySelectorAll('input, textarea, select')]; // Convert NodeList to Array
 
         clonedFields.forEach((field, index) => {
           if (field.type !== 'file' && fields[index]) {
@@ -302,26 +282,26 @@ export const ContainerMixin = {
         this.minTranslate = {};
         this.maxTranslate = {};
         if (this._axis.x) {
-          this.minTranslate.x = (useWindowAsScrollContainer
-            ? 0
-            : containerBoundingRect.left) -
+          this.minTranslate.x =
+            (useWindowAsScrollContainer ? 0 : containerBoundingRect.left) -
             this.boundingClientRect.left -
             this.width / 2;
-          this.maxTranslate.x = (useWindowAsScrollContainer
-            ? this._window.innerWidth
-            : containerBoundingRect.left + containerBoundingRect.width) -
+          this.maxTranslate.x =
+            (useWindowAsScrollContainer
+              ? this._window.innerWidth
+              : containerBoundingRect.left + containerBoundingRect.width) -
             this.boundingClientRect.left -
             this.width / 2;
         }
         if (this._axis.y) {
-          this.minTranslate.y = (useWindowAsScrollContainer
-            ? 0
-            : containerBoundingRect.top) -
+          this.minTranslate.y =
+            (useWindowAsScrollContainer ? 0 : containerBoundingRect.top) -
             this.boundingClientRect.top -
             this.height / 2;
-          this.maxTranslate.y = (useWindowAsScrollContainer
-            ? this._window.innerHeight
-            : containerBoundingRect.top + containerBoundingRect.height) -
+          this.maxTranslate.y =
+            (useWindowAsScrollContainer
+              ? this._window.innerHeight
+              : containerBoundingRect.top + containerBoundingRect.height) -
             this.boundingClientRect.top -
             this.height / 2;
         }
@@ -331,22 +311,12 @@ export const ContainerMixin = {
         }
 
         this.listenerNode = e.touches ? node : this._window;
-        events.move.forEach(eventName =>
-          this.listenerNode.addEventListener(
-            eventName,
-            this.handleSortMove,
-            false
-          ));
-        events.end.forEach(eventName =>
-          this.listenerNode.addEventListener(
-            eventName,
-            this.handleSortEnd,
-            false
-          ));
+        events.move.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortMove, false));
+        events.end.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortEnd, false));
 
         this.sorting = true;
 
-        this.$emit('sort-start', {event: e, node, index, collection});
+        this.$emit('sort-start', { event: e, node, index, collection });
       }
     },
 
@@ -367,22 +337,16 @@ export const ContainerMixin = {
 
     handleDragOut(e) {
       if (this.hub.isSource(this)) {
-        
       }
-    }
+    },
 
     handleSortEnd(e) {
-      const {collection} = this.manager.active;
+      const { collection } = this.manager.active;
 
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
-        events.move.forEach(eventName =>
-          this.listenerNode.removeEventListener(
-            eventName,
-            this.handleSortMove
-          ));
-        events.end.forEach(eventName =>
-          this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
+        events.move.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortMove));
+        events.end.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
       const nodes = this.manager.refs[collection];
@@ -437,7 +401,6 @@ export const ContainerMixin = {
       } else {
         onEnd();
       }
-
     },
 
     transitionHelperIntoPlace(nodes) {
@@ -455,8 +418,7 @@ export const ContainerMixin = {
       let targetX = -deltaScroll.left;
       if (this.translate && this.translate.x > 0) {
         // Diff against right edge when moving to the right
-        targetX += newIndexNode.offsetLeft + newIndexNode.offsetWidth -
-          (indexNode.offsetLeft + indexNode.offsetWidth);
+        targetX += newIndexNode.offsetLeft + newIndexNode.offsetWidth - (indexNode.offsetLeft + indexNode.offsetWidth);
       } else {
         targetX += newIndexNode.offsetLeft - indexNode.offsetLeft;
       }
@@ -464,25 +426,23 @@ export const ContainerMixin = {
       let targetY = -deltaScroll.top;
       if (this.translate && this.translate.y > 0) {
         // Diff against the bottom edge when moving down
-        targetY += newIndexNode.offsetTop + newIndexNode.offsetHeight -
-          (indexNode.offsetTop + indexNode.offsetHeight);
+        targetY += newIndexNode.offsetTop + newIndexNode.offsetHeight - (indexNode.offsetTop + indexNode.offsetHeight);
       } else {
         targetY += newIndexNode.offsetTop - indexNode.offsetTop;
       }
 
-      const duration = this.$props.draggedSettlingDuration !== null
-        ? this.$props.draggedSettlingDuration
-        : this.$props.transitionDuration;
+      const duration =
+        this.$props.draggedSettlingDuration !== null
+          ? this.$props.draggedSettlingDuration
+          : this.$props.transitionDuration;
 
       this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
-      this.helper.style[
-        `${vendorPrefix}TransitionDuration`
-      ] = `${duration}ms`;
+      this.helper.style[`${vendorPrefix}TransitionDuration`] = `${duration}ms`;
 
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         // Register an event handler to clean up styles when the transition
         // finishes.
-        const cleanup = event => {
+        const cleanup = (event) => {
           if (!event || event.propertyName === 'transform') {
             clearTimeout(cleanupTimer);
             this.helper.style[`${vendorPrefix}Transform`] = '';
@@ -497,7 +457,7 @@ export const ContainerMixin = {
     },
 
     updatePosition(e) {
-      const {lockAxis, lockToContainerEdges} = this.$props;
+      const { lockAxis, lockToContainerEdges } = this.$props;
 
       const offset = getPointerOffset(e);
       const translate = {
@@ -505,17 +465,13 @@ export const ContainerMixin = {
         y: offset.y - this.initialOffset.y,
       };
       // Adjust for window scroll
-      translate.y -= (window.pageYOffset - this.initialWindowScroll.top);
-      translate.x -= (window.pageXOffset - this.initialWindowScroll.left);
+      translate.y -= window.pageYOffset - this.initialWindowScroll.top;
+      translate.x -= window.pageXOffset - this.initialWindowScroll.left;
 
       this.translate = translate;
 
       if (lockToContainerEdges) {
-        const [minLockOffset, maxLockOffset] = getLockPixelOffsets(
-          this.lockOffset,
-          this.height,
-          this.width
-        );
+        const [minLockOffset, maxLockOffset] = getLockPixelOffsets(this.lockOffset, this.height, this.width);
         const minOffset = {
           x: this.width / 2 - minLockOffset.x,
           y: this.height / 2 - minLockOffset.y,
@@ -525,16 +481,8 @@ export const ContainerMixin = {
           y: this.height / 2 - maxLockOffset.y,
         };
 
-        translate.x = limit(
-          this.minTranslate.x + minOffset.x,
-          this.maxTranslate.x - maxOffset.x,
-          translate.x
-        );
-        translate.y = limit(
-          this.minTranslate.y + minOffset.y,
-          this.maxTranslate.y - maxOffset.y,
-          translate.y
-        );
+        translate.x = limit(this.minTranslate.x + minOffset.x, this.maxTranslate.x - maxOffset.x, translate.x);
+        translate.y = limit(this.minTranslate.y + minOffset.y, this.maxTranslate.y - maxOffset.y, translate.y);
       }
 
       if (lockAxis === 'x') {
@@ -543,13 +491,11 @@ export const ContainerMixin = {
         translate.x = 0;
       }
 
-      this.helper.style[
-        `${vendorPrefix}Transform`
-      ] = `translate3d(${translate.x}px,${translate.y}px, 0)`;
+      this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${translate.x}px,${translate.y}px, 0)`;
     },
 
     animateNodes() {
-      const {transitionDuration, hideSortableGhost} = this.$props;
+      const { transitionDuration, hideSortableGhost } = this.$props;
       const nodes = this.manager.getOrderedRefs();
       const deltaScroll = {
         left: this.scrollContainer.scrollLeft - this.initialScroll.left,
@@ -560,13 +506,13 @@ export const ContainerMixin = {
         top: this.offsetEdge.top + this.translate.y + deltaScroll.top,
       };
       const scrollDifference = {
-        top: (window.pageYOffset - this.initialWindowScroll.top),
-        left: (window.pageXOffset - this.initialWindowScroll.left),
+        top: window.pageYOffset - this.initialWindowScroll.top,
+        left: window.pageXOffset - this.initialWindowScroll.left,
       };
       this.newIndex = null;
 
       for (let i = 0, len = nodes.length; i < len; i++) {
-        const {node} = nodes[i];
+        const { node } = nodes[i];
         const index = node.sortableInfo.index;
         const width = node.offsetWidth;
         const height = node.offsetHeight;
@@ -579,11 +525,11 @@ export const ContainerMixin = {
           x: 0,
           y: 0,
         };
-        let {edgeOffset} = nodes[i];
+        let { edgeOffset } = nodes[i];
 
         // If we haven't cached the node's offsetTop / offsetLeft value
         if (!edgeOffset) {
-          nodes[i].edgeOffset = (edgeOffset = getEdgeOffset(node, this.container));
+          nodes[i].edgeOffset = edgeOffset = getEdgeOffset(node, this.container);
         }
 
         // Get a reference to the next and previous node
@@ -599,10 +545,10 @@ export const ContainerMixin = {
         // If the node is the one we're currently animating, skip it
         if (index === this.index) {
           /*
-            * With windowing libraries such as `react-virtualized`, the sortableGhost
-            * node may change while scrolling down and then back up (or vice-versa),
-            * so we need to update the reference to the new node just to be safe.
-            */
+           * With windowing libraries such as `react-virtualized`, the sortableGhost
+           * node may change while scrolling down and then back up (or vice-versa),
+           * so we need to update the reference to the new node just to be safe.
+           */
           this.sortableGhost = node;
           if (this.hub && !this.hub.isDest(this)) {
             node.style.display = 'none';
@@ -618,9 +564,7 @@ export const ContainerMixin = {
         }
 
         if (transitionDuration) {
-          node.style[
-            `${vendorPrefix}TransitionDuration`
-          ] = `${transitionDuration}ms`;
+          node.style[`${vendorPrefix}TransitionDuration`] = `${transitionDuration}ms`;
         }
 
         if (this._axis.x) {
@@ -628,19 +572,14 @@ export const ContainerMixin = {
             // Calculations for a grid setup
             if (
               index < this.index &&
-              (
-                ((sortingOffset.left + scrollDifference.left) - offset.width <= edgeOffset.left &&
-                (sortingOffset.top + scrollDifference.top) <= edgeOffset.top + offset.height) ||
-                (sortingOffset.top + scrollDifference.top) + offset.height <= edgeOffset.top
-              )
+              ((sortingOffset.left + scrollDifference.left - offset.width <= edgeOffset.left &&
+                sortingOffset.top + scrollDifference.top <= edgeOffset.top + offset.height) ||
+                sortingOffset.top + scrollDifference.top + offset.height <= edgeOffset.top)
             ) {
               // If the current node is to the left on the same row, or above the node that's being dragged
               // then move it to the right
               translate.x = this.width + this.marginOffset.x;
-              if (
-                edgeOffset.left + translate.x >
-                this.containerBoundingRect.width - offset.width
-              ) {
+              if (edgeOffset.left + translate.x > this.containerBoundingRect.width - offset.width) {
                 // If it moves passed the right bounds, then animate it to the first position of the next row.
                 // We just use the offset of the next node to calculate where to move, because that node's original position
                 // is exactly where we want to go
@@ -652,19 +591,14 @@ export const ContainerMixin = {
               }
             } else if (
               index > this.index &&
-              (
-                ((sortingOffset.left + scrollDifference.left) + offset.width >= edgeOffset.left &&
-                (sortingOffset.top + scrollDifference.top) + offset.height >= edgeOffset.top) ||
-                (sortingOffset.top + scrollDifference.top) + offset.height >= edgeOffset.top + height
-              )
+              ((sortingOffset.left + scrollDifference.left + offset.width >= edgeOffset.left &&
+                sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top) ||
+                sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top + height)
             ) {
               // If the current node is to the right on the same row, or below the node that's being dragged
               // then move it to the left
               translate.x = -(this.width + this.marginOffset.x);
-              if (
-                edgeOffset.left + translate.x <
-                this.containerBoundingRect.left + offset.width
-              ) {
+              if (edgeOffset.left + translate.x < this.containerBoundingRect.left + offset.width) {
                 // If it moves passed the left bounds, then animate it to the last position of the previous row.
                 // We just use the offset of the previous node to calculate where to move, because that node's original position
                 // is exactly where we want to go
@@ -674,15 +608,12 @@ export const ContainerMixin = {
               this.newIndex = index;
             }
           } else {
-            if (
-              index > this.index &&
-              (sortingOffset.left + scrollDifference.left) + offset.width >= edgeOffset.left
-            ) {
+            if (index > this.index && sortingOffset.left + scrollDifference.left + offset.width >= edgeOffset.left) {
               translate.x = -(this.width + this.marginOffset.x);
               this.newIndex = index;
             } else if (
               index < this.index &&
-              (sortingOffset.left + scrollDifference.left) <= edgeOffset.left + offset.width
+              sortingOffset.left + scrollDifference.left <= edgeOffset.left + offset.width
             ) {
               translate.x = this.width + this.marginOffset.x;
               if (this.newIndex == null) {
@@ -691,16 +622,10 @@ export const ContainerMixin = {
             }
           }
         } else if (this._axis.y) {
-          if (
-            index > this.index &&
-            (sortingOffset.top + scrollDifference.top) + offset.height >= edgeOffset.top
-          ) {
+          if (index > this.index && sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top) {
             translate.y = -(this.height + this.marginOffset.y);
             this.newIndex = index;
-          } else if (
-            index < this.index &&
-            (sortingOffset.top + scrollDifference.top) <= edgeOffset.top + offset.height
-          ) {
+          } else if (index < this.index && sortingOffset.top + scrollDifference.top <= edgeOffset.top + offset.height) {
             translate.y = this.height + this.marginOffset.y;
             if (this.newIndex == null) {
               this.newIndex = index;
@@ -751,21 +676,18 @@ export const ContainerMixin = {
       }
 
       if (direction.x !== 0 || direction.y !== 0) {
-        this.autoscrollInterval = setInterval(
-          () => {
-            this.isAutoScrolling = true;
-            const offset = {
-              left: 1 * speed.x * direction.x,
-              top: 1 * speed.y * direction.y,
-            };
-            this.scrollContainer.scrollTop += offset.top;
-            this.scrollContainer.scrollLeft += offset.left;
-            this.translate.x += offset.left;
-            this.translate.y += offset.top;
-            this.animateNodes();
-          },
-          5
-        );
+        this.autoscrollInterval = setInterval(() => {
+          this.isAutoScrolling = true;
+          const offset = {
+            left: 1 * speed.x * direction.x,
+            top: 1 * speed.y * direction.y,
+          };
+          this.scrollContainer.scrollTop += offset.top;
+          this.scrollContainer.scrollLeft += offset.left;
+          this.translate.x += offset.left;
+          this.translate.y += offset.top;
+          this.animateNodes();
+        }, 5);
       }
     },
   },
