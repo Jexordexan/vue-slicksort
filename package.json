@@ -47,20 +47,19 @@
     "rollup": "cross-env BABEL_ENV=rollup rollup -c",
     "clean": "rimraf dist/",
     "test": "eslint src/** --ext .js",
-    "storybook": "start-storybook -s ./logo -p 8001 -c .storybook",
-    "build-storybook": "build-storybook -s ./logo -c .storybook -o .out",
-    "deploy:storybook": "storybook-to-ghpages",
     "deploy:patch": "npm test && npm version patch && npm run deploy:final",
-    "deploy:final": "git push; git push --tags; npm publish; npm run deploy:storybook"
+    "deploy:final": "git push; git push --tags; npm publish; npm run deploy:storybook",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "peerDependencies": {
     "vue": ">=2.2.0"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^3.3.9",
-    "@storybook/addon-options": "^3.4.4",
-    "@storybook/storybook-deployer": "^2.2.0",
-    "@storybook/vue": "^3.3.9",
+    "@storybook/addon-actions": "^6.1.17",
+    "@storybook/addon-essentials": "^6.1.17",
+    "@storybook/addon-links": "^6.1.17",
+    "@storybook/vue": "^6.1.17",
     "autoprefixer": "^6.3.6",
     "babel-cli": "^6.9.0",
     "babel-core": "^6.3.15",
@@ -91,7 +90,7 @@
     "stack-source-map": "^1.0.4",
     "style-loader": "^0.13.1",
     "vue": "^2.5.13",
-    "vue-loader": "^13.7.0",
+    "vue-loader": "^15.9.6",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0",
     "webpack-dashboard": "^0.2.1",
@@ -109,5 +108,6 @@
   "files": [
     "index.d.ts",
     "dist/*"
-  ]
+  ],
+  "dependencies": {}
 }
