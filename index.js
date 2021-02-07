@@ -16,7 +16,9 @@ const SortableItem = {
   mixins: [ElementMixin],
   props: ['item'],
   template: `
-    <li class="list-item" :style="{height: item.height + 'px'}" >{{item.value}}</li>
+    <li class="list-item" :style="{height: item.height + 'px'}" >{{item.value}}
+    <div class="mutli-drag-indicator"></div>
+    </li>
   `,
 };
 
@@ -48,9 +50,13 @@ const ExampleVue = {
   name: 'Example',
   template: `
     <div class="root">
-      <SortableList lockAxis="y" v-model="items">
-        <SortableItem v-for="(item, index) in items" :key="index" :index="index" collection="items" :item="item" />
+      <SortableList lockAxis="y" v-model="items" @select="onSelect" selectionMode="multiple" helperClass="sorting-hover">
+        <SortableItem v-for="(item, index) in items"
+         v-bind:class="{selected: item.selected, active: activeItem == item}"
+         :key="index" :index="index" :selected="item.selected" collection="items" :item="item" />
       </SortableList>
+
+
       <SortableList lockAxis="y" v-model="lists">
         <InnerList v-for="(list, index) in lists" :key="list.name" :index="index" collection="lists" :list="list" ></InnerList>
       </SortableList>
@@ -63,11 +69,13 @@ const ExampleVue = {
   },
   data() {
     return {
+      activeItem: null,
       items: range(100).map((value) => {
         return {
           value: 'Item ' + (value + 1),
           height: random(49, 120),
           id: id++,
+          selected: false
         };
       }),
       lists: range(3).map(val => {
@@ -83,6 +91,20 @@ const ExampleVue = {
         };
       }),
     };
+  },
+
+  methods: {
+
+     onSelect(data)
+     {   
+      this.activeItem = this.items[data.activeIndex];
+      for( var i = 0; i < data.selections.length; i++)
+      {
+        let {index, select} = data.selections[i];
+        this.items[index].selected = select;
+      }
+     }
+
   },
 };
 

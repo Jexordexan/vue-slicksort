@@ -19,21 +19,27 @@ export default class Manager {
     }
   }
 
-  isActive() {
-    return this.active;
+  getTouched() {
+    if (this.touched) {
+      return this.refs[this.touched.collection].find(({ node }) => node.sortableInfo.index == this.touched.index);
+    }
+    else {
+      return null;
+    }
   }
 
-  getActive() {
-    return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
+  getSelected() {
+    return this.refs[this.touched.collection].filter(({ node }) => node.sortableInfo.selected == true || node.sortableInfo.index == this.touched.index);
   }
 
   getIndex(collection, ref) {
     return this.refs[collection].indexOf(ref);
   }
 
-  getOrderedRefs(collection = this.active.collection) {
+  getOrderedRefs(collection = this.touched.collection) {
     return this.refs[collection].sort((a, b) => {
       return a.node.sortableInfo.index - b.node.sortableInfo.index;
     });
   }
+
 }
