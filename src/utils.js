@@ -10,20 +10,41 @@ export function arrayMove(arr, previousIndex, newIndex) {
   return array;
 }
 
+export function arrayRemove(arr, previousIndex) {
+  const array = arr.slice(0);
+  if (previousIndex >= array.length) return array;
+  array.splice(previousIndex, 1);
+  return array;
+}
+
+export function arrayInsert(arr, newIndex, value) {
+  const array = arr.slice(0);
+  if (newIndex === array.length) {
+    array.push(value);
+  } else {
+    array.splice(newIndex, 0, value);
+  }
+  return array;
+}
+
 export const events = {
   start: ['touchstart', 'mousedown'],
   move: ['touchmove', 'mousemove'],
   end: ['touchend', 'touchcancel', 'mouseup'],
 };
 
-export const vendorPrefix = (function() {
+export const vendorPrefix = (function () {
   if (typeof window === 'undefined' || typeof document === 'undefined') return ''; // server environment
   // fix for:
   //    https://bugzilla.mozilla.org/show_bug.cgi?id=548397
   //    window.getComputedStyle() returns null inside an iframe with display: none
   // in this case return an array with a fake mozilla style in it.
   const styles = window.getComputedStyle(document.documentElement, '') || ['-moz-hidden-iframe'];
-  const pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o']))[1];
+  const pre = (Array.prototype.slice
+    .call(styles)
+    .join('')
+    .match(/-(moz|webkit|ms)-/) ||
+    (styles.OLink === '' && ['', 'o']))[1];
 
   switch (pre) {
     case 'ms':
@@ -39,7 +60,6 @@ export function closest(el, fn) {
     el = el.parentNode;
   }
 }
-
 
 export function limit(min, max, value) {
   if (value < min) {
@@ -76,7 +96,7 @@ export function getPointerOffset(e) {
   };
 }
 
-export function getEdgeOffset(node, container, offset = {top: 0, left: 0}) {
+export function getEdgeOffset(node, container, offset = { top: 0, left: 0 }) {
   // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
   if (node) {
     const nodeOffset = {
@@ -91,6 +111,20 @@ export function getEdgeOffset(node, container, offset = {top: 0, left: 0}) {
   }
 }
 
+export function cloneNode(node) {
+  const fields = node.querySelectorAll('input, textarea, select');
+  const clonedNode = node.cloneNode(true);
+  const clonedFields = [...clonedNode.querySelectorAll('input, textarea, select')]; // Convert NodeList to Array
+
+  clonedFields.forEach((field, index) => {
+    if (field.type !== 'file' && fields[index]) {
+      field.value = fields[index].value;
+    }
+  });
+
+  return clonedNode;
+}
+
 export function getOffset(e) {
   return {
     x: e.touches ? e.touches[0].pageX : e.pageX,
@@ -99,21 +133,19 @@ export function getOffset(e) {
 }
 
 export function getLockPixelOffsets(lockOffset, width, height) {
-
   if (!Array.isArray(lockOffset)) {
     lockOffset = [lockOffset, lockOffset];
   }
 
   if (lockOffset.length !== 2) {
-    throw new Error(`lockOffset prop of SortableContainer should be a single value or an array of exactly two values. Given ${lockOffset}`);
+    throw new Error(
+      `lockOffset prop of SortableContainer should be a single value or an array of exactly two values. Given ${lockOffset}`
+    );
   }
 
   const [minLockOffset, maxLockOffset] = lockOffset;
 
-  return [
-    getLockPixelOffset(minLockOffset, width, height),
-    getLockPixelOffset(maxLockOffset, width, height),
-  ];
+  return [getLockPixelOffset(minLockOffset, width, height), getLockPixelOffset(maxLockOffset, width, height)];
 }
 
 export function getLockPixelOffset(lockOffset, width, height) {
@@ -125,10 +157,12 @@ export function getLockPixelOffset(lockOffset, width, height) {
     const match = /^[+-]?\d*(?:\.\d*)?(px|%)$/.exec(lockOffset);
 
     if (match === null) {
-      throw new Error(`lockOffset value should be a number or a string of a number followed by "px" or "%". Given ${lockOffset}`);
+      throw new Error(
+        `lockOffset value should be a number or a string of a number followed by "px" or "%". Given ${lockOffset}`
+      );
     }
 
-    offsetX = (offsetY = parseFloat(lockOffset));
+    offsetX = offsetY = parseFloat(lockOffset);
     unit = match[1];
   }
 
@@ -137,8 +171,8 @@ export function getLockPixelOffset(lockOffset, width, height) {
   }
 
   if (unit === '%') {
-    offsetX = offsetX * width / 100;
-    offsetY = offsetY * height / 100;
+    offsetX = (offsetX * width) / 100;
+    offsetY = (offsetY * height) / 100;
   }
 
   return {
@@ -150,7 +184,7 @@ export function getLockPixelOffset(lockOffset, width, height) {
 export function getDistance(x1, y1, x2, y2) {
   const x = x1 - x2;
   const y = y1 - y2;
-  return Math.sqrt( x*x + y*y );
+  return Math.sqrt(x * x + y * y);
 }
 
 export function getRectCenter(clientRect) {
@@ -158,4 +192,20 @@ export function getRectCenter(clientRect) {
     x: clientRect.left + clientRect.width / 2,
     y: clientRect.top + clientRect.height / 2,
   };
+}
+
+export function resetTransform(nodes = []) {
+  for (let i = 0, len = nodes.length; i < len; i++) {
+    const node = nodes[i];
+    const el = node.node;
+
+    if (!el) return;
+
+    // Clear the cached offsetTop / offsetLeft value
+    node.edgeOffset = null;
+
+    // Remove the transforms / transitions
+    el.style[`${vendorPrefix}Transform`] = '';
+    el.style[`${vendorPrefix}TransitionDuration`] = '';
+  }
 }

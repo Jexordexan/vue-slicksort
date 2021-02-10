@@ -9,45 +9,34 @@ class SlicksortHub extends Manager {
     this.groups = {};
     this.boxes = [];
     this.sorting = false;
+    this.helper = null;
+    this.ghost = null;
   }
 
   getId() {
     return '' + _id++;
   }
 
-  addContainer(group, id, ref) {
-    if (!this.groups[group]) {
-      this.groups[group] = [];
-    }
-
-    console.log('container added to group', group);
-    
-    this.groups[group].push(ref);
+  isSource({ id }) {
+    return this.source.id === id;
   }
 
-  removeContainer(collection, ref) {
-    const index = this.getIndex(collection, ref);
-
-    if (index !== -1) {
-      this.groups[collection].splice(index, 1);
-    }
+  isDest({ id }) {
+    return this.dest.id === id;
   }
 
-  setActive({ group, id }) {
-    console.log('setActive', { group, id });
+  addContainer(group, ref) {
+    this.add(group, ref);
+  }
+
+  removeContainer(group, ref) {
+    this.remove(group, ref);
+  }
+
+  sortStart({ group, ref }) {
     this.sorting = true;
-    this.source = { group, id };
-    this.dest = { group, id };
-  }
-
-  isDest(container) {
-    return this.sorting &&
-            container.group === this.dest.group &&
-            container.id === this.dest.id;
-  }
-
-  sortStart() {
-    const group = this.groups[this.source.group];
+    this.source = { group, id: ref.id, ref };
+    this.dest = { group, id: ref.id, ref };
   }
 
   findClosestDest({ x, y }, containers) {
@@ -67,25 +56,45 @@ class SlicksortHub extends Manager {
 
   handleSortMove(e) {
     const dest = this.dest;
-    const group = this.groups[this.source.group];
+    const group = this.refs[this.source.group];
     const pointer = getPointerOffset(e);
     const newDest = this.findClosestDest(pointer, group);
     if (dest.id !== newDest.id) {
-      this.dest = newDest;
-      console.log('new destination', newDest.id);
+      this.dest = { group, id: newDest.id, ref: newDest };
+      dest.ref.handleDragOut(e);
+      newDest.handleDragIn(e, this.ghost);
+    }
+    if (dest.id !== this.source.id) {
+      this.dest.ref.updatePosition(e);
+      this.dest.ref.animateNodes();
+      this.dest.ref.autoscroll();
     }
   }
 
-  handleSortEnd(e) {
-    this.cancel()
+  handleSortEnd() {
+    if (this.source.id === this.dest.id) return;
+    const payload = this.source.ref.handleDropOut();
+    this.dest.ref.handleDropIn(payload);
+    this.source = null;
+    this.dest = null;
+    this.active = null;
+    this.helper = null;
+    this.ghost = null;
+    this.sorting = false;
   }
 
-  cancel() {
-    if (this.sorting) {
-      console.log('cancel');
-      this.sorting = false;
-      this.active = null;
-    }
+  reset() {
+    this.source = null;
+    this.dest = null;
+    this.active = null;
+    this.helper = null;
+    this.ghost = null;
+    this.sorting = false;
+  }
+
+  cancel(e) {
+    this.dest.ref.handleDragOut(e);
+    this.source.handleSortEnd(e);
   }
 }
 

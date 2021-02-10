@@ -1,22 +1,38 @@
 <template>
-  <SlickList v-model="list" class="list">
-    <SlickItem v-for="(item, i) in list" class="list-item" :key="item.id" :index="i">
+  <SlickList v-model="list" class="list" :class="{ horizontal: axis == 'x' }" group="items" :axis="axis">
+    <SlickItem
+      v-for="(item, i) in list"
+      class="list-item"
+      :key="item.id"
+      :index="i"
+      :style="{ height: item.height + 'px' }"
+    >
       {{ item.value }}
     </SlickItem>
   </SlickList>
 </template>
 
 <script>
-import { SlickItem, SlickList } from '../';
+import { SlickItem, SlickList } from '../src';
 import { createList } from './utils';
 export default {
   components: {
     SlickItem,
     SlickList,
   },
+  props: {
+    name: {
+      type: String,
+      default: 'A',
+    },
+    axis: {
+      type: String,
+      default: 'y',
+    },
+  },
   data() {
     return {
-      list: createList(10),
+      list: createList(5, true, `List ${this.name}`),
     };
   },
 };
@@ -33,6 +49,10 @@ export default {
   background-color: #f3f3f3;
   border: 1px solid #efefef;
   border-radius: 3;
+}
+
+.horizontal {
+  display: flex;
 }
 
 .list-item {

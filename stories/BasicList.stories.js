@@ -1,4 +1,8 @@
+import Vue from 'vue';
+import Slicksort from '../src/plugin';
 import BasicList from './BasicList.vue';
+
+Vue.use(Slicksort);
 
 export default {
   title: 'BasicList',
@@ -12,10 +16,13 @@ export const MultipleLists = () => ({
     BasicList,
   },
   template: `
+  <div>
     <div style="display:flex">
-      <BasicList />
-      <BasicList />
-      <BasicList />
+      <BasicList name="A" />
+      <BasicList name="B" />
+      <BasicList name="C" />
     </div>
+    <BasicList axis="x" name="D" />
+  </div>
   `,
 });
