@@ -18,11 +18,11 @@ export const MultipleLists = () => ({
   template: `
   <div>
     <div style="display:flex">
-      <BasicList name="A" />
-      <BasicList name="B" />
-      <BasicList name="C" />
+      <BasicList name="Apple" />
+      <BasicList name="Banana" />
+      <BasicList name="Cranberry" />
     </div>
-    <BasicList axis="x" name="D" />
+    <BasicList axis="x" name="Dragonfruit" />
   </div>
   `,
 });

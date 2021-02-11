@@ -39,15 +39,15 @@ class SlicksortHub extends Manager {
     this.dest = { group, id: ref.id, ref };
   }
 
-  findClosestDest({ x, y }, containers) {
+  findClosestDest({ x, y }, refs) {
     let closest = null;
     let minDistance = Infinity;
-    for (let i = 0; i < containers.length; i++) {
-      const container = containers[i];
-      const center = getRectCenter(container.container.getBoundingClientRect());
+    for (let i = 0; i < refs.length; i++) {
+      const ref = refs[i];
+      const center = getRectCenter(ref.container.getBoundingClientRect());
       const distance = getDistance(x, y, center.x, center.y);
       if (distance < minDistance) {
-        closest = container;
+        closest = ref;
         minDistance = distance;
       }
     }
@@ -57,12 +57,12 @@ class SlicksortHub extends Manager {
   handleSortMove(e) {
     const dest = this.dest;
     const group = this.refs[this.source.group];
-    const pointer = getPointerOffset(e);
+    const pointer = getPointerOffset(e, 'client');
     const newDest = this.findClosestDest(pointer, group);
     if (dest.id !== newDest.id) {
       this.dest = { group, id: newDest.id, ref: newDest };
       dest.ref.handleDragOut(e);
-      newDest.handleDragIn(e, this.ghost);
+      newDest.handleDragIn(e, this.ghost, this.helper);
     }
     if (dest.id !== this.source.id) {
       this.dest.ref.updatePosition(e);
@@ -94,7 +94,7 @@ class SlicksortHub extends Manager {
 
   cancel(e) {
     this.dest.ref.handleDragOut(e);
-    this.source.handleSortEnd(e);
+    this.source.ref.handleSortEnd(e);
   }
 }
 

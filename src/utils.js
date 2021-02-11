@@ -89,10 +89,12 @@ export function getElementMargin(element) {
   };
 }
 
-export function getPointerOffset(e) {
+export function getPointerOffset(e, reference = 'page') {
+  const x = `${reference}X`;
+  const y = `${reference}Y`;
   return {
-    x: e.touches ? e.touches[0].pageX : e.pageX,
-    y: e.touches ? e.touches[0].pageY : e.pageY,
+    x: e.touches ? e.touches[0][x] : e[x],
+    y: e.touches ? e.touches[0][y] : e[y],
   };
 }
 

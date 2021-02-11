@@ -302,15 +302,6 @@ export const ContainerMixin = {
             this.height / 2;
         }
 
-        console.log(
-          'boundingClientRect',
-          this.boundingClientRect,
-          'minTranslate',
-          this.minTranslate,
-          'maxTranslate',
-          this.maxTranslate
-        );
-
         if (helperClass) {
           this.helper.classList.add(...helperClass.split(' '));
         }
@@ -372,10 +363,6 @@ export const ContainerMixin = {
         this.autoscrollInterval = null;
       }
       if (this.hub.isSource(this)) {
-        this.translate = {
-          x: 1000000,
-          y: 1000000,
-        };
         this.animateNodes();
       } else {
         const { collection } = this.manager.active;
@@ -387,9 +374,8 @@ export const ContainerMixin = {
       }
     },
 
-    handleDragIn(e, sortableGhost) {
+    handleDragIn(e, sortableGhost, helper) {
       if (this.hub.isSource(this)) {
-        // TODO
         return;
       }
 
@@ -416,12 +402,12 @@ export const ContainerMixin = {
       };
 
       const containerBoundingRect = this.container.getBoundingClientRect();
+      const helperBoundingRect = helper.getBoundingClientRect();
       this.containerBoundingRect = containerBoundingRect;
 
-      const pos = getPointerOffset(e);
       this.offsetEdge = {
-        top: pos.y + this.initialScroll.top,
-        left: pos.x + this.initialScroll.left,
+        top: helperBoundingRect.top + this.initialScroll.top + this.initialWindowScroll.top,
+        left: helperBoundingRect.left + this.initialScroll.left + this.initialWindowScroll.left,
       };
 
       this.sortableGhost = cloneNode(sortableGhost);
@@ -437,33 +423,24 @@ export const ContainerMixin = {
       this.maxTranslate = {};
       if (this._axis.x) {
         this.minTranslate.x =
-          (this.useWindowAsScrollContainer ? 0 : containerBoundingRect.left) - pos.x - this.width / 2;
+          (this.useWindowAsScrollContainer ? 0 : containerBoundingRect.left) - helperBoundingRect.left - this.width / 2;
         this.maxTranslate.x =
           (this.useWindowAsScrollContainer
             ? this._window.innerWidth
             : containerBoundingRect.left + containerBoundingRect.width) -
-          pos.x -
+          helperBoundingRect.left -
           this.width / 2;
       }
       if (this._axis.y) {
         this.minTranslate.y =
-          (this.useWindowAsScrollContainer ? 0 : containerBoundingRect.top) - pos.y - this.height / 2;
+          (this.useWindowAsScrollContainer ? 0 : containerBoundingRect.top) - helperBoundingRect.top - this.height / 2;
         this.maxTranslate.y =
           (this.useWindowAsScrollContainer
             ? this._window.innerHeight
             : containerBoundingRect.top + containerBoundingRect.height) -
-          pos.y -
+          helperBoundingRect.top -
           this.height / 2;
       }
-
-      console.log(
-        'boundingClientRect',
-        this.boundingClientRect,
-        'minTranslate',
-        this.minTranslate,
-        'maxTranslate',
-        this.maxTranslate
-      );
 
       // Turn on dragging
       this.sorting = true;
@@ -787,8 +764,6 @@ export const ContainerMixin = {
         y: 10,
       };
 
-      // console.log('tranlsate', translate);
-
       if (translate.y >= this.maxTranslate.y - this.height / 2) {
         direction.y = 1; // Scroll Down
         speed.y = acceleration.y * Math.abs((this.maxTranslate.y - this.height / 2 - translate.y) / this.height);
@@ -818,7 +793,6 @@ export const ContainerMixin = {
           this.scrollContainer.scrollLeft += offset.left;
           this.translate.x += offset.left;
           this.translate.y += offset.top;
-          // console.log('autoscroll', this.translate);
           this.animateNodes();
         }, 5);
       }
