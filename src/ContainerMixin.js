@@ -17,6 +17,8 @@ import {
 
 // Export Sortable Container Component Mixin
 export const ContainerMixin = {
+  emits: ['sort-start', 'sort-move', 'sort-end', 'update:modelValue'],
+
   data() {
     let useHub = false;
     let containerId = 1;
@@ -45,7 +47,7 @@ export const ContainerMixin = {
   },
 
   props: {
-    value: { type: Array, required: true },
+    modelValue: { type: Array, required: true },
     axis: { type: String, default: 'y' }, // 'x', 'y', 'xy'
     distance: { type: Number, default: 0 },
     pressDelay: { type: Number, default: 0 },
@@ -103,7 +105,7 @@ export const ContainerMixin = {
     }
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
         events[key].forEach((eventName) => this.container.removeEventListener(eventName, this.events[key]));
@@ -482,7 +484,7 @@ export const ContainerMixin = {
             newIndex: this.newIndex,
             collection,
           });
-          this.$emit('input', arrayMove(this.value, this.index, this.newIndex));
+          this.$emit('update:modelValue', arrayMove(this.modelValue, this.index, this.newIndex));
         }
 
         this.manager.active = null;
