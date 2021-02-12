@@ -38,7 +38,7 @@ function findClosestDest({ x, y }, refs) {
   return closest;
 }
 
-export class SlicksortHub {
+export default class SlicksortHub {
   constructor() {
     this.refs = [];
     this.sorting = false;

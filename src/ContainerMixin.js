@@ -17,6 +17,7 @@ import {
 
 // Export Sortable Container Component Mixin
 export const ContainerMixin = {
+  inject: ['SlicksortHub'],
   emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:modelValue'],
 
   data() {
@@ -25,9 +26,9 @@ export const ContainerMixin = {
     if (this.group) {
       // If the group option is set, it is assumed the user intends
       // to drag between containers and the required plugin has been installed
-      if (this.$_slicksort_hub) {
+      if (this.SlicksortHub) {
         useHub = true;
-        containerId = this.$_slicksort_hub.getId();
+        containerId = this.SlicksortHub.getId();
       } else if (process.env.NODE_ENV !== 'production') {
         throw new Error('Slicksort plugin required to use "group" prop');
       }
@@ -36,7 +37,7 @@ export const ContainerMixin = {
     return {
       sorting: false,
       id: containerId,
-      hub: useHub ? this.$_slicksort_hub : null,
+      hub: useHub ? this.SlicksortHub : null,
       manager: new Manager(),
       events: {
         start: this.handleStart,
