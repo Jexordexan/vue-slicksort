@@ -6,3 +6,4 @@ styles.min.css.map
 coverage
 npm-debug.log
 .out
+yarn-error.log
