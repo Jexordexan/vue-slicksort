@@ -1,5 +1,16 @@
 ## Changelog
 
+## 1.2.0
+
+feat: `tag` props on SlickList and SlickItem components
+fix: Dragging broken on Android when distance property is set
+fix: node helper not clean
+fix: add event listeners in passive mode
+fix: stopPropogation on click events
+fix: .d.ts types
+docs: Chinese documentation
+chore: lots of dependencies
+
 ## 1.1.0
 
 ADDED appendTo prop - appends the helper to the selected DOM node.
