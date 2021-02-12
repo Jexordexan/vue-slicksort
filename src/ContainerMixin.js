@@ -186,6 +186,7 @@ export const ContainerMixin = {
     },
 
     handlePress(e) {
+      e.stopPropagation();
       const active = this.manager.getActive();
 
       if (active) {
