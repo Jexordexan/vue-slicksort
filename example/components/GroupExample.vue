@@ -1,8 +1,12 @@
 <template>
   <div class="root">
-    <SortableList axis="y" v-for="list in lists" group="a" v-model="list.items">
-      <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
-    </SortableList>
+    <div v-for="list in lists" :key="list.id" class="list">
+      <h1>{{ list.name }}</h1>
+      <strong>Accepts: {{ list.accept }}</strong>
+      <SortableList axis="y" :group="list.group" :accept="list.accept" v-model="list.items">
+        <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
+      </SortableList>
+    </div>
   </div>
 </template>
 
@@ -23,10 +27,12 @@ export default {
   },
   data() {
     return {
-      lists: range(3).map((val) => {
-        return {
+      lists: [
+        {
           id: id++,
-          name: 'List ' + (val + 1),
+          name: 'List A',
+          group: 'a',
+          accept: ['c'],
           items: range(3).map((value) => {
             return {
               value: 'Item ' + (value + 1),
@@ -34,8 +40,34 @@ export default {
               id: id++,
             };
           }),
-        };
-      }),
+        },
+        {
+          id: id++,
+          name: 'List B',
+          group: 'b',
+          accept: ['a'],
+          items: range(3).map((value) => {
+            return {
+              value: 'Item ' + (value + 1),
+              height: random(49, 120),
+              id: id++,
+            };
+          }),
+        },
+        {
+          id: id++,
+          name: 'List C',
+          group: 'c',
+          accept: ['b'],
+          items: range(3).map((value) => {
+            return {
+              value: 'Item ' + (value + 1),
+              height: random(49, 120),
+              id: id++,
+            };
+          }),
+        },
+      ],
     };
   },
 };
