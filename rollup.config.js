@@ -1,8 +1,8 @@
 import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
+import esbuild from 'rollup-plugin-esbuild';
 import pkg from './package.json';
 
-const input =  './src/index.js';
+const input = './src/index.js';
 const moduleName = 'VueSlicksort';
 
 export default [
@@ -13,10 +13,9 @@ export default [
       { file: pkg.module, format: 'es' },
       { file: pkg.browser, format: 'umd', name: moduleName },
     ],
-    plugins: [ 
-      babel(),
-    ],
-  }, {
+    plugins: [esbuild(), babel()],
+  },
+  {
     input,
     output: {
       file: pkg.unpkg,
@@ -24,9 +23,6 @@ export default [
       format: 'umd',
       sourcemap: true,
     },
-    plugins: [
-      babel(),
-      uglify(),
-    ],
+    plugins: [esbuild({ minify: true }), babel()],
   },
 ];
