@@ -7,3 +7,5 @@ coverage
 npm-debug.log
 .out
 yarn-error.log
+.cache
+.temp

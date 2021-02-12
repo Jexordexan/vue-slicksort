@@ -20,7 +20,7 @@ export const ContainerMixin = {
   inject: ['SlicksortHub'],
   emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:modelValue'],
 
-  data() {
+  setup() {
     let useHub = false;
     let containerId = 1;
     if (this.group) {
