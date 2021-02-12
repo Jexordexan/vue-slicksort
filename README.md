@@ -352,7 +352,7 @@ Whether the element should be sortable or not
 
 The `v-handle` directive is used inside the draggable element.
 
-The Container must have the `:useDragHandle` prop set to `true` for the handle to work as explected.
+The Container must have the `:useDragHandle` prop set to `true` for the handle to work as expected.
 
 Here is an example for a simple element with a handle:
 
