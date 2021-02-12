@@ -211,14 +211,7 @@ export const ContainerMixin = {
       const active = this.manager.getActive();
 
       if (active) {
-        const {
-          axis,
-          getHelperDimensions,
-          helperClass,
-          hideSortableGhost,
-          useWindowAsScrollContainer,
-          appendTo,
-        } = this.$props;
+        const { getHelperDimensions, helperClass, hideSortableGhost, appendTo } = this.$props;
         const { node } = active;
         const { index } = node.sortableInfo;
         const margin = getElementMargin(node);
@@ -238,22 +231,6 @@ export const ContainerMixin = {
         this.containerBoundingRect = containerBoundingRect;
         this.index = index;
         this.newIndex = index;
-
-        this._axis = {
-          x: axis.indexOf('x') >= 0,
-          y: axis.indexOf('y') >= 0,
-        };
-        this.offsetEdge = getEdgeOffset(node, this.container);
-        this.initialOffset = getPointerOffset(e);
-        this.initialScroll = {
-          top: this.scrollContainer.scrollTop,
-          left: this.scrollContainer.scrollLeft,
-        };
-
-        this.initialWindowScroll = {
-          top: window.pageYOffset,
-          left: window.pageXOffset,
-        };
 
         const clonedNode = cloneNode(node);
 
@@ -279,33 +256,8 @@ export const ContainerMixin = {
           this.hub.ghost = this.sortableGhost;
         }
 
-        this.translate = {};
-        this.minTranslate = {};
-        this.maxTranslate = {};
-        if (this._axis.x) {
-          this.minTranslate.x =
-            (useWindowAsScrollContainer ? 0 : containerBoundingRect.left) -
-            this.boundingClientRect.left -
-            this.width / 2;
-          this.maxTranslate.x =
-            (useWindowAsScrollContainer
-              ? this._window.innerWidth
-              : containerBoundingRect.left + containerBoundingRect.width) -
-            this.boundingClientRect.left -
-            this.width / 2;
-        }
-        if (this._axis.y) {
-          this.minTranslate.y =
-            (useWindowAsScrollContainer ? 0 : containerBoundingRect.top) -
-            this.boundingClientRect.top -
-            this.height / 2;
-          this.maxTranslate.y =
-            (useWindowAsScrollContainer
-              ? this._window.innerHeight
-              : containerBoundingRect.top + containerBoundingRect.height) -
-            this.boundingClientRect.top -
-            this.height / 2;
-        }
+        this.intializeOffsets(e, this.boundingClientRect);
+        this.offsetEdge = getEdgeOffset(node, this.container);
 
         if (helperClass) {
           this.helper.classList.add(...helperClass.split(' '));
@@ -375,14 +327,9 @@ export const ContainerMixin = {
       }
     },
 
-    handleDragIn(e, sortableGhost, helper) {
-      if (this.hub.isSource(this)) {
-        return;
-      }
+    intializeOffsets(e, clientRect) {
+      const { useWindowAsScrollContainer, containerBoundingRect, _window } = this;
 
-      const nodes = this.manager.refs;
-      this.index = nodes.length;
-      this.manager.active = { index: this.index };
       this._axis = {
         x: this.axis.indexOf('x') >= 0,
         y: this.axis.indexOf('y') >= 0,
@@ -402,14 +349,42 @@ export const ContainerMixin = {
         left: window.pageXOffset,
       };
 
+      this.translate = {};
+      this.minTranslate = {};
+      this.maxTranslate = {};
+
+      if (this._axis.x) {
+        this.minTranslate.x =
+          (useWindowAsScrollContainer ? 0 : containerBoundingRect.left) - clientRect.left - this.width / 2;
+        this.maxTranslate.x =
+          (useWindowAsScrollContainer ? _window.innerWidth : containerBoundingRect.left + containerBoundingRect.width) -
+          clientRect.left -
+          this.width / 2;
+      }
+      if (this._axis.y) {
+        this.minTranslate.y =
+          (useWindowAsScrollContainer ? 0 : containerBoundingRect.top) - clientRect.top - this.height / 2;
+        this.maxTranslate.y =
+          (useWindowAsScrollContainer
+            ? _window.innerHeight
+            : containerBoundingRect.top + containerBoundingRect.height) -
+          clientRect.top -
+          this.height / 2;
+      }
+    },
+
+    handleDragIn(e, sortableGhost, helper) {
+      if (this.hub.isSource(this)) {
+        return;
+      }
+
+      const nodes = this.manager.refs;
+      this.index = nodes.length;
+      this.manager.active = { index: this.index };
+
       const containerBoundingRect = this.container.getBoundingClientRect();
       const helperBoundingRect = helper.getBoundingClientRect();
       this.containerBoundingRect = containerBoundingRect;
-
-      this.offsetEdge = {
-        top: helperBoundingRect.top + this.initialScroll.top + this.initialWindowScroll.top,
-        left: helperBoundingRect.left + this.initialScroll.left + this.initialWindowScroll.left,
-      };
 
       this.sortableGhost = cloneNode(sortableGhost);
       this.container.appendChild(this.sortableGhost);
@@ -419,30 +394,11 @@ export const ContainerMixin = {
       this.height = ghostRect.height;
 
       this.marginOffset = { x: 0, y: 0 };
-      this.translate = {};
-      this.minTranslate = {};
-      this.maxTranslate = {};
-      if (this._axis.x) {
-        this.minTranslate.x =
-          (this.useWindowAsScrollContainer ? 0 : containerBoundingRect.left) - helperBoundingRect.left - this.width / 2;
-        this.maxTranslate.x =
-          (this.useWindowAsScrollContainer
-            ? this._window.innerWidth
-            : containerBoundingRect.left + containerBoundingRect.width) -
-          helperBoundingRect.left -
-          this.width / 2;
-      }
-      if (this._axis.y) {
-        this.minTranslate.y =
-          (this.useWindowAsScrollContainer ? 0 : containerBoundingRect.top) - helperBoundingRect.top - this.height / 2;
-        this.maxTranslate.y =
-          (this.useWindowAsScrollContainer
-            ? this._window.innerHeight
-            : containerBoundingRect.top + containerBoundingRect.height) -
-          helperBoundingRect.top -
-          this.height / 2;
-      }
-
+      this.intializeOffsets(e, helperBoundingRect);
+      this.offsetEdge = {
+        top: helperBoundingRect.top + this.initialScroll.top + this.initialWindowScroll.top,
+        left: helperBoundingRect.left + this.initialScroll.left + this.initialWindowScroll.left,
+      };
       // Turn on dragging
       this.sorting = true;
     },
