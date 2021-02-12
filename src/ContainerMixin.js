@@ -60,8 +60,9 @@ export const ContainerMixin = {
     transitionDuration: { type: Number, default: 300 },
     appendTo: { type: String, default: 'body' },
     draggedSettlingDuration: { type: Number, default: null },
-    group: { type: String, default: '_default' },
-    // allow: { type: Array, default: () => ['default'] },
+    group: { type: String, default: '' },
+    accept: { type: Array, default: () => ['default'] },
+    block: { type: Array, default: () => [] },
     lockAxis: String,
     helperClass: String,
     contentWindow: Object,
@@ -101,7 +102,7 @@ export const ContainerMixin = {
     }
 
     if (this.hub) {
-      this.hub.addContainer(this.group, this);
+      this.hub.addContainer(this);
     }
   },
 
@@ -113,7 +114,7 @@ export const ContainerMixin = {
     }
 
     if (this.hub) {
-      this.hub.removeContainer(this.group, this);
+      this.hub.removeContainer(this);
     }
   },
 
@@ -184,6 +185,8 @@ export const ContainerMixin = {
     },
 
     handleEnd() {
+      if (!this._touched) return;
+
       const { distance } = this.$props;
 
       this._touched = false;
@@ -197,7 +200,6 @@ export const ContainerMixin = {
       if (!this.sorting) {
         clearTimeout(this.pressTimer);
         this.manager.active = null;
-
         if (this.hub) {
           this.hub.cancel();
         }
@@ -271,7 +273,7 @@ export const ContainerMixin = {
         }
 
         if (this.hub) {
-          this.hub.sortStart({ group: this.group, ref: this });
+          this.hub.sortStart({ ref: this });
           this.hub.helper = this.helper;
           this.hub.ghost = this.sortableGhost;
         }
@@ -324,7 +326,8 @@ export const ContainerMixin = {
       this.updatePosition(e);
 
       if (this.hub) {
-        this.hub.handleSortMove(e);
+        const payload = this.modelValue[this.index];
+        this.hub.handleSortMove(e, payload);
       }
 
       if (!this.hub || this.hub.isDest(this)) {
@@ -513,7 +516,7 @@ export const ContainerMixin = {
       };
 
       if (this.hub && !this.hub.isDest(this)) {
-        const dest = this.hub.dest.ref;
+        const dest = this.hub.getDest();
         const destIndex = dest.newIndex;
         const destNodes = dest.manager.getOrderedRefs();
         const newIndexNode = destIndex < destNodes.length ? destNodes[destIndex].node : dest.sortableGhost;
