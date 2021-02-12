@@ -11,11 +11,14 @@ let containerIDCounter = 1;
  */
 function canAcceptElement(dest, source, payload) {
   if (source.id === dest.id) return true;
+  if (dest.block && dest.block.includes(source.group)) return false;
   if (typeof dest.accept === 'function') {
     return dest.accept({ dest, source, payload });
   }
+  if (typeof dest.accept === 'boolean') {
+    return dest.accept;
+  }
   if (dest.accept && dest.accept.includes(source.group)) return true;
-  if (dest.block && dest.block.includes(source.group)) return false;
   if (dest.group === source.group) return true;
   return false;
 }

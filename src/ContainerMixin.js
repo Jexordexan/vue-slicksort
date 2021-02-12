@@ -61,7 +61,7 @@ export const ContainerMixin = {
     appendTo: { type: String, default: 'body' },
     draggedSettlingDuration: { type: Number, default: null },
     group: { type: String, default: '' },
-    accept: { type: Array, default: () => ['default'] },
+    accept: { type: [Boolean, Array, Function], default: false },
     block: { type: Array, default: () => [] },
     lockAxis: String,
     helperClass: String,
