@@ -1,11 +1,11 @@
 declare module 'vue-slicksort' {
-  import Vue, { DirectiveOptions } from 'vue';
+  import Vue, { DirectiveOptions, VueConstructor } from 'vue';
 
   export const ContainerMixin: Vue;
   export const ElementMixin: Vue;
 
-  export const SlickList: Vue;
-  export const SlickItem: Vue;
+  export const SlickList: VueConstructor<Vue>;
+  export const SlickItem: VueConstructor<Vue>;
 
   export const HandleDirective: DirectiveOptions;
 
