@@ -3,7 +3,7 @@
     <div v-for="list in lists" :key="list.id" class="list">
       <h1>{{ list.name }}</h1>
       <strong>Accepts: {{ list.accept }}</strong>
-      <SortableList axis="y" :group="list.group" :accept="list.accept" v-model="list.items">
+      <SortableList axis="y" :group="list.group" :accept="list.accept" :block="list.block" v-model="list.items">
         <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
       </SortableList>
     </div>
@@ -32,7 +32,7 @@ export default {
           id: id++,
           name: 'List A',
           group: 'a',
-          accept: ['c'],
+          accept: ({ source }) => source.group == 'b',
           items: range(3).map((value) => {
             return {
               value: 'Item ' + (value + 1),
@@ -45,7 +45,7 @@ export default {
           id: id++,
           name: 'List B',
           group: 'b',
-          accept: ['a'],
+          accept: ['a', 'c'],
           items: range(3).map((value) => {
             return {
               value: 'Item ' + (value + 1),
@@ -58,7 +58,8 @@ export default {
           id: id++,
           name: 'List C',
           group: 'c',
-          accept: ['b'],
+          accept: true,
+          block: ['a'],
           items: range(3).map((value) => {
             return {
               value: 'Item ' + (value + 1),
