@@ -6,10 +6,6 @@ export const ElementMixin = {
       type: Number,
       required: true,
     },
-    collection: {
-      type: [String, Number],
-      default: 'default',
-    },
     disabled: {
       type: Boolean,
       default: false,
@@ -17,10 +13,10 @@ export const ElementMixin = {
   },
 
   mounted() {
-    const { collection, disabled, index } = this.$props;
+    const { disabled, index } = this.$props;
 
     if (!disabled) {
-      this.setDraggable(collection, index);
+      this.setDraggable(index);
     }
   },
 
@@ -32,38 +28,31 @@ export const ElementMixin = {
     },
     disabled(isDisabled) {
       if (isDisabled) {
-        this.removeDraggable(this.collection);
+        this.removeDraggable();
       } else {
-        this.setDraggable(this.collection, this.index);
+        this.setDraggable(this.index);
       }
-    },
-    collection(newCollection, oldCollection) {
-      this.removeDraggable(oldCollection);
-      this.setDraggable(newCollection, this.index);
     },
   },
 
   beforeUnmount() {
-    const { collection, disabled } = this;
-
-    if (!disabled) this.removeDraggable(collection);
+    if (!this.disabled) this.removeDraggable();
   },
   methods: {
-    setDraggable(collection, index) {
+    setDraggable(index) {
       const node = this.$el;
 
       node.sortableInfo = {
         index,
-        collection,
         manager: this.manager,
       };
 
       this.ref = { node };
-      this.manager.add(collection, this.ref);
+      this.manager.add(this.ref);
     },
 
-    removeDraggable(collection) {
-      this.manager.remove(collection, this.ref);
+    removeDraggable() {
+      this.manager.remove(this.ref);
     },
   },
 };

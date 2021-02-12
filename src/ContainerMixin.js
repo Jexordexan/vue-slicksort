@@ -136,11 +136,11 @@ export const ContainerMixin = {
 
       if (node && node.sortableInfo && this.nodeIsChild(node) && !this.sorting) {
         const { useDragHandle } = this.$props;
-        const { index, collection } = node.sortableInfo;
+        const { index } = node.sortableInfo;
 
         if (useDragHandle && !closest(e.target, (el) => el.sortableHandle != null)) return;
 
-        this.manager.active = { index, collection };
+        this.manager.active = { index };
 
         /*
          * Fixes a bug in Firefox where the :active state of anchor tags
@@ -218,12 +218,12 @@ export const ContainerMixin = {
           useWindowAsScrollContainer,
           appendTo,
         } = this.$props;
-        const { node, collection } = active;
+        const { node } = active;
         const { index } = node.sortableInfo;
         const margin = getElementMargin(node);
 
         const containerBoundingRect = this.container.getBoundingClientRect();
-        const dimensions = getHelperDimensions({ index, node, collection });
+        const dimensions = getHelperDimensions({ index, node });
 
         this.node = node;
         this.margin = margin;
@@ -316,7 +316,7 @@ export const ContainerMixin = {
 
         this.sorting = true;
 
-        this.$emit('sort-start', { event: e, node, index, collection });
+        this.$emit('sort-start', { event: e, node, index });
       }
     },
 
@@ -339,24 +339,20 @@ export const ContainerMixin = {
     },
 
     handleDropOut() {
-      const { collection } = this.manager.active;
       const removed = this.modelValue[this.index];
       const newValue = arrayRemove(this.modelValue, this.index);
       this.$emit('sort-remove', {
         oldIndex: this.index,
-        collection,
       });
       this.$emit('update:modelValue', newValue);
       return removed;
     },
 
     handleDropIn(item) {
-      const { collection } = this.manager.active;
       const newValue = arrayInsert(this.modelValue, this.newIndex, item);
       this.$emit('sort-insert', {
         newIndex: this.newIndex,
         value: item,
-        collection,
       });
       this.$emit('update:modelValue', newValue);
       this.handleDragOut();
@@ -370,8 +366,7 @@ export const ContainerMixin = {
       if (this.hub.isSource(this)) {
         this.animateNodes();
       } else {
-        const { collection } = this.manager.active;
-        resetTransform(this.manager.refs[collection]);
+        resetTransform(this.manager.refs);
         this.sortableGhost.remove();
         this.manager.active = null;
         this._touched = false;
@@ -384,9 +379,9 @@ export const ContainerMixin = {
         return;
       }
 
-      this.manager.active = { collection: 'default' };
-      const nodes = this.manager.refs['default'];
       this.index = nodes.length;
+      this.manager.active = { index: this.index };
+      const nodes = this.manager.refs;
       this._axis = {
         x: this.axis.indexOf('x') >= 0,
         y: this.axis.indexOf('y') >= 0,
@@ -452,15 +447,13 @@ export const ContainerMixin = {
     },
 
     handleSortEnd(e) {
-      const { collection } = this.manager.active;
-
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
         events.move.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortMove));
         events.end.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
-      const nodes = this.manager.refs[collection];
+      const nodes = this.manager.refs;
 
       const onEnd = () => {
         // Remove the helper from the DOM
@@ -485,7 +478,6 @@ export const ContainerMixin = {
             event: e,
             oldIndex: this.index,
             newIndex: this.newIndex,
-            collection,
           });
           this.$emit('update:modelValue', arrayMove(this.modelValue, this.index, this.newIndex));
         }

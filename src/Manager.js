@@ -1,21 +1,22 @@
 export default class Manager {
   constructor() {
-    this.refs = {};
+    this.refs = [];
+    this.active = null;
   }
 
-  add(collection, ref) {
-    if (!this.refs[collection]) {
-      this.refs[collection] = [];
+  add(ref) {
+    if (!this.refs) {
+      this.refs = [];
     }
 
-    this.refs[collection].push(ref);
+    this.refs.push(ref);
   }
 
-  remove(collection, ref) {
-    const index = this.getIndex(collection, ref);
+  remove(ref) {
+    const index = this.getIndex(ref);
 
     if (index !== -1) {
-      this.refs[collection].splice(index, 1);
+      this.refs.splice(index, 1);
     }
   }
 
@@ -24,15 +25,15 @@ export default class Manager {
   }
 
   getActive() {
-    return this.refs[this.active.collection].find(({node}) => node.sortableInfo.index == this.active.index);
+    return this.refs.find(({ node }) => node.sortableInfo.index == this.active.index);
   }
 
-  getIndex(collection, ref) {
-    return this.refs[collection].indexOf(ref);
+  getIndex(ref) {
+    return this.refs.indexOf(ref);
   }
 
-  getOrderedRefs(collection = this.active.collection) {
-    return this.refs[collection].sort((a, b) => {
+  getOrderedRefs() {
+    return this.refs.sort((a, b) => {
       return a.node.sortableInfo.index - b.node.sortableInfo.index;
     });
   }

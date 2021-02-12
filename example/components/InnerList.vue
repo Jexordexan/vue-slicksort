@@ -2,13 +2,7 @@
   <li class="list-item">
     <h3>{{ list.name }}</h3>
     <SortableList v-model="list.items" class="shortList">
-      <SortableItem
-        v-for="(item, index) in list.items"
-        :key="item.id"
-        :collection="list.name"
-        :index="index"
-        :item="item"
-      />
+      <SortableItem v-for="(item, index) in list.items" :key="item.id" :index="index" :item="item" />
     </SortableList>
   </li>
 </template>
