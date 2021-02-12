@@ -22,7 +22,7 @@ export const ContainerMixin = {
   data() {
     let useHub = false;
     let containerId = 1;
-    if (this.$props.group) {
+    if (this.group) {
       // If the group option is set, it is assumed the user intends
       // to drag between containers and the required plugin has been installed
       if (this.$_slicksort_hub) {
@@ -152,10 +152,10 @@ export const ContainerMixin = {
         }
 
         if (!distance) {
-          if (this.$props.pressDelay === 0) {
+          if (this.pressDelay === 0) {
             this.handlePress(e);
           } else {
-            this.pressTimer = setTimeout(() => this.handlePress(e), this.$props.pressDelay);
+            this.pressTimer = setTimeout(() => this.handlePress(e), this.pressDelay);
           }
         }
       }
@@ -495,7 +495,7 @@ export const ContainerMixin = {
         this.sorting = false;
       };
 
-      if (this.$props.transitionDuration || this.$props.draggedSettlingDuration) {
+      if (this.transitionDuration || this.draggedSettlingDuration) {
         this.transitionHelperIntoPlace(nodes, onEnd);
       } else {
         onEnd();
@@ -503,7 +503,7 @@ export const ContainerMixin = {
     },
 
     transitionHelperIntoPlace(nodes, cb) {
-      if (this.$props.draggedSettlingDuration === 0) {
+      if (this.draggedSettlingDuration === 0) {
         return Promise.resolve();
       }
 
@@ -551,10 +551,7 @@ export const ContainerMixin = {
         }
       }
 
-      const duration =
-        this.$props.draggedSettlingDuration !== null
-          ? this.$props.draggedSettlingDuration
-          : this.$props.transitionDuration;
+      const duration = this.draggedSettlingDuration !== null ? this.draggedSettlingDuration : this.transitionDuration;
 
       this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
       this.helper.style[`${vendorPrefix}TransitionDuration`] = `${duration}ms`;
