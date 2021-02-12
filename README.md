@@ -18,6 +18,8 @@
 
 ### Examples available here: <a href="https://jexordexan.github.io/vue-slicksort/">https://jexordexan.github.io/vue-slicksort/</a>
 
+### [中文文档](./doc/zh.md)
+
 ## Features
 
 - **`v-model` Compatible** – Make any array editable with the `v-model` standard
