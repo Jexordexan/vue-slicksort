@@ -379,9 +379,9 @@ export const ContainerMixin = {
         return;
       }
 
+      const nodes = this.manager.refs;
       this.index = nodes.length;
       this.manager.active = { index: this.index };
-      const nodes = this.manager.refs;
       this._axis = {
         x: this.axis.indexOf('x') >= 0,
         y: this.axis.indexOf('y') >= 0,
