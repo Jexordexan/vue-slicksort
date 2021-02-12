@@ -8,10 +8,10 @@ export const SlickList = {
     tag: {
       type: String,
       default: 'div',
-    }
+    },
   },
   render (h) {
-    return h(this.$props.tag || 'div', this.$slots.default);
+    return h(this.tag, this.$slots.default);
   },
 };
 
@@ -20,6 +20,6 @@ export const SlickItem = {
   mixins: [ ElementMixin ],
   props: [ 'tag' ],
   render (h) {
-    return h(this.$props.tag, this.$slots.default);
+    return h(this.tag, this.$slots.default);
   },
 };
