@@ -17,7 +17,7 @@ import {
 
 // Export Sortable Container Component Mixin
 export const ContainerMixin = {
-  emits: ['sort-start', 'sort-move', 'sort-end', 'update:modelValue'],
+  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:modelValue'],
 
   data() {
     let useHub = false;
@@ -337,25 +337,25 @@ export const ContainerMixin = {
 
     handleDropOut() {
       const { collection } = this.manager.active;
-      const removed = this.value[this.index];
-      const newValue = arrayRemove(this.value, this.index);
+      const removed = this.modelValue[this.index];
+      const newValue = arrayRemove(this.modelValue, this.index);
       this.$emit('sort-remove', {
         oldIndex: this.index,
         collection,
       });
-      this.$emit('input', newValue);
+      this.$emit('update:modelValue', newValue);
       return removed;
     },
 
     handleDropIn(item) {
       const { collection } = this.manager.active;
-      const newValue = arrayInsert(this.value, this.newIndex, item);
+      const newValue = arrayInsert(this.modelValue, this.newIndex, item);
       this.$emit('sort-insert', {
         newIndex: this.newIndex,
         value: item,
         collection,
       });
-      this.$emit('input', newValue);
+      this.$emit('update:modelValue', newValue);
       this.handleDragOut();
     },
 

@@ -4,3 +4,4 @@ export { HandleDirective } from './HandleDirective';
 export { SlickList, SlickItem } from './components';
 
 export { arrayMove } from './utils';
+export { default as plugin } from './plugin';

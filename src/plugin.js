@@ -99,7 +99,7 @@ class SlicksortHub extends Manager {
 }
 
 export default {
-  install(Vue, options) {
-    Vue.prototype.$_slicksort_hub = new SlicksortHub(options);
+  install(app, options) {
+    app.config.globalProperties.$_slicksort_hub = new SlicksortHub(options);
   },
 };
