@@ -98,7 +98,7 @@ export const ContainerMixin = {
 
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
-        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key], false));
+        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key], { passive: true }));
       }
     }
 
@@ -128,10 +128,7 @@ export const ContainerMixin = {
       }
 
       this._touched = true;
-      this._pos = {
-        x: e.pageX,
-        y: e.pageY,
-      };
+      this._pos = this.getOffset(e);
 
       const node = closest(e.target, (el) => el.sortableInfo != null);
 
@@ -170,9 +167,10 @@ export const ContainerMixin = {
       const { distance, pressThreshold } = this.$props;
 
       if (!this.sorting && this._touched) {
+        const offset = this.getOffset(e);
         this._delta = {
-          x: this._pos.x - e.pageX,
-          y: this._pos.y - e.pageY,
+          x: this._pos.x - offset.x,
+          y: this._pos.y - offset.y,
         };
         const delta = Math.abs(this._delta.x) + Math.abs(this._delta.y);
 
@@ -208,6 +206,7 @@ export const ContainerMixin = {
     },
 
     handlePress(e) {
+      e.stopPropagation();
       const active = this.manager.getActive();
 
       if (active) {
@@ -452,7 +451,7 @@ export const ContainerMixin = {
     },
 
     transitionHelperIntoPlace(nodes, cb) {
-      if (this.draggedSettlingDuration === 0) {
+      if (this.draggedSettlingDuration === 0 || nodes.length === 0) {
         return Promise.resolve();
       }
 

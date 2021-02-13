@@ -18,6 +18,8 @@
 
 ### Examples available here: <a href="https://jexordexan.github.io/vue-slicksort/">https://jexordexan.github.io/vue-slicksort/</a>
 
+### [中文文档](./doc/zh.md)
+
 ## Features
 
 - **`v-model` Compatible** – Make any array editable with the `v-model` standard
@@ -133,8 +135,8 @@ const ExampleVue = {
   name: 'Example',
   template: `
     <div class="root">
-      <SlickList lockAxis="y" v-model="items">
-        <SlickItem v-for="(item, index) in items" :index="index" :key="index">
+      <SlickList lockAxis="y" v-model="items" tag="ul">
+        <SlickItem v-for="(item, index) in items" :index="index" :key="index" tag="li">
           {{ item }}
         </SlickItem>
       </SlickList>
@@ -374,7 +376,7 @@ Whether the element should be sortable or not
 
 The `v-handle` directive is used inside the draggable element.
 
-The Container must have the `:useDragHandle` prop set to `true` for the handle to work as explected.
+The Container must have the `:useDragHandle` prop set to `true` for the handle to work as expected.
 
 Here is an example for a simple element with a handle:
 

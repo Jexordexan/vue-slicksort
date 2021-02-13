@@ -2,18 +2,21 @@ import { h } from 'vue';
 import { ElementMixin } from './ElementMixin';
 import { ContainerMixin } from './ContainerMixin';
 
-export const SlickList = {
-  name: 'slick-list',
-  mixins: [ContainerMixin],
-  render() {
-    return h('div', this.$slots.default());
-  },
-};
+function create (name, defaultTag, mixin) {
+  return {
+    name,
+    mixins: [ mixin ],
+    props: {
+      tag: {
+        type: String,
+        default: defaultTag,
+      },
+    },
+    render (h) {
+      return h(this.tag, this.$slots.default);
+    },
+  };
+}
 
-export const SlickItem = {
-  name: 'slick-item',
-  mixins: [ElementMixin],
-  render() {
-    return h('div', this.$slots.default());
-  },
-};
+export const SlickList = create('slick-list', 'ul', ContainerMixin);
+export const SlickItem = create('slick-item', 'li', ElementMixin);
