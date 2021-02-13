@@ -98,7 +98,9 @@ export const ContainerMixin = {
 
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
-        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key], { passive: true }));
+        events[key].forEach((eventName) =>
+          this.container.addEventListener(eventName, this.events[key], { passive: true })
+        );
       }
     }
 
@@ -128,7 +130,7 @@ export const ContainerMixin = {
       }
 
       this._touched = true;
-      this._pos = this.getOffset(e);
+      this._pos = getPointerOffset(e);
 
       const node = closest(e.target, (el) => el.sortableInfo != null);
 
@@ -167,7 +169,7 @@ export const ContainerMixin = {
       const { distance, pressThreshold } = this.$props;
 
       if (!this.sorting && this._touched) {
-        const offset = this.getOffset(e);
+        const offset = getPointerOffset(e);
         this._delta = {
           x: this._pos.x - offset.x,
           y: this._pos.y - offset.y,

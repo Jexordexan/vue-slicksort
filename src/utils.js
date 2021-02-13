@@ -127,13 +127,6 @@ export function cloneNode(node) {
   return clonedNode;
 }
 
-export function getOffset(e) {
-  return {
-    x: e.touches ? e.touches[0].pageX : e.pageX,
-    y: e.touches ? e.touches[0].pageY : e.pageY,
-  };
-}
-
 export function getLockPixelOffsets(lockOffset, width, height) {
   if (!Array.isArray(lockOffset)) {
     lockOffset = [lockOffset, lockOffset];
