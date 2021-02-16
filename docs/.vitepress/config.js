@@ -1,12 +1,11 @@
 module.exports = {
   title: 'Vue Slicksort',
   head: [
-    ['link', { rel: 'icon', sizes: '32x32', href: '/public/favicon-32x32.png' }],
-    ['link', { rel: 'icon', sizes: '16x16', href: '/public/favicon-16x16.png' }],
+    ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
+    ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],
   ],
   themeConfig: {
-    base: '/vue-slicksort/',
-    logo: '/assets/logo.png',
+    logo: '/logo.png',
     // Assumes GitHub. Can also be a full GitLab url.
     repo: 'Jexordexan/vue-slicksort',
     // Customising the header label
