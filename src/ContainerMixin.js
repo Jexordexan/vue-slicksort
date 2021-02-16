@@ -18,7 +18,7 @@ import {
 // Export Sortable Container Component Mixin
 export const ContainerMixin = {
   inject: ['SlicksortHub'],
-  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:modelValue'],
+  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:list'],
 
   setup() {
     let useHub = false;
@@ -48,7 +48,7 @@ export const ContainerMixin = {
   },
 
   props: {
-    modelValue: { type: Array, required: true },
+    list: { type: Array, required: true },
     axis: { type: String, default: 'y' }, // 'x', 'y', 'xy'
     distance: { type: Number, default: 0 },
     pressDelay: { type: Number, default: 0 },
@@ -280,7 +280,7 @@ export const ContainerMixin = {
       this.updatePosition(e);
 
       if (this.hub) {
-        const payload = this.modelValue[this.index];
+        const payload = this.list[this.index];
         this.hub.handleSortMove(e, payload);
       }
 
@@ -293,22 +293,22 @@ export const ContainerMixin = {
     },
 
     handleDropOut() {
-      const removed = this.modelValue[this.index];
-      const newValue = arrayRemove(this.modelValue, this.index);
+      const removed = this.list[this.index];
+      const newValue = arrayRemove(this.list, this.index);
       this.$emit('sort-remove', {
         oldIndex: this.index,
       });
-      this.$emit('update:modelValue', newValue);
+      this.$emit('update:list', newValue);
       return removed;
     },
 
     handleDropIn(item) {
-      const newValue = arrayInsert(this.modelValue, this.newIndex, item);
+      const newValue = arrayInsert(this.list, this.newIndex, item);
       this.$emit('sort-insert', {
         newIndex: this.newIndex,
         value: item,
       });
-      this.$emit('update:modelValue', newValue);
+      this.$emit('update:list', newValue);
       this.handleDragOut();
     },
 
@@ -437,7 +437,7 @@ export const ContainerMixin = {
             oldIndex: this.index,
             newIndex: this.newIndex,
           });
-          this.$emit('update:modelValue', arrayMove(this.modelValue, this.index, this.newIndex));
+          this.$emit('update:list', arrayMove(this.list, this.index, this.newIndex));
         }
 
         this.manager.active = null;
