@@ -18,7 +18,7 @@ footer: MIT Licensed | Copyright © 2019-present Jordan Simonds
 
 ### Try it out!
 
-<GroupExample />
+<GroupExample win-screen />
 
 ## Stats
 

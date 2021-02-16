@@ -3,6 +3,7 @@ module.exports = {
   head: [
     ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],
+    ['script', { src: '/confetti.min.js' }],
   ],
   themeConfig: {
     logo: '/logo.png',
