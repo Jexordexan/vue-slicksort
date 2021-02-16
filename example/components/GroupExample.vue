@@ -3,7 +3,7 @@
     <div v-for="list in lists" :key="list.id" class="list">
       <h1>{{ list.name }}</h1>
       <strong>Accepts: {{ list.accept }}</strong>
-      <SortableList axis="y" :group="list.group" :accept="list.accept" :block="list.block" v-model="list.items">
+      <SortableList axis="y" :group="list.group" :accept="list.accept" :block="list.block" v-model:list="list.items">
         <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
       </SortableList>
     </div>
@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import range from 'lodash/range';
-import random from 'lodash/random';
+import { range } from 'lodash-es';
+import { random } from 'lodash-es';
 
 import SortableItem from './SortableItem.vue';
 import SortableList from './SortableList.vue';
