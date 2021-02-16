@@ -14,6 +14,7 @@ $bluetopaz = #58cbf2
 .example-list 
   margin 0
   padding 0
+  overflow auto
   &.horizontal
     display flex
 
@@ -30,7 +31,7 @@ $bluetopaz = #58cbf2
   background $purp
   color white
   line-height 1.4
-  mix-blend-mode multiply
+  // mix-blend-mode multiply
   user-select none
 
 // Drag handle
@@ -47,3 +48,21 @@ $bluetopaz = #58cbf2
 
 h4
   margin-top 1em
+
+
+.button {
+  padding: 5px 15px;
+  background: white;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: inherit;
+
+  &:hover {
+    background: #eee;
+  }
+
+  &:active {
+    background: #ccc;
+  }
+}

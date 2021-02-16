@@ -81,7 +81,7 @@ By default the entire list item is the handle for the drag events. This might be
 
 <FruitExample show-handle />
 
-### Scrolling and long lists
+### Autoscroll
 
 Slicksort will automatically autoscroll within the container if it overflows.
 
@@ -146,6 +146,8 @@ Every list that you want to drag between then needs the `group` prop to be set. 
 ```
 
 ### Between the same group
+
+<SimpleGroupExample />
 
 ### Between different groups
 

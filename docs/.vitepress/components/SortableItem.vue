@@ -1,17 +1,20 @@
 <template>
   <li class="example-list-item" :style="{ height: item.height + 'px', background: item.background }">
-    <ClientOnly>
-      <!-- <span v-drag-handle class="handle" v-if="showHandle"></span> -->
-    </ClientOnly>
+    <DragHandle v-if="showHandle" class="example-drag-handle" />
     {{ item.value }}
+    <button v-if="showHandle" class="button">Add to cart</button>
   </li>
 </template>
 
 <script>
 import { ElementMixin } from '../../../src';
+import DragHandle from './DragHandle.vue';
 
 export default {
   mixins: [ElementMixin],
+  components: {
+    DragHandle,
+  },
   props: {
     item: {
       type: Object,
@@ -22,4 +25,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.button {
+  margin-left: auto;
+}
+</style>

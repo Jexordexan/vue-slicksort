@@ -16,7 +16,7 @@ features:
 footer: MIT Licensed | Copyright © 2019-present Jordan Simonds
 ---
 
-### Try it out!
+## Try it out!
 
 <GroupExample win-screen />
 

@@ -1,17 +1,9 @@
 <template>
   <div class="groups-example">
-    <div class="win-overlay" v-if="showWinScreen">
-      <div>
-        <h1>Winner!</h1>
-        <button class="button" @click="resetList">Reset</button>
-      </div>
-    </div>
     <div v-for="list in lists" :key="list.id" class="list-wrapper">
       <h4>{{ list.name }}</h4>
-      <code>group: '{{ list.group }}'</code>
-      <br />
-      <code>accept: {{ list.accept }}</code>
-      <SortableList axis="y" :group="list.group" :accept="list.accept" :block="list.block" v-model:list="list.items">
+      <code>group: 'groceries'</code>
+      <SortableList axis="y" group="groceries" :accept="list.accept" :block="list.block" v-model:list="list.items">
         <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
       </SortableList>
     </div>
@@ -34,49 +26,31 @@ import SortableList from './SortableList.vue';
 let id = 100;
 
 const colors = ['#eb5757', '#9b51e1', '#58cbf2'];
-
-const randomColor = () => colors[random(0, colors.length - 1)];
+const fruits = ['Apples', 'Bananas', 'Cherries', 'Dragon Fruit'];
+const veggies = ['Potatoes', 'Broccoli'];
 
 const makeList = () => {
   return [
     {
       id: id++,
-      name: 'List A',
-      group: 'a',
-      accept: ['b'],
-      items: range(3).map((value) => {
+      name: 'Shelf',
+      items: fruits.map((value) => {
         return {
-          value: 'Item ' + (value + 1),
+          value,
           height: random(49, 100),
-          background: colors[value],
+          background: colors[0],
           id: id++,
         };
       }),
     },
     {
       id: id++,
-      name: 'List B',
-      group: 'b',
-      accept: true,
-      items: range(3).map((value) => {
+      name: 'Cart',
+      items: veggies.map((value) => {
         return {
-          value: 'Item ' + (value + 1),
+          value,
           height: random(49, 120),
-          background: colors[value],
-          id: id++,
-        };
-      }),
-    },
-    {
-      id: id++,
-      name: 'List C',
-      group: 'c',
-      accept: ['b'],
-      items: range(3).map((value) => {
-        return {
-          value: 'Item ' + (value + 1),
-          height: random(49, 120),
-          background: colors[value],
+          background: colors[1],
           id: id++,
         };
       }),
@@ -145,20 +119,6 @@ export default {
 }
 
 .list-wrapper {
-  width: 33%;
-}
-
-.win-overlay {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  width: 50%;
 }
 </style>

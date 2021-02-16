@@ -24,7 +24,7 @@
 
   type: `true | string[] | ({ source, dest, payload }) => boolean`
 
-  default: `[]`
+  default: `null`
 
   The groups that can be dragged into this container. If `true`, the list will accept items from all other lists. If `string[]`, the list will accept groups listed. If a function is passed, it should return a boolean, where `true` means the item is acceptable. The function will be called with a context object with the following properties:
 

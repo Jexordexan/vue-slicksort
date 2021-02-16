@@ -27,6 +27,7 @@ module.exports = {
       { text: 'Getting Started', link: '/getting-started' },
       { text: 'Guide', link: '/guide' },
       { text: 'Component API', link: '/components' },
+      { text: 'Troubleshooting', link: '/troubleshooting' },
       { text: 'Migrating', link: '/migrating' },
     ],
   },
