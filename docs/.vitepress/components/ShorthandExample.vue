@@ -1,9 +1,7 @@
 <template>
   <SlickList axis="y" v-model:list="fruits" class="example-list">
     <template #item="{ item }">
-      <div class="example-list-item">
-        {{ item }}
-      </div>
+      {{ item }}
     </template>
   </SlickList>
   <details>
