@@ -1,6 +1,11 @@
 module.exports = {
   title: 'Vue Slicksort',
+  head: [
+    ['link', { rel: 'icon', sizes: '32x32', href: '/public/favicon-32x32.png' }],
+    ['link', { rel: 'icon', sizes: '16x16', href: '/public/favicon-16x16.png' }],
+  ],
   themeConfig: {
+    base: '/vue-slicksort/',
     logo: '/assets/logo.png',
     // Assumes GitHub. Can also be a full GitLab url.
     repo: 'Jexordexan/vue-slicksort',
@@ -12,10 +17,17 @@ module.exports = {
     // if your docs are not at the root of the repo:
     docsDir: 'docs',
     // if your docs are in a specific branch (defaults to 'master'):
-    docsBranch: 'master',
+    docsBranch: 'dev',
     // defaults to false, set to true to enable
     editLinks: true,
     // custom text for edit link. Defaults to "Edit this page"
     editLinkText: 'Help us improve this page!',
+
+    sidebar: [
+      { text: 'Getting Started', link: '/getting-started' },
+      { text: 'Guide', link: '/guide' },
+      { text: 'Component API', link: '/components' },
+      { text: 'Migrating', link: '/migrating' },
+    ],
   },
 };
