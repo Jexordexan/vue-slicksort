@@ -326,6 +326,7 @@ export const ContainerMixin = {
       } else {
         resetTransform(this.manager.refs);
         this.sortableGhost.remove();
+        this.sortableGhost = null;
         this.manager.active = null;
         this._touched = false;
         this.sorting = false;
