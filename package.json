@@ -49,6 +49,7 @@
     "rollup": "cross-env BABEL_ENV=rollup rollup -c",
     "clean": "rimraf dist/",
     "test": "eslint src/** --ext .js",
+    "deploy:alpha": "npm test && npm version prerelease --preid=alpha && npm run deploy:final",
     "deploy:patch": "npm test && npm version patch && npm run deploy:final",
     "deploy:final": "git push; git push --tags; npm publish; npm run docs:build",
     "docs:dev": "vitepress dev docs",
