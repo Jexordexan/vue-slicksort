@@ -98,6 +98,25 @@ export function getPointerOffset(e, reference = 'page') {
   };
 }
 
+function offsetParents(node) {
+  var nodes = [node];
+  for (; node; node = node.offsetParent) {
+    nodes.unshift(node);
+  }
+  return nodes;
+}
+
+export function commonOffsetParent(node1, node2) {
+  var parents1 = offsetParents(node1);
+  var parents2 = offsetParents(node2);
+
+  if (parents1[0] != parents2[0]) throw 'No common ancestor!';
+
+  for (var i = 0; i < parents1.length; i++) {
+    if (parents1[i] != parents2[i]) return parents1[i - 1];
+  }
+}
+
 export function getEdgeOffset(node, container, offset = { top: 0, left: 0 }) {
   // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
   if (node) {
@@ -105,8 +124,8 @@ export function getEdgeOffset(node, container, offset = { top: 0, left: 0 }) {
       top: offset.top + node.offsetTop,
       left: offset.left + node.offsetLeft,
     };
-    if (node.parentNode !== container) {
-      return getEdgeOffset(node.parentNode, container, nodeOffset);
+    if (node.offsetParent !== container.offsetParent) {
+      return getEdgeOffset(node.offsetParent, container, nodeOffset);
     } else {
       return nodeOffset;
     }

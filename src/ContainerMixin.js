@@ -5,6 +5,7 @@ import {
   arrayInsert,
   cloneNode,
   closest,
+  commonOffsetParent,
   events,
   getEdgeOffset,
   getElementMargin,
@@ -62,7 +63,7 @@ export const ContainerMixin = {
     appendTo: { type: String, default: 'body' },
     draggedSettlingDuration: { type: Number, default: null },
     group: { type: String, default: '' },
-    accept: { type: [Boolean, Array, Function], default: false },
+    accept: { type: [Boolean, Array, Function], default: null },
     block: { type: Array, default: () => [] },
     lockAxis: String,
     helperClass: String,
@@ -245,8 +246,8 @@ export const ContainerMixin = {
 
         if (hideSortableGhost) {
           this.sortableGhost = node;
-          node.style.visibility = 'hidden';
-          node.style.opacity = 0;
+          // node.style.visibility = 'hidden';
+          // node.style.opacity = 0;
         }
 
         if (this.hub) {
@@ -398,11 +399,16 @@ export const ContainerMixin = {
       this.width = ghostRect.width;
       this.height = ghostRect.height;
 
-      this.intializeOffsets(e, helperBoundingRect);
-      this.offsetEdge = {
-        top: helperBoundingRect.top + this.initialScroll.top + this.initialWindowScroll.top,
-        left: helperBoundingRect.left + this.initialScroll.left + this.initialWindowScroll.left,
-      };
+      // XY coords of the inserted node, relative to the top-left corner of the container
+      this.offsetEdge = getEdgeOffset(this.sortableGhost, this.container);
+
+      this.intializeOffsets(e, ghostRect);
+
+      // Move the initialOffset back to the insertion point of the
+      // sortableGhost (end of the list), as if we had started the drag there.
+      this.initialOffset.x += ghostRect.x - helperBoundingRect.x;
+      this.initialOffset.y += ghostRect.y - helperBoundingRect.y;
+
       // Turn on dragging
       this.sorting = true;
     },
@@ -472,28 +478,20 @@ export const ContainerMixin = {
       if (this.hub && !this.hub.isDest(this)) {
         const dest = this.hub.getDest();
         const destIndex = dest.newIndex;
-        const destNodes = dest.manager.getOrderedRefs();
-        const newIndexNode = destIndex < destNodes.length ? destNodes[destIndex].node : dest.sortableGhost;
-        const sourceScroll = {
-          left: this.scrollContainer.scrollLeft,
-          top: this.scrollContainer.scrollTop,
-        };
-        const destScroll = {
-          left: dest.scrollContainer.scrollLeft,
-          top: dest.scrollContainer.scrollTop,
-        };
-        targetX =
-          newIndexNode.offsetLeft -
-          scrollDifference.left -
-          destScroll.left -
-          (indexNode.offsetLeft - sourceScroll.left);
-        targetY =
-          newIndexNode.offsetTop - scrollDifference.top - destScroll.top - (indexNode.offsetTop - sourceScroll.top);
+        const destRefs = dest.manager.getOrderedRefs();
+        const destNode = destIndex < destRefs.length ? destRefs[destIndex].node : dest.sortableGhost;
+        const ancestor = commonOffsetParent(indexNode, destNode);
+
+        const sourceOffset = getEdgeOffset(indexNode, ancestor);
+        const targetOffset = getEdgeOffset(destNode, ancestor);
+
+        targetX = targetOffset.left - sourceOffset.left - scrollDifference.left;
+        targetY = targetOffset.top - sourceOffset.top - scrollDifference.top;
       } else {
         const newIndexNode = nodes[this.newIndex].node;
         const deltaScroll = {
-          left: this.scrollContainer.scrollLeft - this.initialScroll.left,
-          top: this.scrollContainer.scrollTop - this.initialScroll.top,
+          left: this.scrollContainer.scrollLeft - this.initialScroll.left + scrollDifference.left,
+          top: this.scrollContainer.scrollTop - this.initialScroll.top + scrollDifference.top,
         };
         targetX = -deltaScroll.left;
         if (this.translate && this.translate.x > 0) {
