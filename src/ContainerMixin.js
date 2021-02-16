@@ -98,9 +98,7 @@ export const ContainerMixin = {
 
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
-        events[key].forEach((eventName) =>
-          this.container.addEventListener(eventName, this.events[key], { passive: true })
-        );
+        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key]));
       }
     }
 
@@ -265,8 +263,8 @@ export const ContainerMixin = {
         }
 
         this.listenerNode = e.touches ? node : this._window;
-        events.move.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortMove, false));
-        events.end.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortEnd, false));
+        events.move.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortMove));
+        events.end.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortEnd));
 
         this.sorting = true;
 
@@ -517,7 +515,7 @@ export const ContainerMixin = {
       };
       // Force cleanup in case 'transitionend' never fires
       const cleanupTimer = setTimeout(cleanup, duration + 10);
-      this.helper.addEventListener('transitionend', cleanup, false);
+      this.helper.addEventListener('transitionend', cleanup);
     },
 
     updatePosition(e) {
