@@ -329,6 +329,11 @@ export const ContainerMixin = {
     intializeOffsets(e, clientRect) {
       const { useWindowAsScrollContainer, containerBoundingRect, _window } = this;
 
+      this.marginOffset = {
+        x: this.margin.left + this.margin.right,
+        y: Math.max(this.margin.top, this.margin.bottom),
+      };
+
       this._axis = {
         x: this.axis.indexOf('x') >= 0,
         y: this.axis.indexOf('y') >= 0,
@@ -389,10 +394,10 @@ export const ContainerMixin = {
       this.container.appendChild(this.sortableGhost);
       const ghostRect = this.sortableGhost.getBoundingClientRect();
       this.boundingClientRect = ghostRect;
+      this.margin = getElementMargin(this.sortableGhost);
       this.width = ghostRect.width;
       this.height = ghostRect.height;
 
-      this.marginOffset = { x: 0, y: 0 };
       this.intializeOffsets(e, helperBoundingRect);
       this.offsetEdge = {
         top: helperBoundingRect.top + this.initialScroll.top + this.initialWindowScroll.top,
