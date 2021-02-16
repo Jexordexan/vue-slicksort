@@ -5,8 +5,7 @@
 </template>
 
 <script>
-import { range } from 'lodash-es';
-import { random } from 'lodash-es';
+import { range, random } from 'lodash-es';
 
 import SortableItem from './components/SortableItem.vue';
 import SortableList from './components/SortableList.vue';
