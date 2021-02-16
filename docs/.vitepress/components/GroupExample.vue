@@ -12,7 +12,7 @@
       <br />
       <code>accept: {{ list.accept }}</code>
       <SortableList axis="y" :group="list.group" :accept="list.accept" :block="list.block" v-model:list="list.items">
-        <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
+        <SortableItem v-for="(item, index) in list.items" :key="item.id" :index="index" :item="item" />
       </SortableList>
     </div>
   </div>
