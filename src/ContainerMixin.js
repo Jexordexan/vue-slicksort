@@ -317,6 +317,11 @@ export const ContainerMixin = {
         this.autoscrollInterval = null;
       }
       if (this.hub.isSource(this)) {
+        // Trick to animate all nodes up
+        this.translate = {
+          x: 10000,
+          y: 10000,
+        };
         this.animateNodes();
       } else {
         resetTransform(this.manager.refs);
