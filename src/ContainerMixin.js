@@ -463,9 +463,10 @@ export const ContainerMixin = {
       const indexNode = nodes[this.index].node;
       let targetX = 0;
       let targetY = 0;
-      const deltaScroll = {
-        left: this.scrollContainer.scrollLeft - this.initialScroll.left,
-        top: this.scrollContainer.scrollTop - this.initialScroll.top,
+
+      const scrollDifference = {
+        top: window.pageYOffset - this.initialWindowScroll.top,
+        left: window.pageXOffset - this.initialWindowScroll.left,
       };
 
       if (this.hub && !this.hub.isDest(this)) {
@@ -481,10 +482,19 @@ export const ContainerMixin = {
           left: dest.scrollContainer.scrollLeft,
           top: dest.scrollContainer.scrollTop,
         };
-        targetX = newIndexNode.offsetLeft - destScroll.left - (indexNode.offsetLeft - sourceScroll.left);
-        targetY = newIndexNode.offsetTop - destScroll.top - (indexNode.offsetTop - sourceScroll.top);
+        targetX =
+          newIndexNode.offsetLeft -
+          scrollDifference.left -
+          destScroll.left -
+          (indexNode.offsetLeft - sourceScroll.left);
+        targetY =
+          newIndexNode.offsetTop - scrollDifference.top - destScroll.top - (indexNode.offsetTop - sourceScroll.top);
       } else {
         const newIndexNode = nodes[this.newIndex].node;
+        const deltaScroll = {
+          left: this.scrollContainer.scrollLeft - this.initialScroll.left,
+          top: this.scrollContainer.scrollTop - this.initialScroll.top,
+        };
         targetX = -deltaScroll.left;
         if (this.translate && this.translate.x > 0) {
           // Diff against right edge when moving to the right
