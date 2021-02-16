@@ -42,6 +42,8 @@
   ],
   "scripts": {
     "start": "vite example",
+    "changelog": "standard-changelog",
+    "version": "npm run changelog && git add CHANGELOG.md",
     "build": "npm run clean && npm run rollup",
     "prepublishOnly": "npm run build",
     "rollup": "cross-env BABEL_ENV=rollup rollup -c",
@@ -77,6 +79,7 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-esbuild": "^2.6.1",
     "sass": "^1.32.6",
+    "standard-changelog": "^2.0.27",
     "vite": "^2.0.0-beta.69",
     "vitepress": "^0.12.0",
     "vue": "^3.0.5",
