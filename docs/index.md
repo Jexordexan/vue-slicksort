@@ -3,12 +3,12 @@ home: true
 heroImage: /logomark.png
 heroAlt: Slicksort
 heroText: Vue Slicksort
-tagline: Super smooth sorting for Vue 3
+tagline: Super smooth, touch-friendly, sorting for Vue 3
 actionText: To the Docs!
 actionLink: /getting-started
 features:
   - title: 🥰 Simple
-    details: Use the Slick components, or the provided mixins. Drag and drop betweeen lists is also supported!
+    details: Easy sorting with `v-model` components. Drag and drop between lists is also supported!
   - title: ⚡️ Fast
     details: Silky smooth animations at 60 fps 🔥. Users will be delighted by the experience of sorting
   - title: 🪶 Light
