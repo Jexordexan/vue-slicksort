@@ -62,6 +62,8 @@ This slot will repeat for each item in the `list` prop. This has to be used with
 </template>
 ```
 
+<ShorthandExample />
+
 ### Horizontal List
 
 If your lists are layed out along the X axis, pass in the `axis="x"` prop and it will just work!
