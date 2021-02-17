@@ -4,9 +4,9 @@ interface SortableNode extends HTMLElement {
   };
 }
 
-interface ItemRef {
+export interface ItemRef {
   node: SortableNode;
-  index: number;
+  index?: number;
 }
 
 export default class Manager {

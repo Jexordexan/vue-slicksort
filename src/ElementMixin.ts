@@ -1,6 +1,8 @@
+import { defineComponent, inject } from 'vue';
+import Manager, { ItemRef } from './Manager';
+
 // Export Sortable Element Component Mixin
-export const ElementMixin = {
-  inject: ['manager'],
+export const ElementMixin = defineComponent({
   props: {
     index: {
       type: Number,
@@ -10,6 +12,15 @@ export const ElementMixin = {
       type: Boolean,
       default: false,
     },
+  },
+
+  setup() {
+    const manager = inject<Manager>('manager');
+
+    return {
+      manager,
+      ref: {} as ItemRef,
+    };
   },
 
   mounted() {
@@ -38,8 +49,9 @@ export const ElementMixin = {
   beforeUnmount() {
     if (!this.disabled) this.removeDraggable();
   },
+
   methods: {
-    setDraggable(index) {
+    setDraggable(index: number) {
       const node = this.$el;
 
       node.sortableInfo = {
@@ -48,11 +60,11 @@ export const ElementMixin = {
       };
 
       this.ref = { node };
-      this.manager.add(this.ref);
+      this.manager?.add(this.ref);
     },
 
     removeDraggable() {
-      this.manager.remove(this.ref);
+      this.manager?.remove(this.ref);
     },
   },
-};
+});
