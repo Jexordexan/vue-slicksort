@@ -657,7 +657,7 @@ export const ContainerMixin = {
               // If the current node is to the left on the same row, or above the node that's being dragged
               // then move it to the right
               translate.x = this.width + this.marginOffset.x;
-              if (edgeOffset.left + translate.x > this.containerBoundingRect.width - offset.width) {
+              if (edgeOffset.left + translate.x > this.containerBoundingRect.width - offset.width && nextNode) {
                 // If it moves passed the right bounds, then animate it to the first position of the next row.
                 // We just use the offset of the next node to calculate where to move, because that node's original position
                 // is exactly where we want to go
