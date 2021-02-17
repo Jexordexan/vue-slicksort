@@ -430,7 +430,8 @@ export const ContainerMixin = {
 
       const onEnd = () => {
         // Remove the helper from the DOM
-        this.helper.parentNode.removeChild(this.helper);
+        this.helper.remove();
+        this.helper = null;
 
         if (this.hideSortableGhost && this.sortableGhost) {
           this.sortableGhost.style.visibility = '';
