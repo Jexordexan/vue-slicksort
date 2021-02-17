@@ -1,10 +1,20 @@
-export default class Manager {
-  constructor() {
-    this.refs = [];
-    this.active = null;
-  }
+interface SortableNode extends HTMLElement {
+  sortableInfo: {
+    index: number;
+  };
+}
 
-  add(ref) {
+interface ItemRef {
+  node: SortableNode;
+  index: number;
+}
+
+export default class Manager {
+  private refs: ItemRef[] = [];
+  private active: ItemRef | null = null;
+  constructor() {}
+
+  add(ref: ItemRef) {
     if (!this.refs) {
       this.refs = [];
     }
@@ -12,7 +22,7 @@ export default class Manager {
     this.refs.push(ref);
   }
 
-  remove(ref) {
+  remove(ref: ItemRef) {
     const index = this.getIndex(ref);
 
     if (index !== -1) {
@@ -25,10 +35,10 @@ export default class Manager {
   }
 
   getActive() {
-    return this.refs.find(({ node }) => node.sortableInfo.index == this.active.index);
+    return this.refs.find(({ node }) => node?.sortableInfo?.index == this?.active?.index);
   }
 
-  getIndex(ref) {
+  getIndex(ref: ItemRef) {
     return this.refs.indexOf(ref);
   }
 
