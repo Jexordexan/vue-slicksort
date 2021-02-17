@@ -36,6 +36,52 @@ To fix it, either make the CSS for the list items global, or set the `appendTo` 
 
 By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordexan/vue-slicksort/blob/master/src/HandleDirective.js).
 
+### `v-model` is not working
+
+First, make sure your "model" is bound to `v-model:list`. SlickSort never modifies the `list` prop, it will just emit a new copy of the array with the changes applied. `v-model` will then replace the old reference with the new one. Your list must be a `ref` or be set in `data()`. Using `reactive()` is not advised because it is not reactive when being overridden.
+
+`v-model` bound to a property of a `reactive` object is fine, it just cant be bound the the object itself.
+
+**GOOD**
+
+```vue
+<template>
+  <SlickList v-model:list="list">
+</template>
+
+<script>
+export default {
+  setup() {
+    const list = ref([/* ... */])
+
+    return  {
+      list
+    }
+  }
+}
+</script>
+```
+
+**BAD**
+
+```vue
+<template>
+  <SlickList v-model:list="list">
+</template>
+
+<script>
+export default {
+  setup() {
+    const list = reactive([/* ... */]) // entire object will be replaced with v-model
+
+    return  {
+      list
+    }
+  }
+}
+</script>
+```
+
 ## Reporting Issues
 
 If believe you've found an issue, please [report it](https://github.com/Jexordexan/vue-slicksort/issues) along with any relevant details to reproduce it. The easiest way to do so is to fork this [jsfiddle](https://jsfiddle.net/Jexordexan/1puv2L6c/).

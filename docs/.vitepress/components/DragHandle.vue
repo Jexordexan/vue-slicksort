@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span class="example-drag-handle">
     <slot></slot>
   </span>
 </template>

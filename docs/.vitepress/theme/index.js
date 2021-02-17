@@ -4,6 +4,7 @@ import FruitExample from '../components/FruitExample.vue';
 import LongListExample from '../components/LongListExample.vue';
 import ShorthandExample from '../components/ShorthandExample.vue';
 import SimpleGroupExample from '../components/SimpleGroupExample.vue';
+import KanbanExample from '../components/KanbanExample.vue';
 import { plugin } from '../../../src';
 import '../style.styl';
 
@@ -16,5 +17,6 @@ export default {
     app.component('LongListExample', LongListExample);
     app.component('ShorthandExample', ShorthandExample);
     app.component('SimpleGroupExample', SimpleGroupExample);
+    app.component('KanbanExample', KanbanExample);
   },
 };

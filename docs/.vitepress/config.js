@@ -23,6 +23,11 @@ module.exports = {
     // custom text for edit link. Defaults to "Edit this page"
     editLinkText: 'Help us improve this page!',
 
+    nav: [
+      { text: 'Guide', link: '/guide' },
+      { text: 'Kanban Example', link: '/kanban' },
+    ],
+
     sidebar: [
       { text: 'Getting Started', link: '/getting-started' },
       { text: 'Guide', link: '/guide' },
