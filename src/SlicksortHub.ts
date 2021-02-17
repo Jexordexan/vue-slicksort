@@ -2,6 +2,28 @@ import { getRectCenter, getDistance, getPointerOffset, isPointWithinRect } from 
 
 let containerIDCounter = 1;
 
+interface ContainerRef {
+  id: string;
+  group: string;
+  accept: AcceptProp | null;
+  block: string[];
+  container: HTMLElement;
+
+  handleDragIn(e: MouseEvent, ghost: HTMLElement | null, helper: HTMLElement | null): void;
+  handleDragMove(e: MouseEvent): void;
+  handleDragOut(e: MouseEvent): void;
+  handleSortEnd(e: MouseEvent): void;
+  handleDropIn(payload: unknown): void;
+  handleDropOut(): unknown;
+
+  updatePosition(e: MouseEvent): void;
+  animateNodes(): void;
+  autoscroll(): void;
+}
+
+type AcceptPropArgs = { source: ContainerRef; dest: ContainerRef; payload: unknown };
+type AcceptProp = boolean | string[] | ((args: AcceptPropArgs) => boolean);
+
 /**
  * Always allow when dest === source
  * Defer to 'dest.accept()' if it is a function
@@ -9,7 +31,7 @@ let containerIDCounter = 1;
  * Deny any group in the block list
  * Allow the same group by default, this can be overridden with the block prop
  */
-function canAcceptElement(dest, source, payload) {
+function canAcceptElement(dest: ContainerRef, source: ContainerRef, payload: unknown): boolean {
   if (source.id === dest.id) return true;
   if (dest.block && dest.block.includes(source.group)) return false;
   if (typeof dest.accept === 'function') {
@@ -23,7 +45,11 @@ function canAcceptElement(dest, source, payload) {
   return false;
 }
 
-function findClosestDest({ x, y }, refs, currentDest) {
+function findClosestDest(
+  { x, y }: { x: number; y: number },
+  refs: ContainerRef[],
+  currentDest: ContainerRef
+): ContainerRef | null {
   // Quickly check if we are within the bounds of the current destination
   if (isPointWithinRect({ x, y }, currentDest.container.getBoundingClientRect())) {
     return currentDest;
@@ -54,69 +80,71 @@ function findClosestDest({ x, y }, refs, currentDest) {
 }
 
 export default class SlicksortHub {
-  constructor() {
-    this.refs = [];
-    this.sorting = false;
-    this.helper = null;
-    this.ghost = null;
-  }
+  private refs: ContainerRef[] = [];
+  private source: ContainerRef | null = null;
+  private dest: ContainerRef | null = null;
+  private helper: HTMLElement | null = null;
+  private ghost: HTMLElement | null = null;
 
   getId() {
     return '' + containerIDCounter++;
   }
 
-  isSource({ id }) {
-    return this.source.id === id;
+  isSource({ id }: ContainerRef) {
+    return this.source?.id === id;
   }
 
   getSource() {
     return this.source;
   }
 
-  isDest({ id }) {
-    return this.dest.id === id;
+  isDest({ id }: ContainerRef) {
+    return this.dest?.id === id;
   }
 
   getDest() {
     return this.dest;
   }
 
-  addContainer(ref) {
+  addContainer(ref: ContainerRef) {
     this.refs.push(ref);
   }
 
-  removeContainer(ref) {
+  removeContainer(ref: ContainerRef) {
     this.refs = this.refs.filter((c) => c.id !== ref.id);
   }
 
-  sortStart({ ref }) {
-    this.sorting = true;
+  sortStart(ref: ContainerRef) {
     this.source = ref;
     this.dest = ref;
   }
 
-  handleSortMove(e, payload) {
+  handleSortMove(e: MouseEvent, payload: unknown) {
     const dest = this.dest;
     const source = this.source;
+
+    if (!dest || !source) return;
+
     const refs = this.refs;
     const pointer = getPointerOffset(e, 'client');
-    const newDest = findClosestDest(pointer, refs, dest);
+    const newDest = findClosestDest(pointer, refs, dest) || dest;
+
     if (dest.id !== newDest.id && canAcceptElement(newDest, source, payload)) {
       this.dest = newDest;
       dest.handleDragOut(e);
       newDest.handleDragIn(e, this.ghost, this.helper);
     }
-    if (dest.id !== this.source.id) {
-      this.dest.updatePosition(e);
-      this.dest.animateNodes();
-      this.dest.autoscroll();
+    if (dest.id !== this.source?.id) {
+      this.dest?.updatePosition(e);
+      this.dest?.animateNodes();
+      this.dest?.autoscroll();
     }
   }
 
   handleSortEnd() {
-    if (this.source.id === this.dest.id) return;
-    const payload = this.source.handleDropOut();
-    this.dest.handleDropIn(payload);
+    if (this.source?.id === this.dest?.id) return;
+    const payload = this.source?.handleDropOut();
+    this.dest?.handleDropIn(payload);
     this.reset();
   }
 
@@ -125,12 +153,11 @@ export default class SlicksortHub {
     this.dest = null;
     this.helper = null;
     this.ghost = null;
-    this.sorting = false;
   }
 
-  cancel(e) {
-    this.dest.handleDragOut(e);
-    this.source.handleSortEnd(e);
+  cancel(e: MouseEvent) {
+    this.dest?.handleDragOut(e);
+    this.source?.handleSortEnd(e);
     this.reset();
   }
 }

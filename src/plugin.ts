@@ -1,9 +1,12 @@
 import SlicksortHub from './SlicksortHub';
 import { HandleDirective } from './HandleDirective';
+import { Plugin } from 'vue';
 
-export default {
-  install(app, options) {
+const plugin: Plugin = {
+  install(app) {
     app.directive('drag-handle', HandleDirective);
-    app.provide('SlicksortHub', new SlicksortHub(options));
+    app.provide('SlicksortHub', new SlicksortHub());
   },
 };
+
+export default plugin;

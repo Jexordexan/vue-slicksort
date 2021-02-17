@@ -251,7 +251,7 @@ export const ContainerMixin = {
         }
 
         if (this.hub) {
-          this.hub.sortStart({ ref: this });
+          this.hub.sortStart(this);
           this.hub.helper = this.helper;
           this.hub.ghost = this.sortableGhost;
         }
