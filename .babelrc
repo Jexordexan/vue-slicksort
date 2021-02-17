@@ -8,8 +8,7 @@
       "plugins": ["transform-runtime"]
     },
     "rollup": {
-      "presets": [["@babel/preset-env", { "modules": false }]],
-      "plugins": ["@babel/plugin-external-helpers"]
+      "presets": [["@babel/preset-env", { "modules": false }]]
     }
   }
 }
