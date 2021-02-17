@@ -1,5 +1,7 @@
-export function arrayMove(arr, previousIndex, newIndex) {
-  const array = arr.slice(0);
+type Coords = { x: number; y: number };
+
+export function arrayMove<T>(arr: T[], previousIndex: number, newIndex: number): (T | undefined)[] {
+  const array: (T | undefined)[] = arr.slice(0);
   if (newIndex >= array.length) {
     let k = newIndex - array.length;
     while (k-- + 1) {
@@ -10,14 +12,14 @@ export function arrayMove(arr, previousIndex, newIndex) {
   return array;
 }
 
-export function arrayRemove(arr, previousIndex) {
+export function arrayRemove<T>(arr: T[], previousIndex: number): T[] {
   const array = arr.slice(0);
   if (previousIndex >= array.length) return array;
   array.splice(previousIndex, 1);
   return array;
 }
 
-export function arrayInsert(arr, newIndex, value) {
+export function arrayInsert<T>(arr: T[], newIndex: number, value: T): T[] {
   const array = arr.slice(0);
   if (newIndex === array.length) {
     array.push(value);
@@ -33,17 +35,19 @@ export const events = {
   end: ['touchend', 'touchcancel', 'mouseup'],
 };
 
-export const vendorPrefix = (function () {
+export const vendorPrefix: string = (function () {
   if (typeof window === 'undefined' || typeof document === 'undefined') return ''; // server environment
   // fix for:
   //    https://bugzilla.mozilla.org/show_bug.cgi?id=548397
   //    window.getComputedStyle() returns null inside an iframe with display: none
   // in this case return an array with a fake mozilla style in it.
   const styles = window.getComputedStyle(document.documentElement, '') || ['-moz-hidden-iframe'];
+  // @ts-ignore
   const pre = (Array.prototype.slice
     .call(styles)
     .join('')
     .match(/-(moz|webkit|ms)-/) ||
+    // @ts-ignore
     (styles.OLink === '' && ['', 'o']))[1];
 
   switch (pre) {
@@ -54,14 +58,14 @@ export const vendorPrefix = (function () {
   }
 })();
 
-export function closest(el, fn) {
+export function closest(el: Node | null, fn: (el: Node) => boolean) {
   while (el) {
     if (fn(el)) return el;
     el = el.parentNode;
   }
 }
 
-export function limit(min, max, value) {
+export function limit(min: number, max: number, value: number): number {
   if (value < min) {
     return min;
   }
@@ -71,14 +75,14 @@ export function limit(min, max, value) {
   return value;
 }
 
-function getCSSPixelValue(stringValue) {
+function getCSSPixelValue(stringValue: string): number {
   if (stringValue.substr(-2) === 'px') {
     return parseFloat(stringValue);
   }
   return 0;
 }
 
-export function getElementMargin(element) {
+export function getElementMargin(element: HTMLElement) {
   const style = window.getComputedStyle(element);
 
   return {
@@ -89,24 +93,25 @@ export function getElementMargin(element) {
   };
 }
 
-export function getPointerOffset(e, reference = 'page') {
-  const x = `${reference}X`;
-  const y = `${reference}Y`;
+export function getPointerOffset(e: MouseEvent | TouchEvent, reference: 'client' | 'page' = 'page') {
+  const x = `${reference}X` as 'clientX' | 'pageX';
+  const y = `${reference}Y` as 'clientY' | 'pageY';
+
   return {
-    x: e.touches ? e.touches[0][x] : e[x],
-    y: e.touches ? e.touches[0][y] : e[y],
+    x: (e as TouchEvent).touches ? (e as TouchEvent).touches[0][x] : (e as MouseEvent)[x],
+    y: (e as TouchEvent).touches ? (e as TouchEvent).touches[0][y] : (e as MouseEvent)[y],
   };
 }
 
-function offsetParents(node) {
+function offsetParents(node: HTMLElement) {
   var nodes = [node];
-  for (; node; node = node.offsetParent) {
+  for (; node; node = node.offsetParent as HTMLElement) {
     nodes.unshift(node);
   }
   return nodes;
 }
 
-export function commonOffsetParent(node1, node2) {
+export function commonOffsetParent(node1: HTMLElement, node2: HTMLElement) {
   var parents1 = offsetParents(node1);
   var parents2 = offsetParents(node2);
 
@@ -117,7 +122,11 @@ export function commonOffsetParent(node1, node2) {
   }
 }
 
-export function getEdgeOffset(node, container, offset = { top: 0, left: 0 }) {
+export function getEdgeOffset(
+  node: HTMLElement,
+  container: HTMLElement,
+  offset = { top: 0, left: 0 }
+): { top: number; left: number } {
   // Get the actual offsetTop / offsetLeft value, no matter how deep the node is nested
   if (node) {
     const nodeOffset = {
@@ -125,17 +134,18 @@ export function getEdgeOffset(node, container, offset = { top: 0, left: 0 }) {
       left: offset.left + node.offsetLeft,
     };
     if (node.offsetParent !== container.offsetParent) {
-      return getEdgeOffset(node.offsetParent, container, nodeOffset);
+      return getEdgeOffset(node.offsetParent as HTMLElement, container, nodeOffset);
     } else {
       return nodeOffset;
     }
   }
+  return { top: 0, left: 0 };
 }
 
-export function cloneNode(node) {
-  const fields = node.querySelectorAll('input, textarea, select');
-  const clonedNode = node.cloneNode(true);
-  const clonedFields = [...clonedNode.querySelectorAll('input, textarea, select')]; // Convert NodeList to Array
+export function cloneNode(node: HTMLElement) {
+  const fields = node.querySelectorAll('input, textarea, select') as NodeListOf<HTMLInputElement>;
+  const clonedNode = node.cloneNode(true) as HTMLElement;
+  const clonedFields = [...clonedNode.querySelectorAll('input, textarea, select')] as HTMLInputElement[]; // Convert NodeList to Array
 
   clonedFields.forEach((field, index) => {
     if (field.type !== 'file' && fields[index]) {
@@ -146,7 +156,7 @@ export function cloneNode(node) {
   return clonedNode;
 }
 
-export function getLockPixelOffsets(lockOffset, width, height) {
+export function getLockPixelOffsets(lockOffset: number | number[], width: number, height: number) {
   if (!Array.isArray(lockOffset)) {
     lockOffset = [lockOffset, lockOffset];
   }
@@ -162,7 +172,7 @@ export function getLockPixelOffsets(lockOffset, width, height) {
   return [getLockPixelOffset(minLockOffset, width, height), getLockPixelOffset(maxLockOffset, width, height)];
 }
 
-export function getLockPixelOffset(lockOffset, width, height) {
+export function getLockPixelOffset(lockOffset: number, width: number, height: number) {
   let offsetX = lockOffset;
   let offsetY = lockOffset;
   let unit = 'px';
@@ -195,20 +205,20 @@ export function getLockPixelOffset(lockOffset, width, height) {
   };
 }
 
-export function getDistance(x1, y1, x2, y2) {
+export function getDistance(x1: number, y1: number, x2: number, y2: number) {
   const x = x1 - x2;
   const y = y1 - y2;
   return Math.sqrt(x * x + y * y);
 }
 
-export function getRectCenter(clientRect) {
+export function getRectCenter(clientRect: ClientRect) {
   return {
     x: clientRect.left + clientRect.width / 2,
     y: clientRect.top + clientRect.height / 2,
   };
 }
 
-export function resetTransform(nodes = []) {
+export function resetTransform(nodes: { node: HTMLElement; edgeOffset: Coords | null }[] = []) {
   for (let i = 0, len = nodes.length; i < len; i++) {
     const node = nodes[i];
     const el = node.node;
@@ -219,18 +229,20 @@ export function resetTransform(nodes = []) {
     node.edgeOffset = null;
 
     // Remove the transforms / transitions
+    // @ts-ignore
     el.style[`${vendorPrefix}Transform`] = '';
+    // @ts-ignore
     el.style[`${vendorPrefix}TransitionDuration`] = '';
   }
 }
 
-function withinBounds(pos, top, bottom) {
+function withinBounds(pos: number, top: number, bottom: number) {
   const upper = Math.max(top, bottom);
   const lower = Math.min(top, bottom);
   return lower <= pos && pos <= upper;
 }
 
-export function isPointWithinRect({ x, y }, { top, left, width, height }) {
+export function isPointWithinRect({ x, y }: Coords, { top, left, width, height }: ClientRect) {
   const withinX = withinBounds(x, left, left + width);
   const withinY = withinBounds(y, top, top + height);
   return withinX && withinY;
