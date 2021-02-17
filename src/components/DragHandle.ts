@@ -1,6 +1,6 @@
-import { h } from 'vue';
+import { h, defineComponent } from 'vue';
 
-export const DragHandle = {
+export const DragHandle = defineComponent({
   props: {
     tag: {
       type: String,
@@ -11,6 +11,6 @@ export const DragHandle = {
     this.$el.sortableHandle = true;
   },
   render() {
-    return h(this.tag, this.$slots.default());
+    return h(this.tag, this.$slots.default?.());
   },
-};
+});

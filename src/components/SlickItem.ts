@@ -1,7 +1,7 @@
-import { h } from 'vue';
+import { h, defineComponent } from 'vue';
 import { ElementMixin } from '../ElementMixin';
 
-export const SlickItem = {
+export const SlickItem = defineComponent({
   name: 'slick-item',
   mixins: [ElementMixin],
   props: {
@@ -11,6 +11,6 @@ export const SlickItem = {
     },
   },
   render() {
-    return h(this.tag, this.$slots.default());
+    return h(this.tag, this.$slots.default?.());
   },
-};
+});

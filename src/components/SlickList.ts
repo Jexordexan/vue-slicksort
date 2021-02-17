@@ -1,8 +1,8 @@
-import { h } from 'vue';
+import { h, defineComponent } from 'vue';
 import { ContainerMixin } from '../ContainerMixin';
 import { SlickItem } from './SlickItem';
 
-export const SlickList = {
+export const SlickList = defineComponent({
   name: 'slick-list',
   mixins: [ContainerMixin],
   props: {
@@ -19,7 +19,7 @@ export const SlickList = {
     if (this.$slots.item) {
       return h(
         this.tag,
-        this.list.map((item, index) => {
+        this.list.map((item: any, index: number) => {
           const key = typeof item === 'object' ? item[this.itemKey] : item;
           return h(
             SlickItem,
@@ -36,4 +36,4 @@ export const SlickList = {
     }
     return h(this.tag, this.$slots.default());
   },
-};
+});
