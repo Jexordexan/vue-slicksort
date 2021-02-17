@@ -223,3 +223,15 @@ export function resetTransform(nodes = []) {
     el.style[`${vendorPrefix}TransitionDuration`] = '';
   }
 }
+
+function withinBounds(pos, top, bottom) {
+  const upper = Math.max(top, bottom);
+  const lower = Math.min(top, bottom);
+  return lower <= pos && pos <= upper;
+}
+
+export function isPointWithinRect({ x, y }, { top, left, width, height }) {
+  const withinX = withinBounds(x, left, left + width);
+  const withinY = withinBounds(y, top, top + height);
+  return withinX && withinY;
+}

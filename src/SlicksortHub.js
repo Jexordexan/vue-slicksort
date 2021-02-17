@@ -1,4 +1,4 @@
-import { getRectCenter, getDistance, getPointerOffset } from './utils';
+import { getRectCenter, getDistance, getPointerOffset, isPointWithinRect } from './utils';
 
 let containerIDCounter = 1;
 
@@ -23,18 +23,33 @@ function canAcceptElement(dest, source, payload) {
   return false;
 }
 
-function findClosestDest({ x, y }, refs) {
+function findClosestDest({ x, y }, refs, currentDest) {
+  // Quickly check if we are within the bounds of the current destination
+  if (isPointWithinRect({ x, y }, currentDest.container.getBoundingClientRect())) {
+    return currentDest;
+  }
+
   let closest = null;
   let minDistance = Infinity;
   for (let i = 0; i < refs.length; i++) {
     const ref = refs[i];
-    const center = getRectCenter(ref.container.getBoundingClientRect());
+    const rect = ref.container.getBoundingClientRect();
+    const isWithin = isPointWithinRect({ x, y }, rect);
+
+    if (isWithin) {
+      // If we are within another destination, stop here
+      return ref;
+    }
+
+    const center = getRectCenter(rect);
     const distance = getDistance(x, y, center.x, center.y);
     if (distance < minDistance) {
       closest = ref;
       minDistance = distance;
     }
   }
+
+  // Try to guess the closest destination
   return closest;
 }
 
@@ -85,7 +100,7 @@ export default class SlicksortHub {
     const source = this.source;
     const refs = this.refs;
     const pointer = getPointerOffset(e, 'client');
-    const newDest = findClosestDest(pointer, refs);
+    const newDest = findClosestDest(pointer, refs, dest);
     if (dest.id !== newDest.id && canAcceptElement(newDest, source, payload)) {
       this.dest = newDest;
       dest.handleDragOut(e);
