@@ -140,16 +140,16 @@ export const ContainerMixin = defineComponent({
     },
   },
 
-  setup(props) {
-    const hub = inject<SlicksortHub>('SlicksortHub');
+  inject: ['SlicksortHub'],
+  data() {
     let useHub = false;
     let containerId = '1';
-    if (props) {
+    if (this.group) {
       // If the group option is set, it is assumed the user intends
       // to drag between containers and the required plugin has been installed
-      if (hub) {
+      if (this.SlicksortHub) {
         useHub = true;
-        containerId = hub.getId();
+        containerId = this.SlicksortHub.getId();
       } else if (process.env.NODE_ENV !== 'production') {
         throw new Error('Slicksort plugin required to use "group" prop');
       }
@@ -158,7 +158,7 @@ export const ContainerMixin = defineComponent({
     return ({
       sorting: false,
       id: containerId,
-      hub: useHub ? hub : null,
+      hub: useHub ? this.SlicksortHub : null,
       manager: new Manager(),
     } as unknown) as ComponentData;
   },
@@ -348,12 +348,10 @@ export const ContainerMixin = defineComponent({
         }
 
         this.listenerNode = isTouch(e) ? node : this._window;
-        events.move.forEach((eventName) =>
-          this.listenerNode.addEventListener(eventName, (e) => this.handleSortMove(e as PointEvent))
-        );
-        events.end.forEach((eventName) =>
-          this.listenerNode.addEventListener(eventName, (e) => this.handleSortEnd(e as PointEvent))
-        );
+        // @ts-ignore
+        events.move.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortMove));
+        // @ts-ignore
+        events.end.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortEnd));
 
         this.sorting = true;
 
@@ -513,10 +511,12 @@ export const ContainerMixin = defineComponent({
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
         events.move.forEach((eventName) =>
-          this.listenerNode.removeEventListener(eventName, (e) => this.handleSortMove(e as PointEvent))
+          // @ts-ignore
+          this.listenerNode.removeEventListener(eventName, this.handleSortMove)
         );
         events.end.forEach((eventName) =>
-          this.listenerNode.removeEventListener(eventName, (e) => this.handleSortEnd(e as PointEvent))
+          // @ts-ignore
+          this.listenerNode.removeEventListener(eventName, this.handleSortEnd)
         );
       }
 
