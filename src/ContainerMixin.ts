@@ -19,7 +19,6 @@ import {
   XY,
   TopLeft,
   WidthHeight,
-  PointEventName,
   PointEvent,
   BottomRight,
   isTouch,
@@ -56,7 +55,7 @@ interface ComponentProps {
 interface ComponentData extends ComponentProps {
   id: string;
 
-  SlicksortHub: SlicksortHub;
+  // SlicksortHub: SlicksortHub;
   container: HTMLElement;
   document: Document;
   manager: Manager;
@@ -76,8 +75,8 @@ interface ComponentData extends ComponentProps {
   autoscrollInterval: Timer;
 
   translate: XY;
-  minTranslate: XY;
-  maxTranslate: XY;
+  minTranslate: Partial<XY>;
+  maxTranslate: Partial<XY>;
 
   sorting: boolean;
   node: SortableNode;
@@ -101,6 +100,8 @@ interface ComponentData extends ComponentProps {
 
 // Export Sortable Container Component Mixin
 export const ContainerMixin = defineComponent({
+  inject: ['SlicksortHub'],
+
   emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:list'],
 
   props: {
@@ -140,7 +141,6 @@ export const ContainerMixin = defineComponent({
     },
   },
 
-  inject: ['SlicksortHub'],
   data() {
     let useHub = false;
     let containerId = '1';
@@ -149,7 +149,6 @@ export const ContainerMixin = defineComponent({
       // to drag between containers and the required plugin has been installed
       if (this.SlicksortHub) {
         useHub = true;
-        containerId = this.SlicksortHub.getId();
       } else if (process.env.NODE_ENV !== 'production') {
         throw new Error('Slicksort plugin required to use "group" prop');
       }
@@ -157,7 +156,6 @@ export const ContainerMixin = defineComponent({
 
     return ({
       sorting: false,
-      id: containerId,
       hub: useHub ? this.SlicksortHub : null,
       manager: new Manager(),
     } as unknown) as ComponentData;
@@ -170,6 +168,9 @@ export const ContainerMixin = defineComponent({
   },
 
   mounted() {
+    if (this.hub) {
+      this.id = this.hub.getId();
+    }
     this.container = this.$el;
     this.document = this.container.ownerDocument || document;
     this._window = this.contentWindow || window;
@@ -449,8 +450,8 @@ export const ContainerMixin = defineComponent({
       };
 
       this.translate = { x: 0, y: 0 };
-      this.minTranslate = { x: 0, y: 0 };
-      this.maxTranslate = { x: 0, y: 0 };
+      this.minTranslate = {};
+      this.maxTranslate = {};
 
       if (this._axis.x) {
         this.minTranslate.x =
@@ -665,8 +666,10 @@ export const ContainerMixin = defineComponent({
           y: this.height / 2 - maxLockOffset.y,
         };
 
-        translate.x = limit(this.minTranslate.x + minOffset.x, this.maxTranslate.x - maxOffset.x, translate.x);
-        translate.y = limit(this.minTranslate.y + minOffset.y, this.maxTranslate.y - maxOffset.y, translate.y);
+        if (this.minTranslate.x && this.maxTranslate.x)
+          translate.x = limit(this.minTranslate.x + minOffset.x, this.maxTranslate.x - maxOffset.x, translate.x);
+        if (this.minTranslate.y && this.maxTranslate.y)
+          translate.y = limit(this.minTranslate.y + minOffset.y, this.maxTranslate.y - maxOffset.y, translate.y);
       }
 
       if (lockAxis === 'x') {
@@ -842,18 +845,18 @@ export const ContainerMixin = defineComponent({
         y: 10,
       };
 
-      if (translate.y >= this.maxTranslate.y - this.height / 2) {
+      if (translate.y >= this.maxTranslate.y! - this.height / 2) {
         direction.y = 1; // Scroll Down
-        speed.y = acceleration.y * Math.abs((this.maxTranslate.y - this.height / 2 - translate.y) / this.height);
-      } else if (translate.x >= this.maxTranslate.x - this.width / 2) {
+        speed.y = acceleration.y * Math.abs((this.maxTranslate.y! - this.height / 2 - translate.y) / this.height);
+      } else if (translate.x >= this.maxTranslate.x! - this.width / 2) {
         direction.x = 1; // Scroll Right
-        speed.x = acceleration.x * Math.abs((this.maxTranslate.x - this.width / 2 - translate.x) / this.width);
-      } else if (translate.y <= this.minTranslate.y + this.height / 2) {
+        speed.x = acceleration.x * Math.abs((this.maxTranslate.x! - this.width / 2 - translate.x) / this.width);
+      } else if (translate.y <= this.minTranslate.y! + this.height / 2) {
         direction.y = -1; // Scroll Up
-        speed.y = acceleration.y * Math.abs((translate.y - this.height / 2 - this.minTranslate.y) / this.height);
-      } else if (translate.x <= this.minTranslate.x + this.width / 2) {
+        speed.y = acceleration.y * Math.abs((translate.y - this.height / 2 - this.minTranslate.y!) / this.height);
+      } else if (translate.x <= this.minTranslate.x! + this.width / 2) {
         direction.x = -1; // Scroll Left
-        speed.x = acceleration.x * Math.abs((translate.x - this.width / 2 - this.minTranslate.x) / this.width);
+        speed.x = acceleration.x * Math.abs((translate.x - this.width / 2 - this.minTranslate.x!) / this.width);
       }
 
       if (this.autoscrollInterval) {
