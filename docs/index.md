@@ -26,5 +26,5 @@ footer: MIT Licensed | Copyright © 2019-present Jordan Simonds
 
 [![npm version](https://img.shields.io/npm/v/vue-slicksort/next?style=for-the-badge)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort?style=for-the-badge)](https://www.npmjs.com/package/vue-slicksort)
-![gzip size](https://img.badgesize.io/https://npmcdn.com/vue-slicksort@next?compression=gzip&style=for-the-badge)
+[![npm bundle size (version)](https://img.shields.io/bundlephobia/minzip/vue-slicksort/next?label=gzip&style=for-the-badge)](https://bundlephobia.com/result?p=vue-slicksort@next)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000&style=for-the-badge)](https://github.com/Jexordexan/vue-slicksort/blob/dev/LICENSE)
