@@ -25,7 +25,7 @@ import {
 } from './utils';
 
 type PointEventListener = (e: PointEvent) => any;
-const timeout = window.setTimeout;
+const timeout: (cb: Function, dur?: number) => number = setTimeout;
 type Timer = number | null;
 
 interface ComponentProps {
