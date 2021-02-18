@@ -63,7 +63,6 @@
     "@babel/core": "^7.12.16",
     "@babel/plugin-external-helpers": "^7.12.13",
     "@babel/preset-env": "^7.12.16",
-    "@rollup/plugin-replace": "^2.3.4",
     "@rollup/plugin-typescript": "^8.2.0",
     "@vitejs/plugin-vue": "^1.1.4",
     "@vue/compiler-sfc": "^3.0.5",

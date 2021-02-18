@@ -1,7 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import esbuild from 'rollup-plugin-esbuild';
 import typescript from '@rollup/plugin-typescript';
-import replace from '@rollup/plugin-replace';
 import pkg from './package.json';
 
 const input = './src/index.ts';
@@ -25,6 +24,14 @@ export default [
       format: 'umd',
       sourcemap: true,
     },
-    plugins: [replace({ 'process.env.NODE_ENV': JSON.stringify('production') }), esbuild({ minify: true }), babel()],
+    plugins: [
+      esbuild({
+        minify: true,
+        define: {
+          'process.env.NODE_ENV': '"production"',
+        },
+      }),
+      babel(),
+    ],
   },
 ];
