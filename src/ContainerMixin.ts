@@ -1,4 +1,6 @@
-import Manager from './Manager';
+import { defineComponent, inject, PropType } from 'vue';
+import Manager, { ItemRef, SortableNode } from './Manager';
+import SlicksortHub, { AcceptProp, ContainerRef } from './SlicksortHub';
 import {
   arrayMove,
   arrayRemove,
@@ -14,42 +16,95 @@ import {
   limit,
   resetTransform,
   vendorPrefix,
+  XY,
+  TopLeft,
+  WidthHeight,
+  PointEventName,
+  PointEvent,
+  BottomRight,
+  isTouch,
 } from './utils';
 
+type PointEventListener = (e: PointEvent) => any;
+const timeout = window.setTimeout;
+type Timer = number | null;
+
+interface ComponentProps {
+  list: any[];
+  axis: 'x' | 'y' | 'xy' | 'yx'; // 'x', 'y', 'xy'
+  distance: number;
+  pressDelay: number;
+  pressThreshold: number;
+  useDragHandle: boolean;
+  useWindowAsScrollContainer: boolean;
+  hideSortableGhost: boolean;
+  lockToContainerEdges: boolean;
+  lockOffset: string | number | string[];
+  transitionDuration: number;
+  appendTo: string;
+  draggedSettlingDuration: number;
+  group: string;
+  accept: boolean | string[] | Function;
+  block: string[];
+  lockAxis: string;
+  helperClass: string;
+  contentWindow: Window;
+  shouldCancelStart: (e: MouseEvent) => boolean;
+  getHelperDimensions: (ref: ItemRef) => { width: number; height: number };
+}
+
+interface ComponentData extends ComponentProps {
+  id: string;
+
+  SlicksortHub: SlicksortHub;
+  container: HTMLElement;
+  document: Document;
+  manager: Manager;
+  _window: Window;
+  scrollContainer: HTMLElement;
+
+  hub?: SlicksortHub;
+  events: Record<string, PointEventListener>;
+
+  _touched: boolean;
+  _pos: XY;
+  _delta: XY;
+  _axis: { x: boolean; y: boolean };
+
+  pressTimer: Timer;
+  cancelTimer: Timer;
+  autoscrollInterval: Timer;
+
+  translate: XY;
+  minTranslate: XY;
+  maxTranslate: XY;
+
+  sorting: boolean;
+  node: SortableNode;
+  margin: TopLeft & BottomRight;
+  width: number;
+  height: number;
+  marginOffset: XY;
+  initialOffset: XY;
+  initialScroll: TopLeft;
+  initialWindowScroll: TopLeft;
+  offsetEdge: TopLeft;
+  boundingClientRect: ClientRect;
+  containerBoundingRect: ClientRect;
+  index: number | null;
+  newIndex: number | null;
+
+  helper: HTMLElement | null;
+  sortableGhost: HTMLElement | null;
+  listenerNode: GlobalEventHandlers;
+}
+
 // Export Sortable Container Component Mixin
-export const ContainerMixin = {
-  inject: ['SlicksortHub'],
+export const ContainerMixin = defineComponent({
   emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:list'],
 
-  data() {
-    let useHub = false;
-    let containerId = 1;
-    if (this.group) {
-      // If the group option is set, it is assumed the user intends
-      // to drag between containers and the required plugin has been installed
-      if (this.SlicksortHub) {
-        useHub = true;
-        containerId = this.SlicksortHub.getId();
-      } else if (process.env.NODE_ENV !== 'production') {
-        throw new Error('Slicksort plugin required to use "group" prop');
-      }
-    }
-
-    return {
-      sorting: false,
-      id: containerId,
-      hub: useHub ? this.SlicksortHub : null,
-      manager: new Manager(),
-      events: {
-        start: this.handleStart,
-        move: this.handleMove,
-        end: this.handleEnd,
-      },
-    };
-  },
-
   props: {
-    list: { type: Array, required: true },
+    list: { type: Array as PropType<any[]>, required: true },
     axis: { type: String, default: 'y' }, // 'x', 'y', 'xy'
     distance: { type: Number, default: 0 },
     pressDelay: { type: Number, default: 0 },
@@ -58,31 +113,54 @@ export const ContainerMixin = {
     useWindowAsScrollContainer: { type: Boolean, default: false },
     hideSortableGhost: { type: Boolean, default: true },
     lockToContainerEdges: { type: Boolean, default: false },
-    lockOffset: { type: [String, Number, Array], default: '50%' },
+    lockOffset: { type: [String, Number, Array] as PropType<string | number | number[]>, default: '50%' },
     transitionDuration: { type: Number, default: 300 },
     appendTo: { type: String, default: 'body' },
     draggedSettlingDuration: { type: Number, default: null },
     group: { type: String, default: '' },
-    accept: { type: [Boolean, Array, Function], default: null },
-    block: { type: Array, default: () => [] },
+    accept: { type: [Boolean, Array, Function] as PropType<AcceptProp>, default: null },
+    block: { type: Array as PropType<string[]>, default: () => [] },
     lockAxis: String,
     helperClass: String,
-    contentWindow: Object,
+    contentWindow: Object as PropType<Window>,
     shouldCancelStart: {
-      type: Function,
-      default: (e) => {
+      type: Function as PropType<PointEventListener>,
+      default: (e: any) => {
         // Cancel sorting if the event target is an `input`, `textarea`, `select` or `option`
         const disabledElements = ['input', 'textarea', 'select', 'option', 'button'];
         return disabledElements.indexOf(e.target.tagName.toLowerCase()) !== -1;
       },
     },
     getHelperDimensions: {
-      type: Function,
-      default: ({ node }) => ({
+      type: Function as PropType<(arg: ItemRef) => WidthHeight>,
+      default: ({ node }: ItemRef) => ({
         width: node.offsetWidth,
         height: node.offsetHeight,
       }),
     },
+  },
+
+  setup(props) {
+    const hub = inject<SlicksortHub>('SlicksortHub');
+    let useHub = false;
+    let containerId = '1';
+    if (props) {
+      // If the group option is set, it is assumed the user intends
+      // to drag between containers and the required plugin has been installed
+      if (hub) {
+        useHub = true;
+        containerId = hub.getId();
+      } else if (process.env.NODE_ENV !== 'production') {
+        throw new Error('Slicksort plugin required to use "group" prop');
+      }
+    }
+
+    return ({
+      sorting: false,
+      id: containerId,
+      hub: useHub ? hub : null,
+      manager: new Manager(),
+    } as unknown) as ComponentData;
   },
 
   provide() {
@@ -96,48 +174,56 @@ export const ContainerMixin = {
     this.document = this.container.ownerDocument || document;
     this._window = this.contentWindow || window;
     this.scrollContainer = this.useWindowAsScrollContainer ? this.document.body : this.container;
+    this.events = {
+      start: this.handleStart,
+      move: this.handleMove,
+      end: this.handleEnd,
+    };
 
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
+        // @ts-ignore
         events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key]));
       }
     }
 
     if (this.hub) {
-      this.hub.addContainer(this);
+      this.hub.addContainer(this as ContainerRef);
     }
   },
 
   beforeUnmount() {
     for (const key in this.events) {
       if (this.events.hasOwnProperty(key)) {
+        // @ts-ignore
         events[key].forEach((eventName) => this.container.removeEventListener(eventName, this.events[key]));
       }
     }
 
     if (this.hub) {
-      this.hub.removeContainer(this);
+      this.hub.removeContainer(this as ContainerRef);
     }
   },
 
   methods: {
-    handleStart(e) {
+    handleStart(e: PointEvent) {
       const { distance, shouldCancelStart } = this.$props;
 
-      if (e.button === 2 || shouldCancelStart(e)) {
+      if ((!isTouch(e) && e.button === 2) || shouldCancelStart(e)) {
         return false;
       }
 
       this._touched = true;
       this._pos = getPointerOffset(e);
+      const target = e.target as HTMLElement;
 
-      const node = closest(e.target, (el) => el.sortableInfo != null);
+      const node = closest(target, (el) => el.sortableInfo != null) as SortableNode;
 
       if (node && node.sortableInfo && this.nodeIsChild(node) && !this.sorting) {
         const { useDragHandle } = this.$props;
         const { index } = node.sortableInfo;
 
-        if (useDragHandle && !closest(e.target, (el) => el.sortableHandle != null)) return;
+        if (useDragHandle && !closest(target, (el) => el.sortableHandle != null)) return;
 
         this.manager.active = { index };
 
@@ -146,7 +232,7 @@ export const ContainerMixin = {
          * prevent subsequent 'mousemove' events from being fired
          * (see https://github.com/clauderic/react-sortable-hoc/issues/118)
          */
-        if (e.target.tagName.toLowerCase() === 'a') {
+        if (target.tagName.toLowerCase() === 'a') {
           e.preventDefault();
         }
 
@@ -154,17 +240,17 @@ export const ContainerMixin = {
           if (this.pressDelay === 0) {
             this.handlePress(e);
           } else {
-            this.pressTimer = setTimeout(() => this.handlePress(e), this.pressDelay);
+            this.pressTimer = timeout(() => this.handlePress(e), this.pressDelay) as Timer;
           }
         }
       }
     },
 
-    nodeIsChild(node) {
+    nodeIsChild(node: SortableNode) {
       return node.sortableInfo.manager === this.manager;
     },
 
-    handleMove(e) {
+    handleMove(e: PointEvent) {
       const { distance, pressThreshold } = this.$props;
 
       if (!this.sorting && this._touched) {
@@ -176,15 +262,15 @@ export const ContainerMixin = {
         const delta = Math.abs(this._delta.x) + Math.abs(this._delta.y);
 
         if (!distance && (!pressThreshold || (pressThreshold && delta >= pressThreshold))) {
-          clearTimeout(this.cancelTimer);
-          this.cancelTimer = setTimeout(this.cancel, 0);
+          if (this.cancelTimer) clearTimeout(this.cancelTimer);
+          this.cancelTimer = timeout(this.cancel, 0);
         } else if (distance && delta >= distance && this.manager.isActive()) {
           this.handlePress(e);
         }
       }
     },
 
-    handleEnd() {
+    handleEnd(e: PointEvent) {
       if (!this._touched) return;
 
       const { distance } = this.$props;
@@ -192,21 +278,19 @@ export const ContainerMixin = {
       this._touched = false;
 
       if (!distance) {
-        this.cancel();
+        this.cancel(e);
       }
     },
 
-    cancel() {
+    cancel(e: PointEvent) {
       if (!this.sorting) {
-        clearTimeout(this.pressTimer);
+        if (this.pressTimer) clearTimeout(this.pressTimer);
         this.manager.active = null;
-        if (this.hub) {
-          this.hub.cancel();
-        }
+        if (this.hub) this.hub.cancel(e);
       }
     },
 
-    handlePress(e) {
+    handlePress(e: PointEvent) {
       e.stopPropagation();
       const active = this.manager.getActive();
 
@@ -234,7 +318,7 @@ export const ContainerMixin = {
 
         const clonedNode = cloneNode(node);
 
-        this.helper = this.document.querySelector(appendTo).appendChild(clonedNode);
+        this.helper = this.document.querySelector(appendTo)!.appendChild(clonedNode);
 
         this.helper.style.position = 'fixed';
         this.helper.style.top = `${this.boundingClientRect.top - margin.top}px`;
@@ -246,12 +330,12 @@ export const ContainerMixin = {
 
         if (hideSortableGhost) {
           this.sortableGhost = node;
-          // node.style.visibility = 'hidden';
-          // node.style.opacity = 0;
+          node.style.visibility = 'hidden';
+          node.style.opacity = '0';
         }
 
         if (this.hub) {
-          this.hub.sortStart(this);
+          this.hub.sortStart(this as ContainerRef);
           this.hub.helper = this.helper;
           this.hub.ghost = this.sortableGhost;
         }
@@ -263,9 +347,13 @@ export const ContainerMixin = {
           this.helper.classList.add(...helperClass.split(' '));
         }
 
-        this.listenerNode = e.touches ? node : this._window;
-        events.move.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortMove));
-        events.end.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortEnd));
+        this.listenerNode = isTouch(e) ? node : this._window;
+        events.move.forEach((eventName) =>
+          this.listenerNode.addEventListener(eventName, (e) => this.handleSortMove(e as PointEvent))
+        );
+        events.end.forEach((eventName) =>
+          this.listenerNode.addEventListener(eventName, (e) => this.handleSortEnd(e as PointEvent))
+        );
 
         this.sorting = true;
 
@@ -273,17 +361,17 @@ export const ContainerMixin = {
       }
     },
 
-    handleSortMove(e) {
+    handleSortMove(e: PointEvent) {
       e.preventDefault(); // Prevent scrolling on mobile
 
       this.updatePosition(e);
 
       if (this.hub) {
-        const payload = this.list[this.index];
+        const payload = this.list[this.index!];
         this.hub.handleSortMove(e, payload);
       }
 
-      if (!this.hub || this.hub.isDest(this)) {
+      if (!this.hub || this.hub.isDest(this as ContainerRef)) {
         this.animateNodes();
         this.autoscroll();
       }
@@ -292,8 +380,8 @@ export const ContainerMixin = {
     },
 
     handleDropOut() {
-      const removed = this.list[this.index];
-      const newValue = arrayRemove(this.list, this.index);
+      const removed = this.list[this.index!];
+      const newValue = arrayRemove(this.list, this.index!);
       this.$emit('sort-remove', {
         oldIndex: this.index,
       });
@@ -301,11 +389,11 @@ export const ContainerMixin = {
       return removed;
     },
 
-    handleDropIn(item) {
-      const newValue = arrayInsert(this.list, this.newIndex, item);
+    handleDropIn(payload: unknown) {
+      const newValue = arrayInsert(this.list, this.newIndex!, payload);
       this.$emit('sort-insert', {
         newIndex: this.newIndex,
-        value: item,
+        value: payload,
       });
       this.$emit('update:list', newValue);
       this.handleDragOut();
@@ -316,7 +404,7 @@ export const ContainerMixin = {
         clearInterval(this.autoscrollInterval);
         this.autoscrollInterval = null;
       }
-      if (this.hub.isSource(this)) {
+      if (this.hub!.isSource(this as ContainerRef)) {
         // Trick to animate all nodes up
         this.translate = {
           x: 10000,
@@ -324,16 +412,18 @@ export const ContainerMixin = {
         };
         this.animateNodes();
       } else {
-        resetTransform(this.manager.refs);
-        this.sortableGhost.remove();
-        this.sortableGhost = null;
+        resetTransform(this.manager.getRefs());
+        if (this.sortableGhost) {
+          this.sortableGhost.remove();
+          this.sortableGhost = null;
+        }
         this.manager.active = null;
         this._touched = false;
         this.sorting = false;
       }
     },
 
-    intializeOffsets(e, clientRect) {
+    intializeOffsets(e: PointEvent, clientRect: ClientRect) {
       const { useWindowAsScrollContainer, containerBoundingRect, _window } = this;
 
       this.marginOffset = {
@@ -360,9 +450,9 @@ export const ContainerMixin = {
         left: window.pageXOffset,
       };
 
-      this.translate = {};
-      this.minTranslate = {};
-      this.maxTranslate = {};
+      this.translate = { x: 0, y: 0 };
+      this.minTranslate = { x: 0, y: 0 };
+      this.maxTranslate = { x: 0, y: 0 };
 
       if (this._axis.x) {
         this.minTranslate.x =
@@ -384,12 +474,12 @@ export const ContainerMixin = {
       }
     },
 
-    handleDragIn(e, sortableGhost, helper) {
-      if (this.hub.isSource(this)) {
+    handleDragIn(e: PointEvent, sortableGhost: SortableNode, helper: SortableNode) {
+      if (this.hub!.isSource(this as ContainerRef)) {
         return;
       }
 
-      const nodes = this.manager.refs;
+      const nodes = this.manager.getRefs();
       this.index = nodes.length;
       this.manager.active = { index: this.index };
 
@@ -419,19 +509,25 @@ export const ContainerMixin = {
       this.sorting = true;
     },
 
-    handleSortEnd(e) {
+    handleSortEnd(e: PointEvent) {
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
-        events.move.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortMove));
-        events.end.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
+        events.move.forEach((eventName) =>
+          this.listenerNode.removeEventListener(eventName, (e) => this.handleSortMove(e as PointEvent))
+        );
+        events.end.forEach((eventName) =>
+          this.listenerNode.removeEventListener(eventName, (e) => this.handleSortEnd(e as PointEvent))
+        );
       }
 
-      const nodes = this.manager.refs;
+      const nodes = this.manager.getRefs();
 
       const onEnd = () => {
         // Remove the helper from the DOM
-        this.helper.remove();
-        this.helper = null;
+        if (this.helper) {
+          this.helper.remove();
+          this.helper = null;
+        }
 
         if (this.hideSortableGhost && this.sortableGhost) {
           this.sortableGhost.style.visibility = '';
@@ -441,19 +537,19 @@ export const ContainerMixin = {
         resetTransform(nodes);
 
         // Stop autoscroll
-        clearInterval(this.autoscrollInterval);
+        if (this.autoscrollInterval) clearInterval(this.autoscrollInterval);
         this.autoscrollInterval = null;
 
         // Update state
-        if (this.hub && !this.hub.isDest(this)) {
-          this.hub.handleSortEnd(this.index);
+        if (this.hub && !this.hub.isDest(this as ContainerRef)) {
+          this.hub.handleSortEnd();
         } else {
           this.$emit('sort-end', {
             event: e,
             oldIndex: this.index,
             newIndex: this.newIndex,
           });
-          this.$emit('update:list', arrayMove(this.list, this.index, this.newIndex));
+          this.$emit('update:list', arrayMove(this.list, this.index!, this.newIndex!));
         }
 
         this.manager.active = null;
@@ -468,12 +564,12 @@ export const ContainerMixin = {
       }
     },
 
-    transitionHelperIntoPlace(nodes, cb) {
-      if (this.draggedSettlingDuration === 0 || nodes.length === 0) {
+    transitionHelperIntoPlace(nodes: ItemRef[], cb: Function) {
+      if (this.draggedSettlingDuration === 0 || nodes.length === 0 || !this.helper) {
         return Promise.resolve();
       }
 
-      const indexNode = nodes[this.index].node;
+      const indexNode = nodes[this.index!].node;
       let targetX = 0;
       let targetY = 0;
 
@@ -482,12 +578,13 @@ export const ContainerMixin = {
         left: window.pageXOffset - this.initialWindowScroll.left,
       };
 
-      if (this.hub && !this.hub.isDest(this)) {
+      if (this.hub && !this.hub.isDest(this as ContainerRef)) {
         const dest = this.hub.getDest();
+        if (!dest) return;
         const destIndex = dest.newIndex;
         const destRefs = dest.manager.getOrderedRefs();
-        const destNode = destIndex < destRefs.length ? destRefs[destIndex].node : dest.sortableGhost;
-        const ancestor = commonOffsetParent(indexNode, destNode);
+        const destNode = destIndex < destRefs.length ? destRefs[destIndex].node : dest.sortableGhost!;
+        const ancestor = commonOffsetParent(indexNode, destNode)!;
 
         const sourceOffset = getEdgeOffset(indexNode, ancestor);
         const targetOffset = getEdgeOffset(destNode, ancestor);
@@ -495,7 +592,7 @@ export const ContainerMixin = {
         targetX = targetOffset.left - sourceOffset.left - scrollDifference.left;
         targetY = targetOffset.top - sourceOffset.top - scrollDifference.top;
       } else {
-        const newIndexNode = nodes[this.newIndex].node;
+        const newIndexNode = nodes[this.newIndex!].node;
         const deltaScroll = {
           left: this.scrollContainer.scrollLeft - this.initialScroll.left + scrollDifference.left,
           top: this.scrollContainer.scrollTop - this.initialScroll.top + scrollDifference.top,
@@ -521,15 +618,20 @@ export const ContainerMixin = {
 
       const duration = this.draggedSettlingDuration !== null ? this.draggedSettlingDuration : this.transitionDuration;
 
+      // @ts-ignore
       this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
+      // @ts-ignore
       this.helper.style[`${vendorPrefix}TransitionDuration`] = `${duration}ms`;
 
       // Register an event handler to clean up styles when the transition
       // finishes.
-      const cleanup = (event) => {
+      const cleanup = (event: TransitionEvent) => {
         if (!event || event.propertyName === 'transform') {
           clearTimeout(cleanupTimer);
-          resetTransform([this.helper]);
+          // @ts-ignore
+          this.helper.style[`${vendorPrefix}Transform`] = '';
+          // @ts-ignore
+          this.helper.style[`${vendorPrefix}TransitionDuration`] = '';
           cb();
         }
       };
@@ -538,7 +640,7 @@ export const ContainerMixin = {
       this.helper.addEventListener('transitionend', cleanup);
     },
 
-    updatePosition(e) {
+    updatePosition(e: PointEvent) {
       const { lockAxis, lockToContainerEdges } = this.$props;
 
       const offset = getPointerOffset(e);
@@ -574,6 +676,7 @@ export const ContainerMixin = {
       }
 
       if (this.helper) {
+        // @ts-ignore
         this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${translate.x}px,${translate.y}px, 0)`;
       }
     },
@@ -636,13 +739,14 @@ export const ContainerMixin = {
           if (hideSortableGhost) {
             this.sortableGhost = node;
             node.style.visibility = 'hidden';
-            node.style.opacity = 0;
+            node.style.opacity = '0';
           }
 
           continue;
         }
 
         if (transitionDuration) {
+          // @ts-ignore
           node.style[`${vendorPrefix}TransitionDuration`] = `${transitionDuration}ms`;
         }
 
@@ -650,7 +754,7 @@ export const ContainerMixin = {
           if (this._axis.y) {
             // Calculations for a grid setup
             if (
-              index < this.index &&
+              index < this.index! &&
               ((sortingOffset.left + scrollDifference.left - offset.width <= edgeOffset.left &&
                 sortingOffset.top + scrollDifference.top <= edgeOffset.top + offset.height) ||
                 sortingOffset.top + scrollDifference.top + offset.height <= edgeOffset.top)
@@ -662,14 +766,14 @@ export const ContainerMixin = {
                 // If it moves passed the right bounds, then animate it to the first position of the next row.
                 // We just use the offset of the next node to calculate where to move, because that node's original position
                 // is exactly where we want to go
-                translate.x = nextNode.edgeOffset.left - edgeOffset.left;
-                translate.y = nextNode.edgeOffset.top - edgeOffset.top;
+                translate.x = nextNode.edgeOffset!.left - edgeOffset.left;
+                translate.y = nextNode.edgeOffset!.top - edgeOffset.top;
               }
               if (this.newIndex === null) {
                 this.newIndex = index;
               }
             } else if (
-              index > this.index &&
+              index > this.index! &&
               ((sortingOffset.left + scrollDifference.left + offset.width >= edgeOffset.left &&
                 sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top) ||
                 sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top + height)
@@ -677,21 +781,21 @@ export const ContainerMixin = {
               // If the current node is to the right on the same row, or below the node that's being dragged
               // then move it to the left
               translate.x = -(this.width + this.marginOffset.x);
-              if (edgeOffset.left + translate.x < this.containerBoundingRect.left + offset.width) {
+              if (edgeOffset.left + translate.x < this.containerBoundingRect.left + offset.width && prevNode) {
                 // If it moves passed the left bounds, then animate it to the last position of the previous row.
                 // We just use the offset of the previous node to calculate where to move, because that node's original position
                 // is exactly where we want to go
-                translate.x = prevNode.edgeOffset.left - edgeOffset.left;
-                translate.y = prevNode.edgeOffset.top - edgeOffset.top;
+                translate.x = prevNode.edgeOffset!.left - edgeOffset.left;
+                translate.y = prevNode.edgeOffset!.top - edgeOffset.top;
               }
               this.newIndex = index;
             }
           } else {
-            if (index > this.index && sortingOffset.left + scrollDifference.left + offset.width >= edgeOffset.left) {
+            if (index > this.index! && sortingOffset.left + scrollDifference.left + offset.width >= edgeOffset.left) {
               translate.x = -(this.width + this.marginOffset.x);
               this.newIndex = index;
             } else if (
-              index < this.index &&
+              index < this.index! &&
               sortingOffset.left + scrollDifference.left <= edgeOffset.left + offset.width
             ) {
               translate.x = this.width + this.marginOffset.x;
@@ -701,16 +805,20 @@ export const ContainerMixin = {
             }
           }
         } else if (this._axis.y) {
-          if (index > this.index && sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top) {
+          if (index > this.index! && sortingOffset.top + scrollDifference.top + offset.height >= edgeOffset.top) {
             translate.y = -(this.height + this.marginOffset.y);
             this.newIndex = index;
-          } else if (index < this.index && sortingOffset.top + scrollDifference.top <= edgeOffset.top + offset.height) {
+          } else if (
+            index < this.index! &&
+            sortingOffset.top + scrollDifference.top <= edgeOffset.top + offset.height
+          ) {
             translate.y = this.height + this.marginOffset.y;
             if (this.newIndex == null) {
               this.newIndex = index;
             }
           }
         }
+        // @ts-ignore
         node.style[`${vendorPrefix}Transform`] = `translate3d(${translate.x}px,${translate.y}px,0)`;
       }
 
@@ -754,7 +862,7 @@ export const ContainerMixin = {
       }
 
       if (direction.x !== 0 || direction.y !== 0) {
-        this.autoscrollInterval = setInterval(() => {
+        this.autoscrollInterval = window.setInterval(() => {
           const offset = {
             left: 1 * speed.x * direction.x,
             top: 1 * speed.y * direction.y,
@@ -768,4 +876,4 @@ export const ContainerMixin = {
       }
     },
   },
-};
+});

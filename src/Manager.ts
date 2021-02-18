@@ -1,17 +1,21 @@
-interface SortableNode extends HTMLElement {
+import { TopLeft } from './utils';
+
+export interface SortableNode extends HTMLElement {
   sortableInfo: {
     index: number;
+    manager: Manager;
   };
 }
 
 export interface ItemRef {
   node: SortableNode;
   index?: number;
+  edgeOffset?: TopLeft | null;
 }
 
 export default class Manager {
   private refs: ItemRef[] = [];
-  private active: ItemRef | null = null;
+  public active: { index: number } | null = null;
   constructor() {}
 
   add(ref: ItemRef) {
@@ -40,6 +44,10 @@ export default class Manager {
 
   getIndex(ref: ItemRef) {
     return this.refs.indexOf(ref);
+  }
+
+  getRefs() {
+    return this.refs;
   }
 
   getOrderedRefs() {

@@ -28,12 +28,12 @@ export const SlickList = defineComponent({
               index,
             },
             {
-              default: () => this.$slots.item({ item, index }),
+              default: () => this.$slots.item?.({ item, index }),
             }
           );
         })
       );
     }
-    return h(this.tag, this.$slots.default());
+    return h(this.tag, this.$slots.default?.());
   },
 });

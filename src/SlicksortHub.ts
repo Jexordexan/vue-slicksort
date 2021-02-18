@@ -1,28 +1,31 @@
-import { getRectCenter, getDistance, getPointerOffset, isPointWithinRect } from './utils';
+import Manager, { SortableNode } from './Manager';
+import { getRectCenter, getDistance, getPointerOffset, isPointWithinRect, PointEvent } from './utils';
 
 let containerIDCounter = 1;
 
-interface ContainerRef {
+export interface ContainerRef {
   id: string;
   group: string;
   accept: AcceptProp | null;
   block: string[];
   container: HTMLElement;
+  newIndex: number;
+  manager: Manager;
+  sortableGhost: HTMLElement | null;
 
-  handleDragIn(e: MouseEvent, ghost: HTMLElement | null, helper: HTMLElement | null): void;
-  handleDragMove(e: MouseEvent): void;
-  handleDragOut(e: MouseEvent): void;
-  handleSortEnd(e: MouseEvent): void;
+  handleDragIn(e: PointEvent, ghost: HTMLElement | null, helper: HTMLElement | null): void;
+  handleDragOut(e: PointEvent): void;
+  handleSortEnd(e: PointEvent): void;
   handleDropIn(payload: unknown): void;
   handleDropOut(): unknown;
 
-  updatePosition(e: MouseEvent): void;
+  updatePosition(e: PointEvent): void;
   animateNodes(): void;
   autoscroll(): void;
 }
 
 type AcceptPropArgs = { source: ContainerRef; dest: ContainerRef; payload: unknown };
-type AcceptProp = boolean | string[] | ((args: AcceptPropArgs) => boolean);
+export type AcceptProp = boolean | string[] | ((args: AcceptPropArgs) => boolean);
 
 /**
  * Always allow when dest === source
@@ -80,11 +83,12 @@ function findClosestDest(
 }
 
 export default class SlicksortHub {
+  public helper: HTMLElement | null = null;
+  public ghost: HTMLElement | null = null;
+
   private refs: ContainerRef[] = [];
   private source: ContainerRef | null = null;
   private dest: ContainerRef | null = null;
-  private helper: HTMLElement | null = null;
-  private ghost: HTMLElement | null = null;
 
   getId() {
     return '' + containerIDCounter++;
@@ -119,7 +123,7 @@ export default class SlicksortHub {
     this.dest = ref;
   }
 
-  handleSortMove(e: MouseEvent, payload: unknown) {
+  handleSortMove(e: PointEvent, payload: unknown) {
     const dest = this.dest;
     const source = this.source;
 
@@ -155,7 +159,7 @@ export default class SlicksortHub {
     this.ghost = null;
   }
 
-  cancel(e: MouseEvent) {
+  cancel(e: PointEvent) {
     this.dest?.handleDragOut(e);
     this.source?.handleSortEnd(e);
     this.reset();

@@ -1,4 +1,24 @@
-type Coords = { x: number; y: number };
+import { ItemRef, SortableNode } from './Manager';
+
+export type XY = { x: number; y: number };
+
+export type TopLeft = { top: number; left: number };
+export type BottomRight = { bottom: number; right: number };
+export type WidthHeight = { width: number; height: number };
+export type Timer = ReturnType<typeof setTimeout>;
+export type PointEventName =
+  | 'mousedown'
+  | 'mousemove'
+  | 'mouseup'
+  | 'touchstart'
+  | 'touchmove'
+  | 'touchend'
+  | 'touchcancel';
+export type PointEvent = MouseEvent | TouchEvent;
+
+export const isTouch = (e: PointEvent): e is TouchEvent => {
+  return (e as TouchEvent).touches != null;
+};
 
 export function arrayMove<T>(arr: T[], previousIndex: number, newIndex: number): (T | undefined)[] {
   const array: (T | undefined)[] = arr.slice(0);
@@ -29,7 +49,7 @@ export function arrayInsert<T>(arr: T[], newIndex: number, value: T): T[] {
   return array;
 }
 
-export const events = {
+export const events: Record<string, string[]> = {
   start: ['touchstart', 'mousedown'],
   move: ['touchmove', 'mousemove'],
   end: ['touchend', 'touchcancel', 'mouseup'],
@@ -58,9 +78,9 @@ export const vendorPrefix: string = (function () {
   }
 })();
 
-export function closest(el: Node | null, fn: (el: Node) => boolean) {
+export function closest(el: SortableNode | Node | null, fn: (el: any) => boolean): SortableNode | Node | undefined {
   while (el) {
-    if (fn(el)) return el;
+    if (fn(el)) return el as any;
     el = el.parentNode;
   }
 }
@@ -93,13 +113,13 @@ export function getElementMargin(element: HTMLElement) {
   };
 }
 
-export function getPointerOffset(e: MouseEvent | TouchEvent, reference: 'client' | 'page' = 'page') {
+export function getPointerOffset(e: PointEvent, reference: 'client' | 'page' = 'page') {
   const x = `${reference}X` as 'clientX' | 'pageX';
   const y = `${reference}Y` as 'clientY' | 'pageY';
 
   return {
-    x: (e as TouchEvent).touches ? (e as TouchEvent).touches[0][x] : (e as MouseEvent)[x],
-    y: (e as TouchEvent).touches ? (e as TouchEvent).touches[0][y] : (e as MouseEvent)[y],
+    x: isTouch(e) ? e.touches[0][x] : e[x],
+    y: isTouch(e) ? e.touches[0][y] : e[y],
   };
 }
 
@@ -156,7 +176,11 @@ export function cloneNode(node: HTMLElement) {
   return clonedNode;
 }
 
-export function getLockPixelOffsets(lockOffset: number | number[], width: number, height: number) {
+export function getLockPixelOffsets(lockOffset: string | number | number[], width: number, height: number) {
+  if (typeof lockOffset == 'string') {
+    lockOffset = +lockOffset;
+  }
+
   if (!Array.isArray(lockOffset)) {
     lockOffset = [lockOffset, lockOffset];
   }
@@ -218,7 +242,7 @@ export function getRectCenter(clientRect: ClientRect) {
   };
 }
 
-export function resetTransform(nodes: { node: HTMLElement; edgeOffset: Coords | null }[] = []) {
+export function resetTransform(nodes: ItemRef[] = []) {
   for (let i = 0, len = nodes.length; i < len; i++) {
     const node = nodes[i];
     const el = node.node;
@@ -242,7 +266,7 @@ function withinBounds(pos: number, top: number, bottom: number) {
   return lower <= pos && pos <= upper;
 }
 
-export function isPointWithinRect({ x, y }: Coords, { top, left, width, height }: ClientRect) {
+export function isPointWithinRect({ x, y }: XY, { top, left, width, height }: ClientRect) {
   const withinX = withinBounds(x, left, left + width);
   const withinY = withinBounds(y, top, top + height);
   return withinX && withinY;
