@@ -55,46 +55,99 @@ interface ComponentProps {
 interface ComponentData extends ComponentProps {
   id: string;
 
-  // SlicksortHub: SlicksortHub;
+  // usually thi.$el
   container: HTMLElement;
+
+  // ref to document
   document: Document;
+
+  // Provided for sortable elements to register
   manager: Manager;
+
+  // ref to window
   _window: Window;
+
+  // window or container
+  // TODO make this a prop
   scrollContainer: HTMLElement;
 
+  // Injected and used for drag and drop between lists
   hub?: SlicksortHub;
+
+  // Normalized events for mouse and touch devices
   events: Record<string, PointEventListener>;
 
+  // MOusedown or touchstart occurred
   _touched: boolean;
+
+  // initial point of contact
   _pos: XY;
+
+  // distance from _pos to current pointer position
+  // Used for drag threshold, aka `distance`
   _delta: XY;
+
+  // Data structure for `axis` prop
   _axis: { x: boolean; y: boolean };
 
+  // timer for press threshold
   pressTimer: Timer;
+
+  // used to wait until next tick to cancel
   cancelTimer: Timer;
+
+  // Used for repeating autoscroll
   autoscrollInterval: Timer;
 
+  // The translation applied to the helper
   translate: XY;
+
+  // The minmax values of translate before starting autoscroll
   minTranslate: Partial<XY>;
   maxTranslate: Partial<XY>;
 
+  // Is the user currently sorting
   sorting: boolean;
+
+  // The active node that was originally clicked
   node: SortableNode;
+
+  // The measurements of the node that have to be calculated separately
   margin: TopLeft & BottomRight;
   width: number;
   height: number;
+
+  // space added around the active node
   marginOffset: XY;
+
+  // Initial offset of the cursor
   initialOffset: XY;
+
+  // Initial scroll position of the container and window
   initialScroll: TopLeft;
   initialWindowScroll: TopLeft;
+
+  // The top-left offset of the node from the offsetParent of the *container*
+  // Its important to use the container as a source for the offsetParent so all nodes have the same reference point
   offsetEdge: TopLeft;
+
+  // client rect for the node and container
   boundingClientRect: ClientRect;
   containerBoundingRect: ClientRect;
+
+  // Starting index (use last index for drag in operations)
   index: number | null;
+
+  // Target index for dropping
   newIndex: number | null;
 
+  // The node that follows the mouse
   helper: HTMLElement | null;
+
+  // The node that stays in the list and is hidden
   sortableGhost: HTMLElement | null;
+
+  // The element that we listen to for events
   listenerNode: GlobalEventHandlers;
 }
 
