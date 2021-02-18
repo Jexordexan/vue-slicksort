@@ -154,4 +154,7 @@ Every list that you want to drag between then needs the `group` prop to be set. 
 ### Between different groups
 
 In the example below, three lists have different groups and `accept` props.
-<GroupExample />
+
+<ClientOnly>
+  <GroupExample />
+</ClientOnly>
