@@ -54,7 +54,7 @@ export default {
   },
   setup() {
     const kanban = reactive({
-      name: 'KanBan Example',
+      name: 'Kanban Example',
       columns: [
         {
           id: 'todos',
@@ -123,7 +123,6 @@ export default {
     padding: 10px;
     font-size: 1.5rem;
     font-weight: bold;
-    cursor: grab;
   }
 }
 

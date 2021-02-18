@@ -1,17 +1,33 @@
 <template>
   <div class="groups-example">
-    <div v-for="list in lists" :key="list.id" class="list-wrapper">
-      <h4>{{ list.name }}</h4>
+    <div class="list-wrapper">
+      <h4>{{ shelf.name }}</h4>
       <code>group: 'groceries'</code>
-      <SortableList axis="y" group="groceries" :accept="list.accept" :block="list.block" v-model:list="list.items">
-        <SortableItem v-for="(item, index) in list.items" :key="index" :index="index" :item="item" />
+      <SortableList axis="y" group="groceries" :accept="shelf.accept" :block="shelf.block" v-model:list="shelf.items">
+        <SortableItem v-for="(item, index) in shelf.items" :key="index" :index="index" :item="item" />
+      </SortableList>
+    </div>
+    <div class="list-wrapper">
+      <h4>{{ cart.name }}</h4>
+      <code>group: 'groceries'</code>
+      <SortableList axis="y" group="groceries" :accept="cart.accept" :block="cart.block" v-model:list="cart.items">
+        <SortableItem v-for="(item, index) in cart.items" :key="index" :index="index" :item="item" />
       </SortableList>
     </div>
   </div>
   <details>
     <summary>v-models</summary>
-    <div class="language-js">
-      <pre class="lang-js"><code>lists: {{ lists }}</code></pre>
+    <div class="groups-example">
+      <div class="list-wrapper">
+        <div class="language-js">
+          <pre class="lang-js"><code>shelf: {{ shelf }}</code></pre>
+        </div>
+      </div>
+      <div class="list-wrapper">
+        <div class="language-js">
+          <pre class="lang-js"><code>cart: {{ cart }}</code></pre>
+        </div>
+      </div>
     </div>
   </details>
 </template>
@@ -29,9 +45,14 @@ const colors = ['#eb5757', '#9b51e1', '#58cbf2'];
 const fruits = ['Apples', 'Bananas', 'Cherries', 'Dragon Fruit'];
 const veggies = ['Potatoes', 'Broccoli'];
 
-const makeList = () => {
-  return [
-    {
+export default {
+  name: 'SimpleGroupExample',
+  components: {
+    SortableItem,
+    SortableList,
+  },
+  setup() {
+    const shelf = ref({
       id: id++,
       name: 'Shelf',
       items: fruits.map((value) => {
@@ -42,8 +63,9 @@ const makeList = () => {
           id: id++,
         };
       }),
-    },
-    {
+    });
+
+    const cart = ref({
       id: id++,
       name: 'Cart',
       items: veggies.map((value) => {
@@ -54,59 +76,11 @@ const makeList = () => {
           id: id++,
         };
       }),
-    },
-  ];
-};
-
-export default {
-  name: 'GroupExample',
-  props: {
-    winScreen: Boolean,
-  },
-  components: {
-    SortableItem,
-    SortableList,
-  },
-  setup(props) {
-    const lists = ref(makeList());
-
-    const showWinScreen = ref(false);
-
-    const resetList = () => {
-      lists.value = makeList();
-      showWinScreen.value = false;
-    };
-
-    watch(
-      () => lists.value,
-      (newValue) => {
-        if (!props.winScreen) return;
-        const mapped = newValue.map((l) => l.items.map((i) => i.value));
-
-        const winning = [
-          ['Item 1', 'Item 1', 'Item 1'],
-          ['Item 2', 'Item 2', 'Item 2'],
-          ['Item 3', 'Item 3', 'Item 3'],
-        ];
-
-        if (JSON.stringify(mapped) === JSON.stringify(winning)) {
-          showWinScreen.value = true;
-          confetti.start();
-
-          setTimeout(() => {
-            confetti.stop();
-          }, 5000);
-        }
-      },
-      {
-        deep: true,
-      }
-    );
+    });
 
     return {
-      lists,
-      showWinScreen,
-      resetList,
+      shelf,
+      cart,
     };
   },
 };
