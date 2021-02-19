@@ -5,6 +5,7 @@ export interface SortableNode extends HTMLElement {
     index: number;
     manager: Manager;
   };
+  sortableHandle?: boolean;
 }
 
 export interface ItemRef {
@@ -16,9 +17,8 @@ export interface ItemRef {
 export default class Manager {
   private refs: ItemRef[] = [];
   public active: { index: number } | null = null;
-  constructor() {}
 
-  add(ref: ItemRef) {
+  add(ref: ItemRef): void {
     if (!this.refs) {
       this.refs = [];
     }
@@ -26,7 +26,7 @@ export default class Manager {
     this.refs.push(ref);
   }
 
-  remove(ref: ItemRef) {
+  remove(ref: ItemRef): void {
     const index = this.getIndex(ref);
 
     if (index !== -1) {
@@ -34,23 +34,23 @@ export default class Manager {
     }
   }
 
-  isActive() {
+  isActive(): boolean {
     return !!this.active;
   }
 
-  getActive() {
-    return this.refs.find(({ node }) => node?.sortableInfo?.index == this?.active?.index);
+  getActive(): ItemRef | null {
+    return this.refs.find(({ node }) => node?.sortableInfo?.index == this?.active?.index) || null;
   }
 
-  getIndex(ref: ItemRef) {
+  getIndex(ref: ItemRef): number {
     return this.refs.indexOf(ref);
   }
 
-  getRefs() {
+  getRefs(): ItemRef[] {
     return this.refs;
   }
 
-  getOrderedRefs() {
+  getOrderedRefs(): ItemRef[] {
     return this.refs.sort((a, b) => {
       return a.node.sortableInfo.index - b.node.sortableInfo.index;
     });

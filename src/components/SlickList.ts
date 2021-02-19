@@ -1,9 +1,10 @@
-import { h, defineComponent } from 'vue';
+import { h, defineComponent, PropType } from 'vue';
 import { ContainerMixin } from '../ContainerMixin';
+import { hasOwnProperty } from '../utils';
 import { SlickItem } from './SlickItem';
 
 export const SlickList = defineComponent({
-  name: 'slick-list',
+  name: 'SlickList',
   mixins: [ContainerMixin],
   props: {
     tag: {
@@ -11,7 +12,7 @@ export const SlickList = defineComponent({
       default: 'div',
     },
     itemKey: {
-      type: String,
+      type: [String, Function] as PropType<((item: unknown) => string) | string>,
       default: 'id',
     },
   },
@@ -19,8 +20,23 @@ export const SlickList = defineComponent({
     if (this.$slots.item) {
       return h(
         this.tag,
-        this.list.map((item: any, index: number) => {
-          const key = typeof item === 'object' ? item[this.itemKey] : item;
+        this.list.map((item, index) => {
+          let key: string;
+          if (item == null) {
+            return;
+          } else if (typeof this.itemKey === 'function') {
+            key = this.itemKey(item);
+          } else if (
+            typeof item === 'object' &&
+            hasOwnProperty(item, this.itemKey) &&
+            typeof item[this.itemKey] == 'string'
+          ) {
+            key = item[this.itemKey] as string;
+          } else if (typeof item === 'string') {
+            key = item;
+          } else {
+            throw new Error('Cannot find key for item, use the item-key prop and pass a function or string');
+          }
           return h(
             SlickItem,
             {
@@ -29,9 +45,9 @@ export const SlickList = defineComponent({
             },
             {
               default: () => this.$slots.item?.({ item, index }),
-            }
+            },
           );
-        })
+        }),
       );
     }
     return h(this.tag, this.$slots.default?.());

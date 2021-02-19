@@ -1,4 +1,6 @@
-import { defineComponent, inject, PropType } from 'vue';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { defineComponent, PropType } from 'vue';
 import Manager, { ItemRef, SortableNode } from './Manager';
 import SlicksortHub, { AcceptProp, ContainerRef } from './SlicksortHub';
 import {
@@ -15,21 +17,23 @@ import {
   getPointerOffset,
   limit,
   resetTransform,
-  vendorPrefix,
   XY,
   TopLeft,
   WidthHeight,
   PointEvent,
   BottomRight,
   isTouch,
+  setTransform,
+  hasOwnProperty,
 } from './utils';
 
-type PointEventListener = (e: PointEvent) => any;
+type PointEventListener = (e: PointEvent) => unknown;
+// eslint-disable-next-line @typescript-eslint/ban-types
 const timeout: (cb: Function, dur?: number) => number = setTimeout;
 type Timer = number | null;
 
 interface ComponentProps {
-  list: any[];
+  list: unknown[];
   axis: 'x' | 'y' | 'xy' | 'yx'; // 'x', 'y', 'xy'
   distance: number;
   pressDelay: number;
@@ -43,12 +47,12 @@ interface ComponentProps {
   appendTo: string;
   draggedSettlingDuration: number;
   group: string;
-  accept: boolean | string[] | Function;
+  accept: boolean | string[] | ((ctx: { source: ContainerRef; dest: ContainerRef; payload: unknown }) => boolean);
   block: string[];
   lockAxis: string;
   helperClass: string;
   contentWindow: Window;
-  shouldCancelStart: (e: MouseEvent) => boolean;
+  shouldCancelStart: (e: PointEvent) => boolean;
   getHelperDimensions: (ref: ItemRef) => { width: number; height: number };
 }
 
@@ -155,10 +159,14 @@ interface ComponentData extends ComponentProps {
 export const ContainerMixin = defineComponent({
   inject: ['SlicksortHub'],
 
-  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:list'],
+  provide() {
+    return {
+      manager: this.manager,
+    };
+  },
 
   props: {
-    list: { type: Array as PropType<any[]>, required: true },
+    list: { type: Array as PropType<unknown[]>, required: true },
     axis: { type: String, default: 'y' }, // 'x', 'y', 'xy'
     distance: { type: Number, default: 0 },
     pressDelay: { type: Number, default: 0 },
@@ -174,15 +182,15 @@ export const ContainerMixin = defineComponent({
     group: { type: String, default: '' },
     accept: { type: [Boolean, Array, Function] as PropType<AcceptProp>, default: null },
     block: { type: Array as PropType<string[]>, default: () => [] },
-    lockAxis: String,
-    helperClass: String,
-    contentWindow: Object as PropType<Window>,
+    lockAxis: { type: String, default: '' },
+    helperClass: { type: String, default: '' },
+    contentWindow: { type: Object as PropType<Window>, default: null },
     shouldCancelStart: {
       type: Function as PropType<PointEventListener>,
-      default: (e: any) => {
+      default: (e: PointEvent) => {
         // Cancel sorting if the event target is an `input`, `textarea`, `select` or `option`
         const disabledElements = ['input', 'textarea', 'select', 'option', 'button'];
-        return disabledElements.indexOf(e.target.tagName.toLowerCase()) !== -1;
+        return disabledElements.indexOf((e.target as HTMLElement).tagName.toLowerCase()) !== -1;
       },
     },
     getHelperDimensions: {
@@ -194,9 +202,10 @@ export const ContainerMixin = defineComponent({
     },
   },
 
+  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:list'],
+
   data() {
     let useHub = false;
-    let containerId = '1';
     if (this.group) {
       // If the group option is set, it is assumed the user intends
       // to drag between containers and the required plugin has been installed
@@ -214,12 +223,6 @@ export const ContainerMixin = defineComponent({
     } as unknown) as ComponentData;
   },
 
-  provide() {
-    return {
-      manager: this.manager,
-    };
-  },
-
   mounted() {
     if (this.hub) {
       this.id = this.hub.getId();
@@ -235,7 +238,7 @@ export const ContainerMixin = defineComponent({
     };
 
     for (const key in this.events) {
-      if (this.events.hasOwnProperty(key)) {
+      if (hasOwnProperty(this.events, key)) {
         // @ts-ignore
         events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key]));
       }
@@ -248,7 +251,7 @@ export const ContainerMixin = defineComponent({
 
   beforeUnmount() {
     for (const key in this.events) {
-      if (this.events.hasOwnProperty(key)) {
+      if (hasOwnProperty(this.events, key)) {
         // @ts-ignore
         events[key].forEach((eventName) => this.container.removeEventListener(eventName, this.events[key]));
       }
@@ -271,13 +274,13 @@ export const ContainerMixin = defineComponent({
       this._pos = getPointerOffset(e);
       const target = e.target as HTMLElement;
 
-      const node = closest(target, (el) => el.sortableInfo != null) as SortableNode;
+      const node = closest(target, (el) => (el as SortableNode).sortableInfo != null) as SortableNode;
 
       if (node && node.sortableInfo && this.nodeIsChild(node) && !this.sorting) {
         const { useDragHandle } = this.$props;
         const { index } = node.sortableInfo;
 
-        if (useDragHandle && !closest(target, (el) => el.sortableHandle != null)) return;
+        if (useDragHandle && !closest(target, (el) => (el as SortableNode).sortableHandle != null)) return;
 
         this.manager.active = { index };
 
@@ -564,14 +567,10 @@ export const ContainerMixin = defineComponent({
     handleSortEnd(e: PointEvent) {
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
-        events.move.forEach((eventName) =>
-          // @ts-ignore
-          this.listenerNode.removeEventListener(eventName, this.handleSortMove)
-        );
-        events.end.forEach((eventName) =>
-          // @ts-ignore
-          this.listenerNode.removeEventListener(eventName, this.handleSortEnd)
-        );
+        // @ts-ignore
+        events.move.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortMove));
+        // @ts-ignore
+        events.end.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
       }
 
       const nodes = this.manager.getRefs();
@@ -618,7 +617,7 @@ export const ContainerMixin = defineComponent({
       }
     },
 
-    transitionHelperIntoPlace(nodes: ItemRef[], cb: Function) {
+    transitionHelperIntoPlace(nodes: ItemRef[], cb: () => void) {
       if (this.draggedSettlingDuration === 0 || nodes.length === 0 || !this.helper) {
         return Promise.resolve();
       }
@@ -672,20 +671,14 @@ export const ContainerMixin = defineComponent({
 
       const duration = this.draggedSettlingDuration !== null ? this.draggedSettlingDuration : this.transitionDuration;
 
-      // @ts-ignore
-      this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${targetX}px,${targetY}px, 0)`;
-      // @ts-ignore
-      this.helper.style[`${vendorPrefix}TransitionDuration`] = `${duration}ms`;
+      setTransform(this.helper, `translate3d(${targetX}px,${targetY}px, 0)`, `${duration}ms`);
 
       // Register an event handler to clean up styles when the transition
       // finishes.
       const cleanup = (event: TransitionEvent) => {
         if (!event || event.propertyName === 'transform') {
           clearTimeout(cleanupTimer);
-          // @ts-ignore
-          this.helper.style[`${vendorPrefix}Transform`] = '';
-          // @ts-ignore
-          this.helper.style[`${vendorPrefix}TransitionDuration`] = '';
+          setTransform(this.helper);
           cb();
         }
       };
@@ -732,8 +725,7 @@ export const ContainerMixin = defineComponent({
       }
 
       if (this.helper) {
-        // @ts-ignore
-        this.helper.style[`${vendorPrefix}Transform`] = `translate3d(${translate.x}px,${translate.y}px, 0)`;
+        this.helper.style['transform'] = `translate3d(${translate.x}px,${translate.y}px, 0)`;
       }
     },
 
@@ -802,8 +794,7 @@ export const ContainerMixin = defineComponent({
         }
 
         if (transitionDuration) {
-          // @ts-ignore
-          node.style[`${vendorPrefix}TransitionDuration`] = `${transitionDuration}ms`;
+          node.style['transitionDuration'] = `${transitionDuration}ms`;
         }
 
         if (this._axis.x) {
@@ -874,8 +865,7 @@ export const ContainerMixin = defineComponent({
             }
           }
         }
-        // @ts-ignore
-        node.style[`${vendorPrefix}Transform`] = `translate3d(${translate.x}px,${translate.y}px,0)`;
+        node.style['transform'] = `translate3d(${translate.x}px,${translate.y}px,0)`;
       }
 
       if (this.newIndex == null) {
