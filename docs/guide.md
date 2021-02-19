@@ -40,7 +40,9 @@ export default {
 ```
 
 **Try it out!**
+<ClientOnly>
 <FruitExample />
+</ClientOnly>
 
 ::: tip
 `:key` should refer to unique data, like an ID attribute, that can be used to track the item as it moves. Using the index (`i`) as the key is not advised and may cause unwanted rendering effects.
@@ -62,7 +64,9 @@ This slot will repeat for each item in the `list` prop. This has to be used with
 </template>
 ```
 
-<ShorthandExample />
+<ClientOnly>
+  <ShorthandExample />
+</ClientOnly>
 
 ### Horizontal List
 
@@ -75,13 +79,17 @@ You will have to handle the actual CSS of making them horizontal, `display: flex
 </SlickList>
 ```
 
-<FruitExample axis="x" />
+<ClientOnly>
+	<FruitExample axis="x" />
+</ClientOnly>
 
 ### Using a drag handle
 
 By default the entire list item is the handle for the drag events. This might be a problem if you have inputs or buttons or other interactive elements within the items. You can
 
-<FruitExample show-handle />
+<ClientOnly>
+	<FruitExample show-handle />
+</ClientOnly>
 
 ### Autoscroll
 
@@ -123,7 +131,9 @@ export default {
 </style>
 ```
 
-<LongListExample />
+<ClientOnly>
+  <LongListExample />
+</ClientOnly>
 
 ## Drag and Drop
 
