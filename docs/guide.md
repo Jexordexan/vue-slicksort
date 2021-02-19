@@ -149,7 +149,9 @@ Every list that you want to drag between then needs the `group` prop to be set. 
 
 ### Between the same group
 
-<SimpleGroupExample />
+<ClientOnly>
+  <SimpleGroupExample />
+</ClientOnly>
 
 ### Between different groups
 

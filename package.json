@@ -66,6 +66,7 @@
     "@rollup/plugin-typescript": "^8.2.0",
     "@vitejs/plugin-vue": "^1.1.4",
     "@vue/compiler-sfc": "^3.0.5",
+    "@vueuse/core": "^4.1.1",
     "autoprefixer": "^6.3.6",
     "cross-env": "^1.0.7",
     "cssnano": "^3.10.0",

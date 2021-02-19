@@ -15,7 +15,14 @@
       <li>Drag handle</li>
       <li>Helper styles</li>
     </ul>
-    <SlickList v-model:list="kanban.columns" axis="x" class="column-container" lock-axis="x" use-drag-handle>
+    <SlickList
+      v-model:list="kanban.columns"
+      :axis="axis"
+      :lock-axis="axis"
+      class="column-container"
+      use-drag-handle
+      useWindowAsScrollContainer
+    >
       <SlickItem v-for="(col, i) in kanban.columns" :key="col.id" :index="i" class="kanban-column">
         <header>
           <DragHandle />
@@ -41,7 +48,8 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
+import { useWindowSize } from '@vueuse/core';
 import { SlickList, SlickItem } from '../../../src';
 import DragHandle from './DragHandle.vue';
 import { stringsToItems } from './utils';
@@ -53,6 +61,8 @@ export default {
     DragHandle,
   },
   setup() {
+    const { width } = useWindowSize();
+    const axis = computed(() => (width.value > 768 ? 'x' : 'y'));
     const kanban = reactive({
       name: 'Kanban Example',
       columns: [
@@ -60,15 +70,7 @@ export default {
           id: 'todos',
           name: 'To Do',
           group: 'items',
-          items: stringsToItems([
-            'Vue 3 support',
-            'TypeScript support',
-            'Cancel dragging',
-            'Multiselect',
-            'Accessibility',
-            'UI Tests',
-            'Keyboard navigation',
-          ]),
+          items: stringsToItems(['Cancel dragging', 'Multiselect', 'Accessibility', 'UI Tests', 'Keyboard navigation']),
         },
         {
           id: 'inprogress',
@@ -93,6 +95,7 @@ export default {
 
     return {
       kanban,
+      axis,
     };
   },
 };
@@ -131,6 +134,16 @@ export default {
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
+}
+
+@media screen and (max-width: 768px) {
+  .column-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .kanban-column {
+    width: auto;
+  }
 }
 </style>
 
