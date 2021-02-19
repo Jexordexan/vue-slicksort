@@ -81,6 +81,7 @@
     "rimraf": "^2.5.2",
     "rollup": "^2.38.5",
     "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-bundle-size": "^1.0.3",
     "rollup-plugin-esbuild": "^2.6.1",
     "sass": "^1.32.6",
     "standard-changelog": "^2.0.27",
