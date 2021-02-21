@@ -1,5 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import esbuild from 'rollup-plugin-esbuild';
+import bundleSize from 'rollup-plugin-bundle-size';
 import typescript from '@rollup/plugin-typescript';
 import pkg from './package.json';
 
@@ -32,6 +33,7 @@ export default [
         },
       }),
       babel(),
+      bundleSize(),
     ],
   },
 ];

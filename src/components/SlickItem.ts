@@ -2,7 +2,7 @@ import { h, defineComponent } from 'vue';
 import { ElementMixin } from '../ElementMixin';
 
 export const SlickItem = defineComponent({
-  name: 'slick-item',
+  name: 'SlickItem',
   mixins: [ElementMixin],
   props: {
     tag: {

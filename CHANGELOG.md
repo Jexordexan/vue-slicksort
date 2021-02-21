@@ -1,3 +1,25 @@
+# [2.0.0-alpha.3](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2021-02-19)
+
+
+### Bug Fixes
+
+* Better guessing for "closest" destination ([b462c57](https://github.com/Jexordexan/vue-slicksort/commit/b462c579978b10d26ef3ba7d5ace6e94f95b093d))
+* drag settling animation ([cba65c3](https://github.com/Jexordexan/vue-slicksort/commit/cba65c38273034f64709fe157a681d6b77fd8f3e))
+* Prevent memory leaks by holding on to old helper refs ([2ef5d66](https://github.com/Jexordexan/vue-slicksort/commit/2ef5d66b05e87c4b14a9ac9663d298e701026157))
+* remove ghost reference on drag out ([d8e9adf](https://github.com/Jexordexan/vue-slicksort/commit/d8e9adfa285fa4e321c7bce9dd6e4a472b1f7925))
+* revert setup() to data() ([c0528e5](https://github.com/Jexordexan/vue-slicksort/commit/c0528e50016ea3940bc650e2d91aa937c75c747a))
+* timeout ssr compat ([06e9450](https://github.com/Jexordexan/vue-slicksort/commit/06e94507d61bf543f9b1955570a7ba2f85ed66ac))
+* XY sorting bug when n=1 ([819bd4b](https://github.com/Jexordexan/vue-slicksort/commit/819bd4bf758771cbfe03a252e64a3977df309d8e))
+
+
+### Features
+
+* Add #item slot support for SlickList ([33ac30d](https://github.com/Jexordexan/vue-slicksort/commit/33ac30d264d71abb5d976874d127a5b53493452f))
+* Animate nodes when dragging out ([962a706](https://github.com/Jexordexan/vue-slicksort/commit/962a706da08994234b27c16ba986f976737b061d))
+* DragHandle component ([ab88102](https://github.com/Jexordexan/vue-slicksort/commit/ab881027c7dee6938a153961ec876d1217af220f))
+
+
+
 # [2.0.0-alpha.2](https://github.com/Jexordexan/vue-slicksort/compare/v1.2.0...v2.0.0-alpha.2) (2021-02-16)
 
 

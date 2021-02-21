@@ -1,4 +1,4 @@
-import { defineComponent, inject } from 'vue';
+import { defineComponent } from 'vue';
 import Manager, { ItemRef } from './Manager';
 
 interface ComponentData {
@@ -24,14 +24,6 @@ export const ElementMixin = defineComponent({
     return ({} as unknown) as ComponentData;
   },
 
-  mounted() {
-    const { disabled, index } = this.$props;
-
-    if (!disabled) {
-      this.setDraggable(index);
-    }
-  },
-
   watch: {
     index(newIndex) {
       if (this.$el && this.$el.sortableInfo) {
@@ -45,6 +37,14 @@ export const ElementMixin = defineComponent({
         this.setDraggable(this.index);
       }
     },
+  },
+
+  mounted() {
+    const { disabled, index } = this.$props;
+
+    if (!disabled) {
+      this.setDraggable(index);
+    }
   },
 
   beforeUnmount() {

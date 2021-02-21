@@ -1,4 +1,4 @@
-import Manager, { SortableNode } from './Manager';
+import Manager from './Manager';
 import { getRectCenter, getDistance, getPointerOffset, isPointWithinRect, PointEvent } from './utils';
 
 let containerIDCounter = 1;
@@ -51,7 +51,7 @@ function canAcceptElement(dest: ContainerRef, source: ContainerRef, payload: unk
 function findClosestDest(
   { x, y }: { x: number; y: number },
   refs: ContainerRef[],
-  currentDest: ContainerRef
+  currentDest: ContainerRef,
 ): ContainerRef | null {
   // Quickly check if we are within the bounds of the current destination
   if (isPointWithinRect({ x, y }, currentDest.container.getBoundingClientRect())) {
@@ -90,40 +90,40 @@ export default class SlicksortHub {
   private source: ContainerRef | null = null;
   private dest: ContainerRef | null = null;
 
-  getId() {
+  getId(): string {
     return '' + containerIDCounter++;
   }
 
-  isSource({ id }: ContainerRef) {
+  isSource({ id }: ContainerRef): boolean {
     return this.source?.id === id;
   }
 
-  getSource() {
+  getSource(): ContainerRef | null {
     return this.source;
   }
 
-  isDest({ id }: ContainerRef) {
+  isDest({ id }: ContainerRef): boolean {
     return this.dest?.id === id;
   }
 
-  getDest() {
+  getDest(): ContainerRef | null {
     return this.dest;
   }
 
-  addContainer(ref: ContainerRef) {
+  addContainer(ref: ContainerRef): void {
     this.refs.push(ref);
   }
 
-  removeContainer(ref: ContainerRef) {
+  removeContainer(ref: ContainerRef): void {
     this.refs = this.refs.filter((c) => c.id !== ref.id);
   }
 
-  sortStart(ref: ContainerRef) {
+  sortStart(ref: ContainerRef): void {
     this.source = ref;
     this.dest = ref;
   }
 
-  handleSortMove(e: PointEvent, payload: unknown) {
+  handleSortMove(e: PointEvent, payload: unknown): void {
     const dest = this.dest;
     const source = this.source;
 
@@ -145,21 +145,21 @@ export default class SlicksortHub {
     }
   }
 
-  handleSortEnd() {
+  handleSortEnd(): void {
     if (this.source?.id === this.dest?.id) return;
     const payload = this.source?.handleDropOut();
     this.dest?.handleDropIn(payload);
     this.reset();
   }
 
-  reset() {
+  reset(): void {
     this.source = null;
     this.dest = null;
     this.helper = null;
     this.ghost = null;
   }
 
-  cancel(e: PointEvent) {
+  cancel(e: PointEvent): void {
     this.dest?.handleDragOut(e);
     this.source?.handleSortEnd(e);
     this.reset();
