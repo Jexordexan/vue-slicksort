@@ -73,7 +73,7 @@ interface ComponentData extends ComponentProps {
 
   // window or container
   // TODO make this a prop
-  scrollContainer: HTMLElement;
+  scrollContainer: { scrollTop: number; scrollLeft: number };
 
   // Injected and used for drag and drop between lists
   hub?: SlicksortHub;
@@ -230,7 +230,7 @@ export const ContainerMixin = defineComponent({
     this.container = this.$el;
     this.document = this.container.ownerDocument || document;
     this._window = this.contentWindow || window;
-    this.scrollContainer = this.useWindowAsScrollContainer ? this.document.body : this.container;
+    this.scrollContainer = this.useWindowAsScrollContainer ? { scrollLeft: 0, scrollTop: 0 } : this.container;
     this.events = {
       start: this.handleStart,
       move: this.handleMove,
@@ -567,10 +567,14 @@ export const ContainerMixin = defineComponent({
     handleSortEnd(e: PointEvent) {
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
-        // @ts-ignore
-        events.move.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortMove));
-        // @ts-ignore
-        events.end.forEach((eventName) => this.listenerNode.removeEventListener(eventName, this.handleSortEnd));
+        events.move.forEach((eventName) =>
+          // @ts-ignore
+          this.listenerNode.removeEventListener(eventName, this.handleSortMove),
+        );
+        events.end.forEach((eventName) =>
+          // @ts-ignore
+          this.listenerNode.removeEventListener(eventName, this.handleSortEnd),
+        );
       }
 
       const nodes = this.manager.getRefs();
@@ -913,8 +917,14 @@ export const ContainerMixin = defineComponent({
             left: 1 * speed.x * direction.x,
             top: 1 * speed.y * direction.y,
           };
-          this.scrollContainer.scrollTop += offset.top;
-          this.scrollContainer.scrollLeft += offset.left;
+
+          if (this.useWindowAsScrollContainer) {
+            this._window.scrollBy(offset.left, offset.top);
+          } else {
+            this.scrollContainer.scrollTop += offset.top;
+            this.scrollContainer.scrollLeft += offset.left;
+          }
+
           this.translate.x += offset.left;
           this.translate.y += offset.top;
           this.animateNodes();
