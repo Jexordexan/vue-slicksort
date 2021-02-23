@@ -7,7 +7,7 @@
 
 [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/main/LICENSE)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
 
 <p align="center">
@@ -85,7 +85,7 @@ const SortableList = {
     <ul class="list">
       <slot />
     </ul>
-  `
+  `,
 };
 
 const SortableItem = {
@@ -93,7 +93,7 @@ const SortableItem = {
   props: ['item'],
   template: `
     <li class="list-item">{{item}}</li>
-  `
+  `,
 };
 
 const ExampleVue = {
@@ -107,18 +107,18 @@ const ExampleVue = {
   `,
   components: {
     SortableItem,
-    SortableList
+    SortableList,
   },
   data() {
     return {
-      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8']
+      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8'],
     };
-  }
+  },
 };
 
 const app = new Vue({
   el: '#root',
-  render: h => h(ExampleVue)
+  render: (h) => h(ExampleVue),
 });
 ```
 
@@ -144,17 +144,17 @@ const ExampleVue = {
   `,
   components: {
     SlickItem,
-    SlickList
+    SlickList,
   },
   data() {
     return {
-      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8']
+      items: ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6', 'Item 7', 'Item 8'],
     };
-  }
+  },
 };
 ```
 
-<!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/master/examples/). -->
+<!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/main/examples/). -->
 
 ## Why should I use this?
 
@@ -165,11 +165,13 @@ There are already a number of great Drag & Drop libraries out there (for instanc
 You apply options as individual `props` on whatever component is using the `ContainerMixin`. The component also emits several events during a sorting operation. Here's an example of a customized component:
 
 ```html
-<SortableContainer :value="items"
-                   :transitionDuration="250"
-                   :lockAxis="'y'"
-                   :useDragHandle="true"
-                   @sort-start="onSortStart($event)" >
+<SortableContainer
+  :value="items"
+  :transitionDuration="250"
+  :lockAxis="'y'"
+  :useDragHandle="true"
+  @sort-start="onSortStart($event)"
+>
   <!-- SortableElement stuff goes here -->
 </SortableContainer>
 ```
@@ -179,99 +181,114 @@ You apply options as individual `props` on whatever component is using the `Cont
 ### Props
 
 #### `value` _(required)_
-type: *Array*
+
+type: _Array_
 
 The `value` can be inherited from `v-model` but has to be set to the same list that is rendered with `v-for` inside the `Container`
 
 #### `axis`
-type: *String*
+
+type: _String_
 
 default: `y`
 
 Items can be sorted horizontally, vertically or in a grid. Possible values: `x`, `y` or `xy`
 
 #### `lockAxis`
-type: *String*
+
+type: _String_
 
 If you'd like, you can lock movement to an axis while sorting. This is not something that is possible with HTML5 Drag & Drop
 
 #### `helperClass`
-type: *String*
+
+type: _String_
 
 You can provide a class you'd like to add to the sortable helper to add some styles to it
 
 #### `appendTo`
-type: *String*
+
+type: _String_
 
 default: `body`
 
 You can provide a querySelector string you'd like to add to the sorting element to add parent dom
 
 #### `transitionDuration`
-type: *Number*
+
+type: _Number_
 
 default: `300`
 
 The duration of the transition when elements shift positions. Set this to `0` if you'd like to disable transitions
 
 #### `draggedSettlingDuration`
-type: *Number*
+
+type: _Number_
 
 default: `null`
 
 Override the settling duration for the drag helper. If not set, `transitionDuration` will be used.
 
 #### `pressDelay`
-type: *Number*
+
+type: _Number_
 
 default: `0`
 
 If you'd like elements to only become sortable after being pressed for a certain time, change this property. A good sensible default value for mobile is `200`. Cannot be used in conjunction with the `distance` prop.
 
 #### `pressThreshold`
-type: *Number*
+
+type: _Number_
 
 default: `5`
 
 Number of pixels of movement to tolerate before ignoring a press event.
 
 #### `distance`
-type: *Number*
+
+type: _Number_
 
 default: `0`
 
 If you'd like elements to only become sortable after being dragged a certain number of pixels. Cannot be used in conjunction with the `pressDelay` prop.
 
 #### `useDragHandle`
-type: *Boolean*
+
+type: _Boolean_
 
 default: `false`
 
 If you're using the `HandleDirective`, set this to `true`
 
 #### `useWindowAsScrollContainer`
-type: *Boolean*
+
+type: _Boolean_
 
 default: `false`
 
 If you want, you can set the `window` as the scrolling container
 
 #### `hideSortableGhost`
-type: *Boolean*
+
+type: _Boolean_
 
 default: `true`
 
 Whether to auto-hide the ghost element. By default, as a convenience, Vue Slicksort List will automatically hide the element that is currently being sorted. Set this to false if you would like to apply your own styling.
 
 #### `lockToContainerEdges`
-type: *Boolean*
+
+type: _Boolean_
 
 default: `false`
 
 You can lock movement of the sortable element to it's parent `Container`
 
 #### `lockOffset`
-type: *`OffsetValue` or [ `OffsetValue`, `OffsetValue` ]*\*
+
+type: _`OffsetValue` or [ `OffsetValue`, `OffsetValue` ]_\*
 
 default: `"50%"`
 
@@ -281,23 +298,24 @@ When `lockToContainerEdges` is set to `true`, this controls the offset distance 
 Examples: `10` (which is the same as `"10px"`), `"50%"`
 
 #### `shouldCancelStart`
-type: *Function*
 
-default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L41)
+type: _Function_
+
+default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/main/src/ContainerMixin.js#L41)
 
 This function is invoked before sorting begins, and can be used to programatically cancel sorting before it begins. By default, it will cancel sorting if the event target is either an `input`, `textarea`, `select` or `option`.
 
 #### `getHelperDimensions`
-type: *Function*
 
-default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49)
+type: _Function_
 
-Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details
+default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/main/src/ContainerMixin.js#L49)
+
+Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/main/src/ContainerMixin.js#L49) for more details
 
 ### Events
 
 Events are emitted from the Container element, and can be bound to using `v-bind` or `@` directives
-
 
 #### `@sort-start`
 
@@ -330,19 +348,22 @@ Fired after sorting has ended with the newly sorted list.
 ### Props
 
 #### `index` _(required)_
-type: *Number*
+
+type: _Number_
 
 This is the element's sortableIndex within it's collection. This prop is required.
 
 #### `collection`
-type: *Number or String*
+
+type: _Number or String_
 
 default: `0`
 
 The collection the element is part of. This is useful if you have multiple groups of sortable elements within the same `Container`. [Example](http://Jexordexan.github.io/vue-slicksort/#/basic-configuration/multiple-lists)
 
 #### `disabled`
-type: *Boolean*
+
+type: _Boolean_
 
 default: `false`
 
@@ -365,12 +386,12 @@ Here is an example for a simple element with a handle:
 </template>
 
 <script>
-import { ElementMixin, HandleDirective } from 'vue-slicksort';
+  import { ElementMixin, HandleDirective } from 'vue-slicksort';
 
-export default {
-  mixins: [ElementMixin],
-  directives: { handle: HandleDirective },
-}
+  export default {
+    mixins: [ElementMixin],
+    directives: { handle: HandleDirective },
+  };
 </script>
 ```
 
@@ -399,7 +420,7 @@ Upon sorting, `vue-slicksort` creates a clone of the element you are sorting (th
 
 ### Click events being swallowed
 
-By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordexan/vue-slicksort/blob/master/src/HandleDirective.js).
+By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordexan/vue-slicksort/blob/main/src/HandleDirective.js).
 
 ### Scoped styles
 
