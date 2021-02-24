@@ -108,6 +108,14 @@
 
   If you'd like elements to only become sortable after being dragged a certain number of pixels. Cannot be used in conjunction with the `pressDelay` prop.
 
+- #### `cancelKey`
+
+  type: `string`
+
+  default: `"Escape"`
+
+  The key that will stop the current drag and return the element to its original position. Fires `@sort-cancel` when complete. This can be any [KeyboardEvent.key value](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values).
+
 - #### `useDragHandle`
 
   type: `boolean`
@@ -188,6 +196,12 @@ Events are emitted from the Container element, and can be bound to using `v-bind
   emits: `{ event, newIndex, oldIndex }`
 
   Fired when sorting has ended.
+
+- #### `@sort-cancel`
+
+  emits: `{ event, newIndex, oldIndex }`
+
+  Fired when sorting has been canceled. YOu can set which key cancels a drag with the `cancelKey` prop.
 
 - #### `@sort-insert`
 
