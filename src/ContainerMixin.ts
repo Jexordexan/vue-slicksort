@@ -100,6 +100,9 @@ interface ComponentData extends ComponentProps {
   // used to wait until next tick to cancel
   cancelTimer: Timer;
 
+  // dragout transition timer
+  dragendTimer: Timer;
+
   // Used for repeating autoscroll
   autoscrollInterval: Timer;
 
@@ -260,6 +263,11 @@ export const ContainerMixin = defineComponent({
     if (this.hub) {
       this.hub.removeContainer(this as ContainerRef);
     }
+
+    if (this.dragendTimer) clearTimeout(this.dragendTimer);
+    if (this.cancelTimer) clearTimeout(this.cancelTimer);
+    if (this.pressTimer) clearTimeout(this.pressTimer);
+    if (this.autoscrollInterval) clearInterval(this.autoscrollInterval);
   },
 
   methods: {
@@ -451,7 +459,7 @@ export const ContainerMixin = defineComponent({
         value: payload,
       });
       this.$emit('update:list', newValue);
-      this.handleDragOut();
+      this.handleDragEnd();
     },
 
     handleDragOut() {
@@ -467,15 +475,32 @@ export const ContainerMixin = defineComponent({
         };
         this.animateNodes();
       } else {
-        resetTransform(this.manager.getRefs());
-        if (this.sortableGhost) {
-          this.sortableGhost.remove();
-          this.sortableGhost = null;
-        }
-        this.manager.active = null;
-        this._touched = false;
-        this.sorting = false;
+        this.manager.getRefs().forEach((ref) => {
+          ref.node.style['transform'] = '';
+        });
+        this.dragendTimer = timeout(this.handleDragEnd, this.transitionDuration || 0);
       }
+    },
+
+    handleDragEnd() {
+      if (this.autoscrollInterval) {
+        clearInterval(this.autoscrollInterval);
+        this.autoscrollInterval = null;
+      }
+
+      resetTransform(this.manager.getRefs());
+      if (this.sortableGhost) {
+        this.sortableGhost.remove();
+        this.sortableGhost = null;
+      }
+
+      if (this.dragendTimer) {
+        clearTimeout(this.dragendTimer);
+        this.dragendTimer = null;
+      }
+      this.manager.active = null;
+      this._touched = false;
+      this.sorting = false;
     },
 
     intializeOffsets(e: PointEvent, clientRect: ClientRect) {
@@ -532,6 +557,12 @@ export const ContainerMixin = defineComponent({
     handleDragIn(e: PointEvent, sortableGhost: SortableNode, helper: SortableNode) {
       if (this.hub!.isSource(this as ContainerRef)) {
         return;
+      }
+
+      if (this.dragendTimer) {
+        this.handleDragEnd();
+        clearTimeout(this.dragendTimer);
+        this.dragendTimer = null;
       }
 
       const nodes = this.manager.getRefs();

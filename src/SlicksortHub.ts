@@ -14,7 +14,8 @@ export interface ContainerRef {
   sortableGhost: HTMLElement | null;
 
   handleDragIn(e: PointEvent, ghost: HTMLElement | null, helper: HTMLElement | null): void;
-  handleDragOut(e: PointEvent): void;
+  handleDragOut(): void;
+  handleDragEnd(): void;
   handleSortEnd(e: PointEvent): void;
   handleDropIn(payload: unknown): void;
   handleDropOut(): unknown;
@@ -135,7 +136,7 @@ export default class SlicksortHub {
 
     if (dest.id !== newDest.id && canAcceptElement(newDest, source, payload)) {
       this.dest = newDest;
-      dest.handleDragOut(e);
+      dest.handleDragOut();
       newDest.handleDragIn(e, this.ghost, this.helper);
     }
     if (dest.id !== this.source?.id) {
@@ -160,7 +161,7 @@ export default class SlicksortHub {
   }
 
   cancel(e: PointEvent): void {
-    this.dest?.handleDragOut(e);
+    this.dest?.handleDragEnd();
     this.source?.handleSortEnd(e);
     this.reset();
   }
