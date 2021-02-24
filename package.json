@@ -7,7 +7,7 @@
     "email": "simonds.jordan@gmail.com"
   },
   "user": "jsimonds",
-  "homepage": "https://github.com/Jexordexan/vue-slicksort",
+  "homepage": "https://vue-slicksort.netlify.app",
   "main": "dist/vue-slicksort.cjs.js",
   "module": "dist/vue-slicksort.esm.js",
   "browser": "dist/vue-slicksort.umd.js",
