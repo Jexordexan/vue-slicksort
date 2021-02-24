@@ -1,3 +1,14 @@
+# [2.0.0-alpha.4](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2021-02-24)
+
+
+### Bug Fixes
+
+* animate nodes on drag out ([0a3c2be](https://github.com/Jexordexan/vue-slicksort/commit/0a3c2be16a5541ef8cf47eb4430faaba6ee52771))
+* remove helper class before transition to allow animation ([ab5aafd](https://github.com/Jexordexan/vue-slicksort/commit/ab5aafdbee69cf8a5135701f745b29633a8ff8f1))
+* useWindowAsScrollContainer ([0b65c19](https://github.com/Jexordexan/vue-slicksort/commit/0b65c1918b3c44c48d39f1e4f4d760fb7cdea65c)), closes [#88](https://github.com/Jexordexan/vue-slicksort/issues/88)
+
+
+
 # [2.0.0-alpha.3](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.2...v2.0.0-alpha.3) (2021-02-19)
 
 
