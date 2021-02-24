@@ -579,6 +579,11 @@ export const ContainerMixin = defineComponent({
 
       const nodes = this.manager.getRefs();
 
+      // Remove the helper class(es) early to give it a chance to transition back
+      if (this.helper && this.helperClass) {
+        this.helper.classList.remove(...this.helperClass.split(' '));
+      }
+
       const onEnd = () => {
         // Remove the helper from the DOM
         if (this.helper) {
