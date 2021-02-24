@@ -160,9 +160,8 @@ export default class SlicksortHub {
     this.ghost = null;
   }
 
-  cancel(e: PointEvent): void {
+  cancel(): void {
     this.dest?.handleDragEnd();
-    this.source?.handleSortEnd(e);
     this.reset();
   }
 }

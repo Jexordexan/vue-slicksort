@@ -48,6 +48,7 @@ interface ComponentProps {
   draggedSettlingDuration: number;
   group: string;
   accept: boolean | string[] | ((ctx: { source: ContainerRef; dest: ContainerRef; payload: unknown }) => boolean);
+  cancelKey: string;
   block: string[];
   lockAxis: string;
   helperClass: string;
@@ -115,6 +116,9 @@ interface ComponentData extends ComponentProps {
 
   // Is the user currently sorting
   sorting: boolean;
+
+  // The user has initiated a cancel action
+  canceling: boolean;
 
   // The active node that was originally clicked
   node: SortableNode;
@@ -184,6 +188,7 @@ export const ContainerMixin = defineComponent({
     draggedSettlingDuration: { type: Number, default: null },
     group: { type: String, default: '' },
     accept: { type: [Boolean, Array, Function] as PropType<AcceptProp>, default: null },
+    cancelKey: { type: String, default: 'Escape' },
     block: { type: Array as PropType<string[]>, default: () => [] },
     lockAxis: { type: String, default: '' },
     helperClass: { type: String, default: '' },
@@ -205,7 +210,7 @@ export const ContainerMixin = defineComponent({
     },
   },
 
-  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-insert', 'sort-remove', 'update:list'],
+  emits: ['sort-start', 'sort-move', 'sort-end', 'sort-cancel', 'sort-insert', 'sort-remove', 'update:list'],
 
   data() {
     let useHub = false;
@@ -335,7 +340,7 @@ export const ContainerMixin = defineComponent({
       }
     },
 
-    handleEnd(e: PointEvent) {
+    handleEnd() {
       if (!this._touched) return;
 
       const { distance } = this.$props;
@@ -343,15 +348,25 @@ export const ContainerMixin = defineComponent({
       this._touched = false;
 
       if (!distance) {
-        this.cancel(e);
+        this.cancel();
       }
     },
 
-    cancel(e: PointEvent) {
+    cancel() {
       if (!this.sorting) {
         if (this.pressTimer) clearTimeout(this.pressTimer);
         this.manager.active = null;
-        if (this.hub) this.hub.cancel(e);
+        if (this.hub) this.hub.cancel();
+      }
+    },
+
+    handleSortCancel(e: KeyboardEvent | TouchEvent) {
+      if (isTouch(e) || e.key === this.cancelKey) {
+        this.newIndex = this.index;
+        this.canceling = true;
+        this.translate = { x: 0, y: 0 };
+        this.animateNodes();
+        this.handleSortEnd(e);
       }
     },
 
@@ -417,6 +432,8 @@ export const ContainerMixin = defineComponent({
         events.move.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortMove));
         // @ts-ignore
         events.end.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortEnd));
+        // @ts-ignore
+        events.cancel.forEach((eventName) => this.listenerNode.addEventListener(eventName, this.handleSortCancel));
 
         this.sorting = true;
 
@@ -595,7 +612,7 @@ export const ContainerMixin = defineComponent({
       this.sorting = true;
     },
 
-    handleSortEnd(e: PointEvent) {
+    handleSortEnd(e: PointEvent | KeyboardEvent) {
       // Remove the event listeners if the node is still in the DOM
       if (this.listenerNode) {
         events.move.forEach((eventName) =>
@@ -606,6 +623,10 @@ export const ContainerMixin = defineComponent({
           // @ts-ignore
           this.listenerNode.removeEventListener(eventName, this.handleSortEnd),
         );
+        events.cancel.forEach((eventName) =>
+          // @ts-ignore
+          this.listenerNode.removeEventListener(eventName, this.handleSortCancel),
+        );
       }
 
       const nodes = this.manager.getRefs();
@@ -614,6 +635,10 @@ export const ContainerMixin = defineComponent({
       if (this.helper && this.helperClass) {
         this.helper.classList.remove(...this.helperClass.split(' '));
       }
+
+      // Stop autoscroll
+      if (this.autoscrollInterval) clearInterval(this.autoscrollInterval);
+      this.autoscrollInterval = null;
 
       const onEnd = () => {
         // Remove the helper from the DOM
@@ -629,13 +654,11 @@ export const ContainerMixin = defineComponent({
 
         resetTransform(nodes);
 
-        // Stop autoscroll
-        if (this.autoscrollInterval) clearInterval(this.autoscrollInterval);
-        this.autoscrollInterval = null;
-
         // Update state
         if (this.hub && !this.hub.isDest(this as ContainerRef)) {
-          this.hub.handleSortEnd();
+          this.canceling ? this.hub.cancel() : this.hub.handleSortEnd();
+        } else if (this.canceling) {
+          this.$emit('sort-cancel', { event: e });
         } else {
           this.$emit('sort-end', {
             event: e,
@@ -647,6 +670,7 @@ export const ContainerMixin = defineComponent({
 
         this.manager.active = null;
         this._touched = false;
+        this.canceling = false;
         this.sorting = false;
       };
 
@@ -671,7 +695,7 @@ export const ContainerMixin = defineComponent({
         left: window.pageXOffset - this.initialWindowScroll.left,
       };
 
-      if (this.hub && !this.hub.isDest(this as ContainerRef)) {
+      if (this.hub && !this.hub.isDest(this as ContainerRef) && !this.canceling) {
         const dest = this.hub.getDest();
         if (!dest) return;
         const destIndex = dest.newIndex;

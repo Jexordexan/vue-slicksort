@@ -16,7 +16,7 @@ export type PointEventName =
   | 'touchcancel';
 export type PointEvent = MouseEvent | TouchEvent;
 
-export const isTouch = (e: PointEvent): e is TouchEvent => {
+export const isTouch = (e: Event): e is TouchEvent => {
   return (e as TouchEvent).touches != null;
 };
 
@@ -60,7 +60,8 @@ export function arrayInsert<T>(arr: T[], newIndex: number, value: T): T[] {
 export const events: Record<string, string[]> = {
   start: ['touchstart', 'mousedown'],
   move: ['touchmove', 'mousemove'],
-  end: ['touchend', 'touchcancel', 'mouseup'],
+  end: ['touchend', 'mouseup'],
+  cancel: ['touchcancel', 'keyup'],
 };
 
 export function closest(
