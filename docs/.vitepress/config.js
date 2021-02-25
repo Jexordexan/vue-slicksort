@@ -4,6 +4,7 @@ module.exports = {
     ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],
     ['script', { src: '/confetti.min.js' }],
+    ['script', { src: 'https://www.googletagmanager.com/gtag/js?id=G-6JF11BVDSJ' }],
     ['meta', { property: 'og:title', content: 'Vue Slicksort' }],
     ['meta', { property: 'og:image', content: '/logo.png' }],
     ['meta', { property: 'og:image:width', content: '375' }],
