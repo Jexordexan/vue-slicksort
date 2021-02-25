@@ -4,6 +4,12 @@ module.exports = {
     ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],
     ['script', { src: '/confetti.min.js' }],
+    ['meta', { property: 'og:title', content: 'Vue Slicksort' }],
+    ['meta', { property: 'og:image', content: '/logo.png' }],
+    ['meta', { property: 'og:description', content: 'Beautiful, touch-friendly sorting for Vue 3' }],
+    ['meta', { property: 'og:url', content: 'https://vue-slicksort.netlify.app' }],
+    ['meta', { property: 'og:locale', content: 'en_US' }],
+    ['meta', { property: 'twitter:title', content: 'Vue Slicksort' }],
   ],
   themeConfig: {
     logo: '/logo.png',
