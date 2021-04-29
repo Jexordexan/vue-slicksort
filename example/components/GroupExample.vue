@@ -11,8 +11,7 @@
 </template>
 
 <script>
-import { range } from 'lodash-es';
-import { random } from 'lodash-es';
+import { range, random } from '../util';
 
 import SortableItem from './SortableItem.vue';
 import SortableList from './SortableList.vue';

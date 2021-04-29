@@ -3,11 +3,13 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended", 
-    "plugin:vue/recommended"
+    "plugin:vue/recommended",
+    "plugin:cypress/recommended"
   ],
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
   "parser": "@typescript-eslint/parser",
   "plugins": [
