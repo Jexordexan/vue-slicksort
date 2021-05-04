@@ -168,7 +168,7 @@ export const ContainerMixin = defineComponent({
     SlicksortHub: {
       from: 'SlicksortHub',
       default: null,
-    }
+    },
   },
 
   provide() {
