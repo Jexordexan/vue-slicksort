@@ -52,7 +52,7 @@
     "cy": "cypress open-ct",
     "deploy:alpha": "npm test && npm version prerelease --preid=alpha && npm run deploy:final",
     "deploy:patch": "npm test && npm version patch && npm run deploy:final",
-    "deploy:final": "git push; git push --tags; npm publish; npm run docs:build",
+    "deploy:final": "git push; git push --tags; npm publish",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs"
