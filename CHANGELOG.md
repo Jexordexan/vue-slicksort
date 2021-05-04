@@ -1,3 +1,17 @@
+# [2.0.0-alpha.5](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2021-05-04)
+
+
+### Bug Fixes
+
+* Missing hub warning ([7396699](https://github.com/Jexordexan/vue-slicksort/commit/73966998f6b2bfb01f432672efde7d23f155be03))
+
+
+### Features
+
+* Cancel drag on escape keypress ([c92833e](https://github.com/Jexordexan/vue-slicksort/commit/c92833e40bac858f2fc7b6330e854541751b21d7))
+
+
+
 # [2.0.0-alpha.4](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.3...v2.0.0-alpha.4) (2021-02-24)
 
 
