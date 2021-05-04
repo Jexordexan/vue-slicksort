@@ -8,6 +8,36 @@ Slicksort Version 2 is an overhaul of Version 1 with many awaited features, incl
 
 Vue 2 support has been removed for now. We may revisit this later with the [vue-demi](https://github.com/vueuse/vue-demi) library. In order to use v2 of `vue-slicksort` you must upgrade to Vue 3. Apologies for the inconvenience!
 
+### V-model changes
+
+With the transition to Vue 3, we chose to use named v-model. Anywhere you used `v-model` in V1, must become `v-model:list`.
+
+Before:
+
+```
+<SlickList v-model="list"> ... </SlickList>
+```
+
+After:
+
+```
+<SlickList v-model:list="list"> ... </SlickList>
+```
+
+This was done to make the emitted events more explicit, so if you were using the expanded v-model syntax, the props/events have changed from `:value` and `@input` to `:list` and `@update:list`.
+
+Before:
+
+```
+<SlickList :value="list" @input="onUpdateList"> ... </SlickList>
+```
+
+After:
+
+```
+<SlickList :list="list" @update:list="onUpdateList"> ... </SlickList>
+```
+
 ### `collection` Removed
 
 The `collection` prop has been removed from the `Element`. This props purpose has been replaced by the `group` prop on the `Container`, which can allow/prevent dragging between lists. This means that any list with elements of different `collections` should be refactored to be a set of lists with different groups. This is a simple example of the transition.
