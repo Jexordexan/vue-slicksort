@@ -164,7 +164,12 @@ interface ComponentData extends ComponentProps {
 
 // Export Sortable Container Component Mixin
 export const ContainerMixin = defineComponent({
-  inject: ['SlicksortHub'],
+  inject: { 
+    SlicksortHub: {
+      from: 'SlicksortHub',
+      default: null,
+    }
+  },
 
   provide() {
     return {
