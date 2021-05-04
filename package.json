@@ -81,6 +81,7 @@
     "cypress": "^7.2.0",
     "esbuild": "^0.8.44",
     "eslint": "^7.20.0",
+    "eslint-plugin-cypress": "^2.11.2",
     "eslint-plugin-import": "^2.0.1",
     "eslint-plugin-vue": "^7.6.0",
     "postcss": "^8.2.6",
