@@ -2,6 +2,9 @@
 
 ![Slicksort logo](/logo/logomark.png)
 
+## THESE DOCS ARE FOR V1 ONLY
+For V2 (compatible with Vue 3) go to https://vue-slicksort.netlify.app/
+
 > A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
 > Based on [react-sortable-hoc](https://github.com/clauderic/react-sortable-hoc) by [@clauderic]
 
