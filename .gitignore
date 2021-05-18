@@ -9,3 +9,8 @@ npm-debug.log
 yarn-error.log
 .cache
 .temp
+
+# Cypress
+cypress/videos
+cypress/results
+cypress/screenshots
