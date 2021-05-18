@@ -21,3 +21,9 @@ export const stringsToItems = (arr) => {
     };
   });
 };
+
+export const track = (...args) => {
+  if (typeof gtag !== 'undefined') {
+    gtag(...args);
+  }
+};

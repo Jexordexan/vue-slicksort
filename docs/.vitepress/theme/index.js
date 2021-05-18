@@ -7,35 +7,17 @@ import PageListExample from '../components/PageListExample.vue';
 import ShorthandExample from '../components/ShorthandExample.vue';
 import SimpleGroupExample from '../components/SimpleGroupExample.vue';
 import KanbanExample from '../components/KanbanExample.vue';
+import { track } from '../components/utils';
 import { plugin } from '../../../src';
 import '../style.styl';
-
-const GOOGLE_APP_ID = 'G-6JF11BVDSJ';
-
-function installGoogleAnalytics(router) {
-  window.dataLayer = window.dataLayer || [];
-  function gtag() {
-    dataLayer.push(arguments);
-  }
-  gtag('js', new Date());
-
-  gtag('config', GOOGLE_APP_ID);
-
-  gtag('create', GOOGLE_APP_ID, 'auto');
-  gtag('set', 'anonymizeIp', true);
-
-  watchEffect(() => {
-    gtag('set', 'page', router.route.path);
-    gtag('send', 'pageview');
-  });
-}
 
 export default {
   ...DefaultTheme,
   enhanceApp({ app, router }) {
-    if (GOOGLE_APP_ID && process.env.NODE_ENV === 'production' && typeof window !== 'undefined') {
-      installGoogleAnalytics(router);
-    }
+    watchEffect(() => {
+      track('set', 'page', router.route.path);
+      track('send', 'pageview');
+    });
 
     app.use(plugin);
     app.component('GroupExample', GroupExample);

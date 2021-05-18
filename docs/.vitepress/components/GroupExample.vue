@@ -11,8 +11,21 @@
       <code>group: '{{ list.group }}'</code>
       <br />
       <code>accept: {{ list.accept }}</code>
-      <SortableList axis="y" :group="list.group" :accept="list.accept" :block="list.block" v-model:list="list.items">
-        <SortableItem v-for="(item, index) in list.items" :key="item.id" :index="index" :item="item" />
+      <SortableList
+        axis="y"
+        :group="list.group"
+        :accept="list.accept"
+        :block="list.block"
+        v-model:list="list.items"
+        @sort-end="track('event', 'sort_end', { list_name: 'group_example' })"
+        @sort-remove="track('event', 'sort_end', { list_name: 'group_example' })"
+      >
+        <SortableItem
+          v-for="(item, index) in list.items"
+          :key="item.id"
+          :index="index"
+          :item="item"
+        />
       </SortableList>
     </div>
   </div>
@@ -25,8 +38,8 @@
 </template>
 
 <script>
-import { reactive, ref, watch } from 'vue';
-import { random, range } from './utils';
+import { ref, watch } from 'vue';
+import { random, range, track } from './utils';
 
 import SortableItem from './SortableItem.vue';
 import SortableList from './SortableList.vue';
@@ -34,8 +47,6 @@ import SortableList from './SortableList.vue';
 let id = 100;
 
 const colors = ['#eb5757', '#9b51e1', '#58cbf2'];
-
-const randomColor = () => colors[random(0, colors.length - 1)];
 
 const makeList = () => {
   return [
@@ -101,6 +112,7 @@ export default {
     const resetList = () => {
       lists.value = makeList();
       showWinScreen.value = false;
+      track('event', 'game_reset');
     };
 
     watch(
@@ -118,6 +130,7 @@ export default {
         if (JSON.stringify(mapped) === JSON.stringify(winning)) {
           showWinScreen.value = true;
           confetti.start();
+          track('event', 'game_win');
 
           setTimeout(() => {
             confetti.stop();
@@ -126,13 +139,14 @@ export default {
       },
       {
         deep: true,
-      }
+      },
     );
 
     return {
       lists,
       showWinScreen,
       resetList,
+      track,
     };
   },
 };
