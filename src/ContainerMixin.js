@@ -196,8 +196,8 @@ export const ContainerMixin = {
           useWindowAsScrollContainer,
           appendTo,
         } = this.$props;
-        const {node, collection} = active;
-        const {index} = node.sortableInfo;
+        const {node} = active;
+        const {index, collection} = node.sortableInfo;
         const margin = getElementMargin(node);
 
         const containerBoundingRect = this.container.getBoundingClientRect();
