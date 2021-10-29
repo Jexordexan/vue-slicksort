@@ -68,7 +68,7 @@ export const ContainerMixin = {
     this.document = this.container.ownerDocument || document;
     this._window = this.contentWindow || window;
     this.scrollContainer = this.useWindowAsScrollContainer
-      ? this.document.body
+      ? this.document.documentElement
       : this.container;
 
     for (const key in this.events) {
