@@ -25,6 +25,7 @@ import {
   isTouch,
   setTransform,
   hasOwnProperty,
+  findScrollContainer,
 } from './utils';
 
 type PointEventListener = (e: PointEvent) => unknown;
@@ -243,7 +244,7 @@ export const ContainerMixin = defineComponent({
     this.container = this.$el;
     this.document = this.container.ownerDocument || document;
     this._window = this.contentWindow || window;
-    this.scrollContainer = this.useWindowAsScrollContainer ? { scrollLeft: 0, scrollTop: 0 } : this.container;
+    this.scrollContainer = this.useWindowAsScrollContainer ? { scrollLeft: 0, scrollTop: 0 } : findScrollContainer(this.container);
     this.events = {
       start: this.handleStart,
       move: this.handleMove,
@@ -385,7 +386,7 @@ export const ContainerMixin = defineComponent({
         const { index } = node.sortableInfo;
         const margin = getElementMargin(node);
 
-        const containerBoundingRect = this.container.getBoundingClientRect();
+        const containerBoundingRect = findScrollContainer(this.container).getBoundingClientRect();
         const dimensions = getHelperDimensions({ index, node });
 
         this.node = node;
