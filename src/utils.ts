@@ -266,7 +266,7 @@ export function isPointWithinRect({ x, y }: XY, { top, left, width, height }: Cl
 
 // https://stackoverflow.com/a/42543908/622510
 const overflowRegex = /(auto|scroll)/;
-export function findScrollContainer(element: HTMLElement) {
+export function findScrollContainer(element: HTMLElement): HTMLElement {
   let style = getComputedStyle(element);
   const excludeStaticParent = style.position === "absolute";
 
