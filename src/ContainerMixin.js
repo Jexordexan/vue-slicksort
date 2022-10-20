@@ -585,6 +585,11 @@ export const ContainerMixin = {
 
       for (let i = 0, len = nodes.length; i < len; i++) {
         const {node} = nodes[i];
+        
+	if (node.sortableInfo.disabled) {
+	    continue;
+	}
+
         const index = node.sortableInfo.index;
         const width = node.offsetWidth;
         const height = node.offsetHeight;
