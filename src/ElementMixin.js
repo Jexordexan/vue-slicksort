@@ -19,9 +19,8 @@ export const ElementMixin = {
   mounted() {
     const {collection, disabled, index} = this.$props;
 
-    if (!disabled) {
-      this.setDraggable(collection, index);
-    }
+    this.setDraggable(collection, index);
+    this.$el.sortableInfo.disabled = disabled;
   },
 
   watch: {
@@ -31,11 +30,7 @@ export const ElementMixin = {
       }
     },
     disabled(isDisabled) {
-      if (isDisabled) {
-        this.removeDraggable(this.collection);
-      } else {
-        this.setDraggable(this.collection, this.index);
-      }
+      this.$el.sortableInfo.disabled = isDisabled;
     },
     collection(newCollection, oldCollection) {
       this.removeDraggable(oldCollection);
