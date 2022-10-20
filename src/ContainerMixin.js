@@ -197,6 +197,11 @@ export const ContainerMixin = {
           appendTo,
         } = this.$props;
         const {node, collection} = active;
+	      
+	if (node.sortableInfo.disabled) {
+	  return;
+	}
+	      
         const {index} = node.sortableInfo;
         const margin = getElementMargin(node);
 
