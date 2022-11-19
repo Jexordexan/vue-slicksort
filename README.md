@@ -2,24 +2,21 @@
 
 ![Slicksort logo](/logo/logomark.png)
 
-## THESE DOCS ARE FOR V1 ONLY
-For V2 (compatible with Vue 3) go to https://vue-slicksort.netlify.app/
-
 > A set of component mixins to turn any list into an animated, touch-friendly, sortable list.
 > Based on [react-sortable-hoc](https://github.com/clauderic/react-sortable-hoc) by [@clauderic]
 
 [![npm version](https://img.shields.io/npm/v/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
 [![npm downloads](https://img.shields.io/npm/dm/vue-slicksort.svg)](https://www.npmjs.com/package/vue-slicksort)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/main/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/Jexordexan/vue-slicksort/blob/master/LICENSE)
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
 
 <p align="center">
-  <a href="https://jexordexan.github.io/vue-slicksort/">
+  <a href="https://vue-slicksort.netlify.app/">
     <img src="logo/demo.gif">
   </a>
 </p>
 
-### Examples available here: <a href="https://jexordexan.github.io/vue-slicksort/">https://jexordexan.github.io/vue-slicksort/</a>
+### Examples available here: [vue-slicksort.netlify.app/](https://vue-slicksort.netlify.app/)
 
 ### [中文文档](./doc/zh.md)
 
@@ -74,6 +71,11 @@ If you are loading the package via `<script>` tag:
 </script>
 ```
 
+## Usage
+
+Check out the docs:  [vue-slicksort.netlify.app](https://vue-slicksort.netlify.app/)
+
+<!-- 
 ## Usage
 
 ### Basic Example
@@ -155,14 +157,14 @@ const ExampleVue = {
     };
   },
 };
-```
+``` -->
 
-<!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/main/examples/). -->
+<!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/master/examples/). -->
 
 ## Why should I use this?
 
 There are already a number of great Drag & Drop libraries out there (for instance, [vuedraggable](https://github.com/SortableJS/Vue.Draggable) is fantastic). If those libraries fit your needs, you should definitely give them a try first. However, most of those libraries rely on the HTML5 Drag & Drop API, which has some severe limitations. For instance, things rapidly become tricky if you need to support touch devices, if you need to lock dragging to an axis, or want to animate the nodes as they're being sorted. Vue Slicksort aims to provide a simple set of component mixins to fill those gaps. If you're looking for a dead-simple, mobile-friendly way to add sortable functionality to your lists, then you're in the right place.
-
+<!-- 
 ## Customization and props
 
 You apply options as individual `props` on whatever component is using the `ContainerMixin`. The component also emits several events during a sorting operation. Here's an example of a customized component:
@@ -175,7 +177,6 @@ You apply options as individual `props` on whatever component is using the `Cont
   :useDragHandle="true"
   @sort-start="onSortStart($event)"
 >
-  <!-- SortableElement stuff goes here -->
 </SortableContainer>
 ```
 
@@ -304,7 +305,7 @@ Examples: `10` (which is the same as `"10px"`), `"50%"`
 
 type: _Function_
 
-default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/main/src/ContainerMixin.js#L41)
+default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L41)
 
 This function is invoked before sorting begins, and can be used to programatically cancel sorting before it begins. By default, it will cancel sorting if the event target is either an `input`, `textarea`, `select` or `option`.
 
@@ -312,9 +313,9 @@ This function is invoked before sorting begins, and can be used to programatical
 
 type: _Function_
 
-default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/main/src/ContainerMixin.js#L49)
+default: [Function](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49)
 
-Optional `function({node, index, collection})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/main/src/ContainerMixin.js#L49) for more details
+Optional `function({node, index})` that should return the computed dimensions of the SortableHelper. See [default implementation](https://github.com/Jexordexan/vue-slicksort/blob/master/src/ContainerMixin.js#L49) for more details
 
 ### Events
 
@@ -322,7 +323,7 @@ Events are emitted from the Container element, and can be bound to using `v-bind
 
 #### `@sort-start`
 
-emits: `{ event: MouseEvent, node: HTMLElement, index: number, collection: string }`
+emits: `{ event: MouseEvent, node: HTMLElement, index: number }`
 
 Fired when sorting begins.
 
@@ -334,7 +335,7 @@ Fired when the mouse is moved during sorting.
 
 #### `@sort-end`
 
-emits: `{ event, newIndex, oldIndex, collection }`
+emits: `{ event, newIndex, oldIndex }`
 
 Fired when sorting has ended.
 
@@ -357,6 +358,9 @@ type: _Number_
 This is the element's sortableIndex within it's collection. This prop is required.
 
 #### `collection`
+
+**REMOVED IN v2.0.0**
+Use `group` and multiple scroll containers instead.
 
 type: _Number or String_
 
@@ -396,7 +400,7 @@ Here is an example for a simple element with a handle:
     directives: { handle: HandleDirective },
   };
 </script>
-```
+``` -->
 
 # FAQ
 
@@ -423,7 +427,7 @@ Upon sorting, `vue-slicksort` creates a clone of the element you are sorting (th
 
 ### Click events being swallowed
 
-By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordexan/vue-slicksort/blob/main/src/HandleDirective.js).
+By default, `vue-slicksort` is triggered immediately on `mousedown`. If you'd like to prevent this behaviour, there are a number of strategies readily available. You can use the `distance` prop to set a minimum distance (in pixels) to be dragged before sorting is enabled. You can also use the `pressDelay` prop to add a delay before sorting is enabled. Alternatively, you can also use the [HandleDirective](https://github.com/Jexordexan/vue-slicksort/blob/master/src/HandleDirective.js).
 
 ### Scoped styles
 

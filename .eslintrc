@@ -1,9 +1,20 @@
 {
-  "extends": ["eslint:recommended", "plugin:vue/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended", 
+    "plugin:vue/recommended",
+    "plugin:cypress/recommended"
+  ],
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2017,
