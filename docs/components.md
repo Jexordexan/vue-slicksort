@@ -254,7 +254,7 @@ Events are emitted from the Container element, and can be bound to using `v-bind
   **REMOVED IN v2.0.0**
   Use `group` and multiple scroll containers instead.
 
-  See [Migration docs](/migrating.html#collection-removed)
+  See [Migration docs](/migrating-1x.html#collection-removed)
 
 - #### `disabled`
 

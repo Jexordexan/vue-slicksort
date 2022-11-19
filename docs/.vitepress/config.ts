@@ -22,7 +22,7 @@ export default defineConfig({
             gtag('set', 'anonymizeIp', true);
           `,
         ]
-      : [],
+      : ['', {}],
     ['meta', { property: 'og:title', content: 'Vue Slicksort' }],
     ['meta', { property: 'og:image', content: '/logo.png' }],
     ['meta', { property: 'og:image:width', content: '375' }],

@@ -2266,15 +2266,7 @@
     ora "^5.3.0"
     upath "^2.0.1"
 
-"@vueuse/core@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-4.1.1.tgz#9136952bc435dfc42263959bea8dac35965bac43"
-  integrity sha512-a+fu7FUHDzLpgcOGwbgyNZXLbm85NHEf4jkPkyqTtqHEHqU4aVbdyM0Vzl90PpFEDe92pJjoYJnZEQQgq9nEHw==
-  dependencies:
-    "@vueuse/shared" "4.1.1"
-    vue-demi latest
-
-"@vueuse/core@^9.4.0":
+"@vueuse/core@^9.4.0", "@vueuse/core@^9.5.0":
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/@vueuse/core/-/core-9.5.0.tgz#6726e952e8f92b465457d3bc95deb385aacd9a41"
   integrity sha512-6GsWBsJHEb3sYw15mbLrcbslAVY45pkzjJYTKYKCXv88z7srAF0VEW0q+oXKsl58tCbqooplInahXFg8Yo1m4w==
@@ -2288,13 +2280,6 @@
   version "9.5.0"
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-9.5.0.tgz#b01c84230261ddee4d439ae5d9c21343dc5ae565"
   integrity sha512-4M1AyPZmIv41pym+K5+4wup3bKuYebbH8w8BROY1hmT7rIwcyS4tEL+UsGz0Hiu1FCOxcoBrwtAizc0YmBJjyQ==
-
-"@vueuse/shared@4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-4.1.1.tgz#58e4333d5ab45927e25578fad83bc81cecfea475"
-  integrity sha512-M1bNwOaJZypu/AUYKrOU87pQLRp8VgMYHQyL1hVc6V3hi3ZcUBSjZuyFVaUdxGk0OeA0NPzHoYbByTMrpxElug==
-  dependencies:
-    vue-demi latest
 
 "@vueuse/shared@9.5.0":
   version "9.5.0"
@@ -9091,11 +9076,6 @@ vue-demi@*:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.13.11.tgz#7d90369bdae8974d87b1973564ad390182410d99"
   integrity sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==
-
-vue-demi@latest:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.6.0.tgz#e314282f704cb449119b9fd002cbbc0e39f591fe"
-  integrity sha512-8GEJa0mHJpYJeGeq5fD1pJct2kfdl30PHfmL1NaJ97mgKPyKojlIRt/3inGBK4Y0ylCI6T5vOo3chwpqDOq/Hw==
 
 vue-eslint-parser@^7.5.0:
   version "7.5.0"

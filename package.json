@@ -76,7 +76,7 @@
     "@vitejs/plugin-vue-jsx": "^2.1.1",
     "@vue/compiler-sfc": "^3.2.45",
     "@vue/test-utils": "^2.0.0-rc.6",
-    "@vueuse/core": "^4.1.1",
+    "@vueuse/core": "^9.5.0",
     "autoprefixer": "^6.3.6",
     "cross-env": "^1.0.7",
     "cssnano": "^3.10.0",
