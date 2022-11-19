@@ -6,3 +6,11 @@ styles.min.css.map
 coverage
 npm-debug.log
 .out
+yarn-error.log
+.cache
+.temp
+
+# Cypress
+cypress/videos
+cypress/results
+cypress/screenshots

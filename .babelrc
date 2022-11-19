@@ -1,15 +1,14 @@
 {
   "env": {
     "commonjs": {
-      "presets": ["env"]
+      "presets": ["@babel/preset-env"]
     },
     "es6": {
-      "presets": ["env"],
+      "presets": ["@babel/preset-env"],
       "plugins": ["transform-runtime"]
     },
     "rollup": {
-      "presets": [["env", { "modules": false }]],
-      "plugins": ["external-helpers"]
+      "presets": [["@babel/preset-env", { "modules": false }]]
     }
   }
 }
