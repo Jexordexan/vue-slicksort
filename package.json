@@ -1,6 +1,6 @@
 {
   "name": "vue-slicksort",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Set of mixins to turn any list into a sortable, touch-friendly, animated list",
   "author": {
     "name": "Jordan Simonds",
