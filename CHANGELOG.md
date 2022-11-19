@@ -1,3 +1,12 @@
+# [2.0.0](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.5...v2.0.0) (2022-11-19)
+
+
+### Features
+
+* track game wins and moves ([ef7d36e](https://github.com/Jexordexan/vue-slicksort/commit/ef7d36e8235df9005f10c8699a4f791bc1ad96d9))
+
+
+
 # [2.0.0-alpha.5](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2021-05-04)
 
 
