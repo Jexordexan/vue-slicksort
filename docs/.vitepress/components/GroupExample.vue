@@ -3,7 +3,7 @@
     <div class="win-overlay" v-if="showWinScreen">
       <div>
         <h1>Winner!</h1>
-        <button class="button" @click="resetList">Reset</button>
+        <button class="doc-button" @click="resetList">Reset</button>
       </div>
     </div>
     <div v-for="list in lists" :key="list.id" class="list-wrapper">
@@ -38,15 +38,15 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
-import { random, range, track } from './utils';
+import { ref, watch } from 'vue'
+import { random, range, track } from './utils'
 
-import SortableItem from './SortableItem.vue';
-import SortableList from './SortableList.vue';
+import SortableItem from './SortableItem.vue'
+import SortableList from './SortableList.vue'
 
-let id = 100;
+let id = 100
 
-const colors = ['#eb5757', '#9b51e1', '#58cbf2'];
+const colors = ['#eb5757', '#9b51e1', '#58cbf2']
 
 const makeList = () => {
   return [
@@ -61,7 +61,7 @@ const makeList = () => {
           height: random(49, 100),
           background: colors[value],
           id: id++,
-        };
+        }
       }),
     },
     {
@@ -75,7 +75,7 @@ const makeList = () => {
           height: random(49, 120),
           background: colors[value],
           id: id++,
-        };
+        }
       }),
     },
     {
@@ -89,11 +89,11 @@ const makeList = () => {
           height: random(49, 120),
           background: colors[value],
           id: id++,
-        };
+        }
       }),
     },
-  ];
-};
+  ]
+}
 
 export default {
   name: 'GroupExample',
@@ -105,51 +105,51 @@ export default {
     SortableList,
   },
   setup(props) {
-    const lists = ref(makeList());
+    const lists = ref(makeList())
 
-    const showWinScreen = ref(false);
+    const showWinScreen = ref(false)
 
     const resetList = () => {
-      lists.value = makeList();
-      showWinScreen.value = false;
-      track('event', 'game_reset');
-    };
+      lists.value = makeList()
+      showWinScreen.value = false
+      track('event', 'game_reset')
+    }
 
     watch(
       () => lists.value,
       (newValue) => {
-        if (!props.winScreen) return;
-        const mapped = newValue.map((l) => l.items.map((i) => i.value));
+        if (!props.winScreen) return
+        const mapped = newValue.map((l) => l.items.map((i) => i.value))
 
         const winning = [
           ['Item 1', 'Item 1', 'Item 1'],
           ['Item 2', 'Item 2', 'Item 2'],
           ['Item 3', 'Item 3', 'Item 3'],
-        ];
+        ]
 
         if (JSON.stringify(mapped) === JSON.stringify(winning)) {
-          showWinScreen.value = true;
-          confetti.start();
-          track('event', 'game_win');
+          showWinScreen.value = true
+          confetti.start()
+          track('event', 'game_win')
 
           setTimeout(() => {
-            confetti.stop();
-          }, 5000);
+            confetti.stop()
+          }, 5000)
         }
       },
       {
         deep: true,
       },
-    );
+    )
 
     return {
       lists,
       showWinScreen,
       resetList,
       track,
-    };
+    }
   },
-};
+}
 </script>
 
 <style scoped>

@@ -2,14 +2,15 @@ $rubyred = #eb5757
 $purp = #9b51e0
 $bluetopaz = #58cbf2
 
-:root {
-  --c-brand: $purp;
-  --c-brand-light: lighten($purp, 20%);
-}
+:root
+  --vp-c-brand-lighter: lighten($purp, 30%);
+  --vp-c-brand-light: lighten($purp, 20%);
+  --vp-c-brand: $purp;
+  --vp-c-brand-dark: darken($purp, 0%);
+  --vp-c-brand-darker: darken($purp, 10%);
 
-.nav-bar-title .logo {
+.nav-bar-title .logo
   height: 2rem;  
-}
 
 .example-list 
   margin 0
@@ -49,22 +50,23 @@ h4
   margin-top 1em
 
 
-.button {
+.doc-button
   padding: 5px 15px;
   background: white;
+  color: var(--vp-c-brand);
   border: 2px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
   font-size: inherit;
 
-  &:hover {
+  &:hover
     background: #eee;
-  }
 
-  &:active {
+  &:active
     background: #ccc;
-  }
-}
+
+  &.space-start
+    margin-inline-start: auto;
 
 .kanban-page
   max-width: 0

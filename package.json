@@ -72,8 +72,8 @@
     "@rollup/plugin-typescript": "^8.2.0",
     "@typescript-eslint/eslint-plugin": "^4.15.1",
     "@typescript-eslint/parser": "^4.15.1",
-    "@vitejs/plugin-vue": "^1.2.2",
-    "@vue/compiler-sfc": "^3.0.11",
+    "@vitejs/plugin-vue": "^3.2.0",
+    "@vue/compiler-sfc": "^3.2.45",
     "@vue/test-utils": "^2.0.0-rc.6",
     "@vueuse/core": "^4.1.1",
     "autoprefixer": "^6.3.6",
@@ -94,9 +94,9 @@
     "sass": "^1.32.6",
     "standard-changelog": "^2.0.27",
     "typescript": "^4.2.3",
-    "vite": "^2.2.3",
-    "vitepress": "^0.13.2",
-    "vue": "^3.0.11",
+    "vite": "^3.2.4",
+    "vitepress": "^1.0.0-alpha.29",
+    "vue": "^3.2.45",
     "vuepress": "^2.0.0-alpha.23"
   },
   "browserslist": [

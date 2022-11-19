@@ -6,13 +6,13 @@
 
 You need to use the `:key` attribute on every list item, and it needs to be unique to the object you are displaying, like an `id`. Using `index` can lead to re-rendered lists because the index changes when sorting
 
-**GOOD**
+✅ **GOOD**
 
 ```html
 <SlickItem v-for="(item, i) in list" :key="item.id" :index="i"></SlickItem>
 ```
 
-**BAD**
+❌ **BAD**
 
 ```html
 <SlickItem v-for="(item, i) in list" :key="i" :index="i"></SlickItem>
@@ -42,7 +42,7 @@ First, make sure your "model" is bound to `v-model:list`. SlickSort never modifi
 
 `v-model` bound to a property of a `reactive` object is fine, it just cant be bound the the object itself.
 
-**GOOD**
+✅ **GOOD**
 
 ```vue
 <template>
@@ -62,7 +62,7 @@ export default {
 </script>
 ```
 
-**BAD**
+❌ **BAD**
 
 ```vue
 <template>

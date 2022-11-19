@@ -1,4 +1,4 @@
-# Migrating from V1
+# Migrating from 1.x
 
 Slicksort Version 2 is an overhaul of Version 1 with many awaited features, including sorting between lists! It also comes with some breaking changes.
 

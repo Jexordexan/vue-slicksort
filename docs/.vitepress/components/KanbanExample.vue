@@ -1,20 +1,5 @@
 <template>
   <div class="kanban-board">
-    <h2>{{ kanban.name }}</h2>
-    <p>
-      This example uses many advanced features at once. You can see the source code
-      <a href="https://github.com/Jexordexan/vue-slicksort/blob/docs/docs/.vitepress/components/KanbanExample.vue"
-        >here</a
-      >.
-    </p>
-    <ul>
-      <li>Nested lists</li>
-      <li>Drag and drop</li>
-      <li>Grid sort</li>
-      <li>Lock axis</li>
-      <li>Drag handle</li>
-      <li>Helper styles</li>
-    </ul>
     <SlickList
       v-model:list="kanban.columns"
       :axis="axis"
@@ -36,7 +21,12 @@
           class="kanban-list"
           helper-class="kanban-helper"
         >
-          <SlickItem v-for="(item, j) in col.items" :key="item.id" :index="j" class="kanban-list-item">
+          <SlickItem
+            v-for="(item, j) in col.items"
+            :key="item.id"
+            :index="j"
+            class="kanban-list-item"
+          >
             <div class="kanban-list-item-inner">
               {{ item.value }}
             </div>
@@ -48,11 +38,11 @@
 </template>
 
 <script>
-import { computed, reactive } from 'vue';
-import { useWindowSize } from '@vueuse/core';
-import { SlickList, SlickItem } from '../../../src';
-import DragHandle from './DragHandle.vue';
-import { stringsToItems } from './utils';
+import { computed, reactive } from 'vue'
+import { useWindowSize } from '@vueuse/core'
+import { SlickList, SlickItem } from '../../../src'
+import DragHandle from './DragHandle.vue'
+import { stringsToItems } from './utils'
 
 export default {
   components: {
@@ -61,8 +51,8 @@ export default {
     DragHandle,
   },
   setup() {
-    const { width } = useWindowSize();
-    const axis = computed(() => (width.value > 768 ? 'x' : 'y'));
+    const { width } = useWindowSize()
+    const axis = computed(() => (width.value > 768 ? 'x' : 'y'))
     const kanban = reactive({
       name: 'Kanban Example',
       columns: [
@@ -70,7 +60,13 @@ export default {
           id: 'todos',
           name: 'To Do',
           group: 'items',
-          items: stringsToItems(['Cancel dragging', 'Multiselect', 'Accessibility', 'UI Tests', 'Keyboard navigation']),
+          items: stringsToItems([
+            'Cancel dragging',
+            'Multiselect',
+            'Accessibility',
+            'UI Tests',
+            'Keyboard navigation',
+          ]),
         },
         {
           id: 'inprogress',
@@ -79,26 +75,20 @@ export default {
           items: stringsToItems(['Fix drag settling jankiness']),
         },
         {
-          id: 'review',
-          name: 'Review',
-          group: 'items',
-          items: stringsToItems([]),
-        },
-        {
           id: 'done',
           name: 'Done',
           group: 'items',
           items: stringsToItems(['Vue 3 support', 'TypeScript support']),
         },
       ],
-    });
+    })
 
     return {
       kanban,
       axis,
-    };
+    }
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -119,6 +109,7 @@ export default {
   padding: 10px;
   background: #eee;
   border-radius: 20px;
+  color: #333;
 
   > header {
     display: flex;
