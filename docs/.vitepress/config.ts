@@ -9,20 +9,6 @@ export default defineConfig({
     ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],
     ['script', { src: '/confetti.min.js' }],
     ['script', { src: `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_APP_ID}` }],
-    process.env.NODE_ENV !== 'production'
-      ? [
-          'script',
-          {},
-          `
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GOOGLE_APP_ID}');
-            gtag('create', '${GOOGLE_APP_ID}', 'auto');
-            gtag('set', 'anonymizeIp', true);
-          `,
-        ]
-      : ['', {}],
     ['meta', { property: 'og:title', content: 'Vue Slicksort' }],
     ['meta', { property: 'og:image', content: '/logo.png' }],
     ['meta', { property: 'og:image:width', content: '375' }],
