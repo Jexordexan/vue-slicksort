@@ -15,6 +15,7 @@ const GOOGLE_APP_ID = 'G-6JF11BVDSJ'
 
 export default defineConfig({
   title: 'Vue Slicksort',
+  cleanUrls: 'with-subfolders',
   head: [
     ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],

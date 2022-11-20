@@ -2,10 +2,8 @@
 
 Slicksort exports two components for quickly creating sortable lists. These have to be used together, or with the slot shorthand.
 
-- `SlickList` For wrapping a list of items
-- `SlickItem` For wrapping a single item and its content
-
-For more information on Component API, visit [Components](/components)
+- `SlickList` For wrapping a list of items ([API](components/slicklist))
+- `SlickItem` For wrapping a single item and its content ([API](components/slickitem))
 
 The functionality of these components are also available as mixins, by using the `ContainerMixin` and `ElementMixin`, you can make your own sortable components.
 
