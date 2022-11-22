@@ -1,5 +1,5 @@
 declare module 'vue-slicksort' {
-  import { DirectiveOptions, Component } from 'vue';
+  import { DirectiveOptions, Component, Plugin } from 'vue';
 
   export const ContainerMixin: Component;
   export const ElementMixin: Component;
@@ -10,4 +10,6 @@ declare module 'vue-slicksort' {
   export const HandleDirective: DirectiveOptions;
 
   export function arrayMove<T>(arr: Array<T>, prevIndex: number, newIndex: number): Array<T>;
+
+  export const plugin: Plugin;
 }
