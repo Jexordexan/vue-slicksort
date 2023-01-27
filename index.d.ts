@@ -6,6 +6,7 @@ declare module 'vue-slicksort' {
 
   export const SlickList: Component;
   export const SlickItem: Component;
+  export const DragHandle: Component;
 
   export const HandleDirective: DirectiveOptions;
 
