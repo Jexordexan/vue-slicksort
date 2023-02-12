@@ -1,3 +1,7 @@
+## [2.0.5](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.4...v2.0.5) (2023-02-12)
+
+
+
 ## [2.0.4](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.3...v2.0.4) (2023-02-12)
 
 
