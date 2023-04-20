@@ -186,7 +186,7 @@ type: _String_
 
 #### `appendTo`
 
-type: _String_
+type: _String_ | _HTMLElement_
 
 default: `body`
 

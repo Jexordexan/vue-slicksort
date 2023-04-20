@@ -212,7 +212,7 @@ You can provide a class you'd like to add to the sortable helper to add some sty
 
 #### `appendTo`
 
-type: _String_
+type: _String_ | _HTMLElement_
 
 default: `body`
 
