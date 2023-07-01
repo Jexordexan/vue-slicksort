@@ -656,6 +656,7 @@ export const ContainerMixin = defineComponent({
         if (this.hideSortableGhost && this.sortableGhost) {
           this.sortableGhost.style.visibility = '';
           this.sortableGhost.style.opacity = '';
+          this.sortableGhost = null;
         }
 
         resetTransform(nodes);

@@ -1,6 +1,8 @@
-const GOOGLE_APP_ID = 'G-6JF11BVDSJ';
+import { defineConfig } from 'vitepress'
 
-module.exports = {
+const GOOGLE_APP_ID = 'G-6JF11BVDSJ'
+
+export default defineConfig({
   title: 'Vue Slicksort',
   head: [
     ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
@@ -38,34 +40,40 @@ module.exports = {
     ['meta', { property: 'twitter:title', content: 'Vue Slicksort' }],
   ],
   themeConfig: {
-    logo: '/logo.png',
-    // Assumes GitHub. Can also be a full GitLab url.
-    repo: 'Jexordexan/vue-slicksort',
-    // Customising the header label
-    // Defaults to "GitHub"/"GitLab"/"Bitbucket" depending on `themeConfig.repo`
-    repoLabel: 'GitHub',
-
-    // Optional options for generating "Edit this page" link
-    // if your docs are not at the root of the repo:
-    docsDir: 'docs',
-    // if your docs are in a specific branch (defaults to 'master'):
-    docsBranch: 'dev',
-    // defaults to false, set to true to enable
-    editLinks: true,
-    // custom text for edit link. Defaults to "Edit this page"
-    editLinkText: 'Help us improve this page!',
-
+    logo: '/logo.svg',
+    socialLinks: [{ icon: 'github', link: 'https://github.com/Jexordexan/vue-slicksort' }],
     nav: [
-      { text: 'Guide', link: '/guide' },
-      { text: 'Kanban Example', link: '/kanban' },
+      { text: 'Guide', link: '/introduction' },
+      { text: 'Migration from 1.x', link: '/migrating-1x' },
     ],
 
     sidebar: [
-      { text: 'Getting Started', link: '/getting-started' },
-      { text: 'Guide', link: '/guide' },
-      { text: 'Component API', link: '/components' },
-      { text: 'Troubleshooting', link: '/troubleshooting' },
-      { text: 'Migrating', link: '/migrating' },
+      {
+        text: 'Guide',
+        items: [
+          { text: 'Introduction', link: '/introduction' },
+          { text: 'Getting started', link: '/getting-started' },
+          { text: 'Basic use', link: '/basics' },
+          { text: 'Drag and drop', link: '/drag-and-drop' },
+          { text: 'Troubleshooting', link: '/troubleshooting' },
+          { text: 'Migrating from 1.x', link: '/migrating-1x' },
+        ],
+      },
+      {
+        text: 'Components',
+        items: [
+          { text: 'SlickList', link: '/components/slicklist' },
+          { text: 'SlickItem', link: '/components/slickitem' },
+          { text: 'DragHandle', link: '/components/draghandle' },
+        ],
+      },
+      {
+        text: 'Demos',
+        items: [
+          { text: 'Kanban', link: '/kanban' },
+          { text: 'Window scroll', link: '/window-scroll' },
+        ],
+      },
     ],
   },
-};
+})

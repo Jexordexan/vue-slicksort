@@ -11,12 +11,12 @@
 ![gzip size](http://img.badgesize.io/https://npmcdn.com/vue-slicksort?compression=gzip)
 
 <p align="center">
-  <a href="https://jexordexan.github.io/vue-slicksort/">
+  <a href="https://vue-slicksort.netlify.app/">
     <img src="logo/demo.gif">
   </a>
 </p>
 
-### Examples available here: <a href="https://jexordexan.github.io/vue-slicksort/">https://jexordexan.github.io/vue-slicksort/</a>
+### Examples available here: [vue-slicksort.netlify.app/](https://vue-slicksort.netlify.app/)
 
 ### [中文文档](./doc/zh.md)
 
@@ -71,6 +71,11 @@ If you are loading the package via `<script>` tag:
 </script>
 ```
 
+## Usage
+
+Check out the docs:  [vue-slicksort.netlify.app](https://vue-slicksort.netlify.app/)
+
+<!-- 
 ## Usage
 
 ### Basic Example
@@ -152,14 +157,14 @@ const ExampleVue = {
     };
   },
 };
-```
+``` -->
 
 <!-- More code examples are available [here](https://github.com/Jexordexan/vue-slicksort/blob/master/examples/). -->
 
 ## Why should I use this?
 
 There are already a number of great Drag & Drop libraries out there (for instance, [vuedraggable](https://github.com/SortableJS/Vue.Draggable) is fantastic). If those libraries fit your needs, you should definitely give them a try first. However, most of those libraries rely on the HTML5 Drag & Drop API, which has some severe limitations. For instance, things rapidly become tricky if you need to support touch devices, if you need to lock dragging to an axis, or want to animate the nodes as they're being sorted. Vue Slicksort aims to provide a simple set of component mixins to fill those gaps. If you're looking for a dead-simple, mobile-friendly way to add sortable functionality to your lists, then you're in the right place.
-
+<!-- 
 ## Customization and props
 
 You apply options as individual `props` on whatever component is using the `ContainerMixin`. The component also emits several events during a sorting operation. Here's an example of a customized component:
@@ -172,7 +177,6 @@ You apply options as individual `props` on whatever component is using the `Cont
   :useDragHandle="true"
   @sort-start="onSortStart($event)"
 >
-  <!-- SortableElement stuff goes here -->
 </SortableContainer>
 ```
 
@@ -396,7 +400,7 @@ Here is an example for a simple element with a handle:
     directives: { handle: HandleDirective },
   };
 </script>
-```
+``` -->
 
 # FAQ
 
