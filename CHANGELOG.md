@@ -1,3 +1,32 @@
+## [2.0.5](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.4...v2.0.5) (2023-02-12)
+
+
+
+## [2.0.4](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.3...v2.0.4) (2023-02-12)
+
+
+
+## [2.0.3](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.2...v2.0.3) (2022-11-25)
+
+
+
+## [2.0.2](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.1...v2.0.2) (2022-11-19)
+
+
+
+## [2.0.1](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0...v2.0.1) (2022-11-19)
+
+
+
+# [2.0.0](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.5...v2.0.0) (2022-11-19)
+
+
+### Features
+
+* track game wins and moves ([ef7d36e](https://github.com/Jexordexan/vue-slicksort/commit/ef7d36e8235df9005f10c8699a4f791bc1ad96d9))
+
+
+
 # [2.0.0-alpha.5](https://github.com/Jexordexan/vue-slicksort/compare/v2.0.0-alpha.4...v2.0.0-alpha.5) (2021-05-04)
 
 
@@ -99,34 +128,34 @@
 
 ## 1.2.0
 
-feat: `tag` props on SlickList and SlickItem components
-fix: Dragging broken on Android when distance property is set
-fix: node helper not clean
-fix: add event listeners in passive mode
-fix: stopPropogation on click events
-fix: .d.ts types
-docs: Chinese documentation
-chore: lots of dependencies
+- feat: `tag` props on SlickList and SlickItem components
+- fix: Dragging broken on Android when distance property is set
+- fix: node helper not clean
+- fix: add event listeners in passive mode
+- fix: stopPropogation on click events
+- fix: .d.ts types
+- docs: Chinese documentation
+- chore: lots of dependencies
 
 ## 1.1.0
 
-ADDED appendTo prop - appends the helper to the selected DOM node.
+- ADDED appendTo prop - appends the helper to the selected DOM node.
 
 ## 1.0.0
 
-ADDED Typescript support
-ADDED Settling animation, the drag helper will now settle back into its new location after releasing the drag.
-BREAKING: sortStart, sortMove, and sortEnd events are now kebab-case (sort-start, sort-move, sort-end) as per standard practice.
-Any previous event listeners will need to be updated
+- ADDED Typescript support
+- ADDED Settling animation, the drag helper will now settle back into its new location after releasing the drag.
+- BREAKING: sortStart, sortMove, and sortEnd events are now kebab-case (sort-start, sort-move, sort-end) as per standard practice.
+- Any previous event listeners will need to be updated
 
 ### 0.1.5
 
-Fixed a bug in firefox where the text got selected upon dragging
+- Fixed a bug in firefox where the text got selected upon dragging
 
 ### 0.1.1
 
-Fixed bug where the node index wasn't being updated on the manager
+- Fixed bug where the node index wasn't being updated on the manager
 
 ### 0.1.0
 
-Initial push: Convert library from react to vue.
+- Initial push: Convert library from react to vue.

@@ -2,14 +2,26 @@ import { defineConfig } from 'vitepress'
 
 const GOOGLE_APP_ID = 'G-6JF11BVDSJ'
 
+/*
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6JF11BVDSJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-6JF11BVDSJ');
+</script>
+*/
+
 export default defineConfig({
   title: 'Vue Slicksort',
+  cleanUrls: true,
   head: [
     ['link', { rel: 'icon', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['link', { rel: 'icon', sizes: '16x16', href: '/favicon-16x16.png' }],
     ['script', { src: '/confetti.min.js' }],
     ['script', { src: `https://www.googletagmanager.com/gtag/js?id=${GOOGLE_APP_ID}` }],
-    process.env.NODE_ENV !== 'production'
+    process.env.NODE_ENV === 'production'
       ? [
           'script',
           {},
@@ -22,7 +34,7 @@ export default defineConfig({
             gtag('set', 'anonymizeIp', true);
           `,
         ]
-      : [],
+      : ['meta', {}],
     ['meta', { property: 'og:title', content: 'Vue Slicksort' }],
     ['meta', { property: 'og:image', content: '/logo.png' }],
     ['meta', { property: 'og:image:width', content: '375' }],

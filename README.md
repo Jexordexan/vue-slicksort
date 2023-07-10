@@ -413,7 +413,13 @@ In root folder:
 	$ npm run storybook
 ``` -->
 
-### Upgrade from v0.x.x
+
+### Upgrade from v1.x
+
+There are a few changes in v2, mainly support for Vue 3 and dragging between groups. Read more about migrating here:
+[vue-slicksort.netlify.app/migrating-1x](https://vue-slicksort.netlify.app/migrating-1x)
+
+### Upgrade from v0.x
 
 The event names have all changed from camelCase to dash-case to accommodate for inline HTML templates.
 
