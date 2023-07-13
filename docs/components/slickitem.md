@@ -16,7 +16,7 @@ This is the element's sortableIndex within it's collection. This prop is require
 **REMOVED IN v2.0.0**
 Use `group` and multiple scroll containers instead.
 
-See [Migration docs](/migrating.html#collection-removed)
+See [Migration docs](/migrating-1x.html#collection-removed)
 
 ### `disabled`
 

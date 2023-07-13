@@ -263,3 +263,27 @@ export function isPointWithinRect({ x, y }: XY, { top, left, width, height }: Cl
   const withinY = withinBounds(y, top, top + height);
   return withinX && withinY;
 }
+
+// https://stackoverflow.com/a/42543908/622510
+const overflowRegex = /(auto|scroll)/;
+export function findScrollContainer(element: HTMLElement): HTMLElement {
+  let style = getComputedStyle(element);
+  const excludeStaticParent = style.position === "absolute";
+
+  if (style.position === "fixed") return document.documentElement;
+  for (let el: HTMLElement | null = element; el !== document.documentElement; el = el.parentElement) {
+    if (!el) {
+      return document.documentElement
+    }
+
+    style = getComputedStyle(el);
+    if (excludeStaticParent && style.position === "static") {
+        continue;
+    }
+    if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) {
+      return el;
+    }
+  }
+
+  return document.documentElement;
+}

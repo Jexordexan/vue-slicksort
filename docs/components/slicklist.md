@@ -5,6 +5,14 @@ The `SlickList`  contains several [`SlickItem`](slickitem)
 
 ## Props
 
+### `tag`
+
+type: `string`
+
+default: `div`
+
+The HTML tag that will render in the DOM.
+
 ### `list`
 
   type: `any[]`
