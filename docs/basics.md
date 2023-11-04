@@ -77,7 +77,7 @@ You will have to handle the actual CSS of making them horizontal, `display: flex
 By default the entire list item is the handle for the drag events. This might be a problem if you have inputs or buttons or other interactive elements within the items. You can use the drag handle mixin to make any element a handle.
 
 ```html
-<SlickList axis="y" v-model:list="fruits">
+<SlickList axis="y" v-model:list="fruits" useDragHandle>
   <SlickItem v-for="(fruit, i) in fruits" :key="fruit" :index="i">
     <DragHandle>
       <Icon name="hamburger" />
