@@ -166,10 +166,6 @@ export function cloneNode(node: HTMLElement): HTMLElement {
 }
 
 export function getLockPixelOffsets(lockOffset: string | number | number[], width: number, height: number): XY[] {
-  if (typeof lockOffset == 'string') {
-    lockOffset = +lockOffset;
-  }
-
   if (!Array.isArray(lockOffset)) {
     lockOffset = [lockOffset, lockOffset];
   }
@@ -185,7 +181,7 @@ export function getLockPixelOffsets(lockOffset: string | number | number[], widt
   return [getLockPixelOffset(minLockOffset, width, height), getLockPixelOffset(maxLockOffset, width, height)];
 }
 
-export function getLockPixelOffset(lockOffset: number, width: number, height: number): XY {
+export function getLockPixelOffset(lockOffset: string | number, width: number, height: number): XY {
   let offsetX = lockOffset;
   let offsetY = lockOffset;
   let unit = 'px';
