@@ -44,7 +44,7 @@ interface ComponentProps {
   lockToContainerEdges: boolean;
   lockOffset: string | number | string[];
   transitionDuration: number;
-  appendTo: string;
+  appendTo: string | HTMLElement;
   draggedSettlingDuration: number;
   group: string;
   accept: boolean | string[] | ((ctx: { source: ContainerRef; dest: ContainerRef; payload: unknown }) => boolean);
@@ -189,7 +189,7 @@ export const ContainerMixin = defineComponent({
     lockToContainerEdges: { type: Boolean, default: false },
     lockOffset: { type: [String, Number, Array] as PropType<string | number | number[]>, default: '50%' },
     transitionDuration: { type: Number, default: 300 },
-    appendTo: { type: String, default: 'body' },
+    appendTo: { type: [String, Object] as PropType<string | HTMLElement>, default: 'body' },
     draggedSettlingDuration: { type: Number, default: null },
     group: { type: String, default: '' },
     accept: { type: [Boolean, Array, Function] as PropType<AcceptProp>, default: null },
@@ -402,8 +402,9 @@ export const ContainerMixin = defineComponent({
         this.newIndex = index;
 
         const clonedNode = cloneNode(node);
+        const helperContainer = appendTo instanceof HTMLElement ? appendTo : this.document.querySelector(appendTo as string);
 
-        this.helper = this.document.querySelector(appendTo)!.appendChild(clonedNode);
+        this.helper = helperContainer!.appendChild(clonedNode);
 
         this.helper.style.position = 'fixed';
         this.helper.style.top = `${this.boundingClientRect.top - margin.top}px`;

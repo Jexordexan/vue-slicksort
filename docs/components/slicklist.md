@@ -73,7 +73,7 @@ The HTML tag that will render in the DOM.
 
 ### `appendTo`
 
-  type: `string` (Query selector)
+  type: `string | HTMLElement` (Query selector or HTML Element)
 
   default: `body`
 
