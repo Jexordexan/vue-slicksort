@@ -253,7 +253,7 @@ export const ContainerMixin = defineComponent({
     for (const key in this.events) {
       if (hasOwnProperty(this.events, key)) {
         // @ts-ignore
-        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key]));
+        events[key].forEach((eventName) => this.container.addEventListener(eventName, this.events[key], { passive: true }));
       }
     }
 
